@@ -21,7 +21,39 @@ class StudentAttendanceRequest extends BaseRequest
      */
     protected function prepareForValidation(): void
     {
+        // $this->merge([
+        //     'academic_session_id' => $this->academic_session_id
+        //         ? (int) $this->academic_session_id
+        //         : null,
+
+        //     'class_id' => $this->class_id
+        //         ? (int) $this->class_id
+        //         : null,
+
+        //     'section_id' => $this->section_id
+        //         ? (int) $this->section_id
+        //         : null,
+        // ]);
+
+        $attendance = $this->input('attendance');
+
+        /*
+        |--------------------------------------------------------------------------
+        | Decode attendance JSON
+        |--------------------------------------------------------------------------
+        */
+
+        if (is_string($attendance)) {
+
+            $attendance = json_decode(
+                $attendance,
+                true
+            );
+
+        }
+
         $this->merge([
+
             'academic_session_id' => $this->academic_session_id
                 ? (int) $this->academic_session_id
                 : null,
@@ -33,6 +65,9 @@ class StudentAttendanceRequest extends BaseRequest
             'section_id' => $this->section_id
                 ? (int) $this->section_id
                 : null,
+
+            'attendance' => $attendance,
+
         ]);
     }
 
@@ -111,7 +146,7 @@ class StudentAttendanceRequest extends BaseRequest
              */
 
             'attendance.*.student_enrollment_id' => [
-                'required_if:attendance,*',
+                'required',
                 'integer',
                 'distinct',
                 'exists:student_enrollments,id',
@@ -124,7 +159,7 @@ class StudentAttendanceRequest extends BaseRequest
              */
 
             'attendance.*.status' => [
-                'required_if:attendance,*',
+                'required',
                 Rule::in([
                     'present',
                     'absent',
@@ -155,33 +190,47 @@ class StudentAttendanceRequest extends BaseRequest
     {
         return [
 
-            'academic_session_id.required' => 'Academic session is required.',
+            'academic_session_id.required' =>
+                'Academic session is required.',
 
-            'academic_session_id.exists' => 'Selected academic session is invalid.',
+            'academic_session_id.exists' =>
+                'Selected academic session is invalid.',
 
-            'class_id.required' => 'Class is required.',
+            'class_id.required' =>
+                'Class is required.',
 
-            'class_id.exists' => 'Selected class is invalid.',
+            'class_id.exists' =>
+                'Selected class is invalid.',
 
-            'attendance_date.required' => 'Attendance date is required.',
+            'attendance_date.required' =>
+                'Attendance date is required.',
 
-            'attendance_date.date' => 'Please provide a valid attendance date.',
+            'attendance_date.date' =>
+                'Please provide a valid attendance date.',
 
-            'attendance.required' => 'Please select at least one student.',
+            'attendance.required' =>
+                'Please select at least one student.',
 
-            'attendance.min' => 'Please select at least one student.',
+            'attendance.min' =>
+                'Please select at least one student.',
 
-            'attendance.*.student_enrollment_id.required' => 'Student enrollment is required.',
+            'attendance.*.student_enrollment_id.required' =>
+                'Student enrollment is required.',
 
-            'attendance.*.student_enrollment_id.exists' => 'Selected student enrollment is invalid.',
+            'attendance.*.student_enrollment_id.exists' =>
+                'Selected student enrollment is invalid.',
 
-            'attendance.*.student_enrollment_id.distinct' => 'Duplicate student enrollment is not allowed.',
+            'attendance.*.student_enrollment_id.distinct' =>
+                'Duplicate student enrollment is not allowed.',
 
-            'attendance.*.status.required' => 'Attendance status is required.',
+            'attendance.*.status.required' =>
+                'Attendance status is required.',
 
-            'attendance.*.status.in' => 'Invalid attendance status.',
+            'attendance.*.status.in' =>
+                'Invalid attendance status.',
 
-            'attendance.*.remarks.max' => 'Remarks cannot exceed 500 characters.',
+            'attendance.*.remarks.max' =>
+                'Remarks cannot exceed 500 characters.',
 
         ];
     }

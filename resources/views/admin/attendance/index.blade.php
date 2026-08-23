@@ -204,6 +204,12 @@
                         <th width="100">
                             Roll No
                         </th>
+                        <th>
+                            class 
+                        </th>
+                        <th>
+                            section
+                        </th>
 
                         <th width="330">
                             Attendance
@@ -220,10 +226,10 @@
 
                 <tbody id="attendanceTableBody">
 
-                    <tr>
+                    <tr class="attendance-row">
 
                         <td
-                            colspan="7"
+                            colspan="9"
                             class="text-center text-muted py-5">
 
                             <i class="bi bi-people fs-3 d-block mb-2"></i>
@@ -377,7 +383,7 @@
 
 <script>
 
-    const ATTENDANCE_STUDENTS_URL =
+    const ATTENDANCE_STUDENTS_LIST_URL =
         "{{ route('admin.attendance.students') }}";
 
     const ATTENDANCE_SAVE_URL =

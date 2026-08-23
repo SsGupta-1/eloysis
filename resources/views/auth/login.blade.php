@@ -68,7 +68,7 @@
     </div>
 
 </div>
-@include('components.common.flash-message');
+@include('components.common.flash-message')
 @include('components.admin.scripts')
 </body>
 

@@ -1,19 +1,348 @@
 const Attendance = {
 
-    students: [],
+    table: null,
+
+    /*
+    |--------------------------------------------------------------------------
+    | Attendance State
+    |--------------------------------------------------------------------------
+    |
+    | {
+    |     enrollment_id: {
+    |         student_enrollment_id: 1,
+    |         status: 'present',
+    |         remarks: '...'
+    |     }
+    | }
+    |
+    |--------------------------------------------------------------------------
+    */
+
+    attendanceState: {},
 
 
     /*
     |--------------------------------------------------------------------------
-    | Initialize
+    | Init
     |--------------------------------------------------------------------------
     */
 
     init() {
 
+        this.initDataTable();
+
         this.bindEvents();
 
-        this.setDefaultDate();
+    },
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | DataTable
+    |--------------------------------------------------------------------------
+    */
+
+    initDataTable() {
+
+        this.table = $('#attendanceTable').DataTable({
+
+            processing: true,
+
+            serverSide: true,
+
+            searching: true,
+
+            ordering: false,
+
+            pageLength: 10,
+
+            lengthMenu: [
+                [10, 25, 50, 100],
+                [10, 25, 50, 100]
+            ],
+
+            ajax: {
+
+                url: ATTENDANCE_STUDENTS_LIST_URL,
+
+                type: 'GET',
+
+                data: function (d) {
+
+                    d.academic_session_id =
+                        $('#academic_session_id').val();
+
+                    d.class_id =
+                        $('#class_id').val();
+
+                    d.section_id =
+                        $('#section_id').val();
+
+                    d.attendance_date =
+                        $('#attendance_date').val();
+
+                },
+
+                error: function (xhr) {
+
+                    Toast.error(
+                        xhr.responseJSON?.message ??
+                        'Unable to load students.'
+                    );
+
+
+                }
+
+            },
+
+
+            /*
+            |--------------------------------------------------------------------------
+            | DataTable Draw
+            |--------------------------------------------------------------------------
+            */
+
+            drawCallback: () => {
+
+                this.restoreAttendanceState();
+
+
+            },
+
+            createdRow: function (row, data, dataIndex) {
+
+                $(row).addClass('attendance-row');
+
+            },
+            /*
+            |--------------------------------------------------------------------------
+            | Columns
+            |--------------------------------------------------------------------------
+            */
+
+            columns: [
+
+                /*
+                |--------------------------------------------------------------------------
+                | #
+                |--------------------------------------------------------------------------
+                */
+
+                {
+                    data: null,
+
+                    name: null,
+
+                    orderable: false,
+
+                    searchable: false,
+
+                    render: function (
+                        data,
+                        type,
+                        row,
+                        meta
+                    ) {
+
+                        return (
+                            meta.row +
+                            meta.settings._iDisplayStart +
+                            1
+                        );
+
+                    }
+
+                },
+
+                {
+                    data: 'profile_image_url',
+
+                    name: 'profile_image_url',
+                    render: function (data, type, row) {
+                        const profileImage = row.profile_image_url ?? DEFAULT_AVATAR;
+
+                        return `
+                            <div class="d-flex align-items-center">
+                                <img
+                                    src="${profileImage}"
+                                    width="38"
+                                    height="38"
+                                    class="rounded-circle me-2"
+                                    style="object-fit: cover;">
+                            </div>
+                        `;
+                    }
+
+                },
+
+                /*
+               |--------------------------------------------------------------------------
+               | Student
+               |--------------------------------------------------------------------------
+               */
+
+                {
+                    data: 'student_name',
+
+                    name: 'student_name',
+
+                    defaultContent: '-'
+
+                },
+
+                /*
+                |--------------------------------------------------------------------------
+                | Admission No
+                |--------------------------------------------------------------------------
+                */
+
+                {
+                    data: 'admission_no',
+
+                    name: 'admission_no',
+
+                    defaultContent: '-'
+
+                },
+
+
+                {
+                    data: 'roll_number',
+                    name: 'roll_number',
+                    defaultContent: '-'
+                },
+
+
+                /*
+                |--------------------------------------------------------------------------
+                | Class
+                |--------------------------------------------------------------------------
+                */
+
+                {
+                    data: 'class_name',
+
+                    name: 'class_name',
+
+                    defaultContent: '-'
+
+                },
+
+
+                /*
+                |--------------------------------------------------------------------------
+                | Section
+                |--------------------------------------------------------------------------
+                */
+
+                {
+                    data: 'section_name',
+
+                    name: 'section_name',
+
+                    defaultContent: '-'
+
+                },
+
+
+                /*
+                |--------------------------------------------------------------------------
+                | Attendance Status
+                |--------------------------------------------------------------------------
+                */
+
+                {
+                    data: null,
+
+                    name: null,
+
+                    orderable: false,
+
+                    searchable: false,
+
+                    render: function (
+                        data,
+                        type,
+                        row
+                    ) {
+
+                        return `
+
+                            <select
+                                class="form-select form-select-sm attendance-status"
+                                data-enrollment-id="${row.id}">
+
+                                <option value="">
+                                    Select
+                                </option>
+
+                                <option value="present">
+                                    Present
+                                </option>
+
+                                <option value="absent">
+                                    Absent
+                                </option>
+
+                                <option value="late">
+                                    Late
+                                </option>
+
+                                <option value="leave">
+                                    Leave
+                                </option>
+
+                            </select>
+
+                        `;
+
+                    }
+
+                },
+
+
+                /*
+                |--------------------------------------------------------------------------
+                | Remarks
+                |--------------------------------------------------------------------------
+                */
+
+                {
+                    data: null,
+
+                    name: null,
+
+                    orderable: false,
+
+                    searchable: false,
+
+                    render: function (
+                        data,
+                        type,
+                        row
+                    ) {
+
+                        return `
+
+                            <input
+                                type="text"
+                                class="form-control form-control-sm attendance-remarks"
+                                data-enrollment-id="${row.id}"
+                                maxlength="500"
+                                placeholder="Remarks">
+
+                        `;
+
+                    }
+
+                }
+
+            ]
+
+        });
+
+        this.setActionButtons(true);
+        this.updateSummary();
 
     },
 
@@ -28,28 +357,185 @@ const Attendance = {
 
         /*
         |--------------------------------------------------------------------------
-        | Load Students
+        | Filter
         |--------------------------------------------------------------------------
         */
 
-        $('#filterForm').on('submit', (e) => {
+        $('#filterForm').on(
+            'submit',
+            (e) => {
 
-            e.preventDefault();
+                e.preventDefault();
 
-            this.loadStudents();
+                this.resetState();
 
-        });
+                this.reload();
+
+            }
+        );
 
 
         /*
         |--------------------------------------------------------------------------
-        | Save Attendance - Top
+        | Reset
         |--------------------------------------------------------------------------
         */
 
+        $('#btnReset').on(
+            'click',
+            () => {
+
+                $('#filterForm')[0].reset();
+
+                this.resetState();
+
+                this.reload();
+
+            }
+        );
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | Status Change
+        |--------------------------------------------------------------------------
+        */
+
+        $(document).on(
+            'change',
+            '.attendance-status',
+            (e) => {
+
+                const select =
+                    $(e.currentTarget);
+
+                const enrollmentId =
+                    select.data('enrollment-id');
+
+                this.updateState(
+                    enrollmentId,
+                    {
+                        status: select.val()
+                    }
+                );
+
+                const row =
+                    select.closest('.attendance-row');
+
+                this.setRowStatus(
+                    row,
+                    select.val()
+                );
+
+            }
+        );
+
+        // $(document).on(
+        //     'click',
+        //     '.attendance-status-btn',
+        //     (e) => {
+
+        //         const button =
+        //             $(e.currentTarget);
+
+        //         const status =
+        //             button.data('status');
+
+        //         const row =
+        //             button.closest('.attendance-row');
+
+
+        //         this.setRowStatus(
+        //             row,
+        //             status
+        //         );
+
+        //     }
+        // );
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | Remarks Change
+        |--------------------------------------------------------------------------
+        */
+
+        $(document).on(
+            'input',
+            '.attendance-remarks',
+            (e) => {
+
+                const input =
+                    $(e.currentTarget);
+
+                const enrollmentId =
+                    input.data('enrollment-id');
+
+                this.updateState(
+                    enrollmentId,
+                    {
+                        remarks: input.val()
+                    }
+                );
+
+                this.updateSummary();
+
+            }
+        );
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | Mark All Present
+        |--------------------------------------------------------------------------
+        */
+
+        $('#btnMarkAllPresent').on(
+            'click',
+            () => {
+
+                this.markAll('present');
+
+            }
+        );
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | Mark All Absent
+        |--------------------------------------------------------------------------
+        */
+
+        $('#btnMarkAllAbsent').on(
+            'click',
+            () => {
+
+                this.markAll('absent');
+
+            }
+        );
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | Save
+        |--------------------------------------------------------------------------
+        */
+
+        $('#attendanceForm').on(
+            'submit',
+            (e) => {
+
+                e.preventDefault();
+
+                this.save();
+
+            }
+        );
+
         $('#btnSaveAttendance').on('click', () => {
 
-            this.saveAttendance();
+            this.save();
 
         });
 
@@ -62,560 +548,120 @@ const Attendance = {
 
         $('#btnSaveAttendanceBottom').on('click', () => {
 
-            this.saveAttendance();
+            this.save();
 
         });
 
-
-        /*
-        |--------------------------------------------------------------------------
-        | Mark All Present
-        |--------------------------------------------------------------------------
-        */
-
-        $('#btnMarkAllPresent').on('click', () => {
-
-            this.markAll('present');
-
-        });
+    },
 
 
-        /*
-        |--------------------------------------------------------------------------
-        | Mark All Absent
-        |--------------------------------------------------------------------------
-        */
+    /*
+    |--------------------------------------------------------------------------
+    | Update Attendance State
+    |--------------------------------------------------------------------------
+    */
 
-        $('#btnMarkAllAbsent').on('click', () => {
+    updateState(
+        enrollmentId,
+        data
+    ) {
 
-            this.markAll('absent');
+        if (!enrollmentId) {
 
-        });
+            return;
+
+        }
 
 
-        /*
-        |--------------------------------------------------------------------------
-        | Individual Attendance Status
-        |--------------------------------------------------------------------------
-        */
+        enrollmentId =
+            String(enrollmentId);
 
-        $(document).on(
-            'click',
-            '.attendance-status-btn',
-            (e) => {
 
-                const button =
-                    $(e.currentTarget);
+        if (!this.attendanceState[enrollmentId]) {
 
-                const status =
-                    button.data('status');
+            this.attendanceState[enrollmentId] = {
+
+                student_enrollment_id:
+                    Number(enrollmentId),
+
+                status: '',
+
+                remarks: null
+
+            };
+
+        }
+
+
+        Object.assign(
+            this.attendanceState[enrollmentId],
+            data
+        );
+
+    },
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | Restore State After DataTable Draw
+    |--------------------------------------------------------------------------
+    */
+
+    restoreAttendanceState() {
+
+        $('#attendanceTable tbody tr')
+            .each((index, element) => {
 
                 const row =
-                    button.closest('.attendance-row');
+                    $(element);
 
 
-                this.setRowStatus(
-                    row,
-                    status
-                );
-
-            }
-        );
-
-
-        /*
-        |--------------------------------------------------------------------------
-        | Remarks
-        |--------------------------------------------------------------------------
-        */
-
-        $(document).on(
-            'input',
-            '.attendance-remarks',
-            () => {
-
-                this.updateSummary();
-
-            }
-        );
-
-    },
-
-
-    /*
-    |--------------------------------------------------------------------------
-    | Default Date
-    |--------------------------------------------------------------------------
-    */
-
-    setDefaultDate() {
-
-        if (!$('#attendance_date').val()) {
-
-            const today = new Date();
-
-            const date =
-                today.toISOString()
-                    .split('T')[0];
-
-            $('#attendance_date').val(date);
-
-        }
-
-    },
-
-
-    /*
-    |--------------------------------------------------------------------------
-    | Load Students
-    |--------------------------------------------------------------------------
-    */
-
-    loadStudents(page = 1) {
-
-        const sessionId =
-            $('#academic_session_id').val();
-
-        const classId =
-            $('#class_id').val();
-
-        const sectionId =
-            $('#section_id').val();
-
-        const date =
-            $('#attendance_date').val();
-
-
-        /*
-        |--------------------------------------------------------------------------
-        | Validation
-        |--------------------------------------------------------------------------
-        */
-
-        if (!sessionId) {
-
-            Toast.error(
-                'Please select academic session.'
-            );
-
-            return;
-
-        }
-
-
-        if (!classId) {
-
-            Toast.error(
-                'Please select class.'
-            );
-
-            return;
-
-        }
-
-
-        if (!date) {
-
-            Toast.error(
-                'Please select attendance date.'
-            );
-
-            return;
-
-        }
-
-
-        const data = {
-
-            academic_session_id:
-                sessionId,
-
-            class_id:
-                classId,
-
-            section_id:
-                sectionId,
-
-            attendance_date:
-                date
-
-        };
-
-
-        Ajax.request({
-
-            url:
-                ATTENDANCE_STUDENTS_URL,
-
-            method: 'GET',
-
-            data: $('#filterForm').serialize() + '&page=' + page,
-
-            success:
-                (response) => {
-
-                    this.students =
-                        response.data || [];
-
-                    this.renderStudents(
-                        this.students
+                const statusInput =
+                    row.find(
+                        '.attendance-status'
                     );
+
+
+                const enrollmentId =
+                    statusInput.data(
+                        'enrollment-id'
+                    );
+
+
+                if (!enrollmentId) {
+
+                    return;
 
                 }
 
-        });
 
-    },
+                const state =
+                    this.attendanceState[
+                    String(enrollmentId)
+                    ];
 
 
-    /*
-    |--------------------------------------------------------------------------
-    | Render Students
-    |--------------------------------------------------------------------------
-    */
+                if (!state) {
 
-    renderStudents(students) {
+                    return;
 
-        let html = '';
+                }
 
 
-        /*
-        |--------------------------------------------------------------------------
-        | Empty State
-        |--------------------------------------------------------------------------
-        */
+                row.find(
+                    '.attendance-status'
+                ).val(
+                    state.status
+                );
 
-        if (!students.length) {
 
-            html = `
+                row.find(
+                    '.attendance-remarks'
+                ).val(
+                    state.remarks ?? ''
+                );
 
-                <tr>
-
-                    <td
-                        colspan="7"
-                        class="text-center text-muted py-5">
-
-                        <i
-                            class="bi bi-person-x fs-3 d-block mb-2">
-                        </i>
-
-                        No students found for the
-                        selected criteria.
-
-                    </td>
-
-                </tr>
-
-            `;
-
-
-            $('#attendanceTableBody')
-                .html(html);
-
-
-            this.setActionButtons(false);
-
-
-            $('#attendanceSummary')
-                .text('No students found.');
-
-
-            return;
-
-        }
-
-
-        /*
-        |--------------------------------------------------------------------------
-        | Render Rows
-        |--------------------------------------------------------------------------
-        */
-
-        students.forEach((enrollment, index) => {
-
-            const student =
-                enrollment.student;
-
-            const user =
-                student?.user;
-
-
-            /*
-            |--------------------------------------------------------------------------
-            | Existing Attendance
-            |--------------------------------------------------------------------------
-            */
-
-            const attendance =
-                enrollment.attendances?.[0];
-
-
-            const status =
-                attendance?.status || 'present';
-
-
-            const remarks =
-                attendance?.remarks || '';
-
-
-            /*
-            |--------------------------------------------------------------------------
-            | Profile Image
-            |--------------------------------------------------------------------------
-            */
-
-            let profileImage = '';
-
-
-            if (user?.profile_image_url) {
-
-                profileImage = `
-
-                    <img
-                        src="${this.escapeHtml(
-                    user.profile_image_url
-                )}"
-                        class="student-avatar"
-                        alt="Student">
-
-                `;
-
-            } else {
-
-                profileImage = `
-
-                    <div
-                        class="student-avatar-placeholder">
-
-                        <i class="bi bi-person"></i>
-
-                    </div>
-
-                `;
-
-            }
-
-
-            /*
-            |--------------------------------------------------------------------------
-            | Attendance Buttons
-            |--------------------------------------------------------------------------
-            */
-
-            const statusHtml = `
-
-                <input
-                    type="hidden"
-                    class="attendance-status"
-                    value="${this.escapeHtml(status)}">
-
-
-                <div
-                    class="attendance-status-group">
-
-                    ${this.statusButton(
-                'present',
-                'Present',
-                'bi-check-circle',
-                status
-            )}
-
-                    ${this.statusButton(
-                'absent',
-                'Absent',
-                'bi-x-circle',
-                status
-            )}
-
-                    ${this.statusButton(
-                'late',
-                'Late',
-                'bi-clock',
-                status
-            )}
-
-                    ${this.statusButton(
-                'leave',
-                'Leave',
-                'bi-calendar-x',
-                status
-            )}
-
-                </div>
-
-            `;
-
-
-            /*
-            |--------------------------------------------------------------------------
-            | Student Row
-            |--------------------------------------------------------------------------
-            */
-
-            html += `
-
-                <tr
-                    class="attendance-row"
-                    data-enrollment-id="${enrollment.id}">
-
-                    <td>
-
-                        ${index + 1}
-
-                    </td>
-
-
-                    <td>
-
-                        ${profileImage}
-
-                    </td>
-
-
-                    <td>
-
-                        <strong>
-
-                            ${this.escapeHtml(
-                user?.name ?? '-'
-            )}
-
-                        </strong>
-
-                    </td>
-
-
-                    <td>
-
-                        ${this.escapeHtml(
-                student?.admission_no ?? '-'
-            )}
-
-                    </td>
-
-
-                    <td>
-
-                        ${this.escapeHtml(
-                enrollment.roll_number ?? '-'
-            )}
-
-                    </td>
-
-
-                    <td>
-
-                        ${statusHtml}
-
-                    </td>
-
-
-                    <td>
-
-                        <input
-                            type="text"
-                            class="form-control attendance-remarks"
-                            value="${this.escapeHtml(remarks)}"
-                            placeholder="Remarks">
-
-                    </td>
-
-                </tr>
-
-            `;
-
-        });
-
-
-        $('#attendanceTableBody')
-            .html(html);
-
-
-        this.setActionButtons(true);
-
-        this.updateSummary();
-
-    },
-
-
-    /*
-    |--------------------------------------------------------------------------
-    | Status Button
-    |--------------------------------------------------------------------------
-    */
-
-    statusButton(
-        value,
-        label,
-        icon,
-        currentStatus
-    ) {
-
-        const active =
-            currentStatus === value
-                ? 'active'
-                : '';
-
-
-        return `
-
-            <button
-                type="button"
-                class="btn btn-outline-secondary attendance-status-btn ${active}"
-                data-status="${value}">
-
-                <i class="bi ${icon} me-1"></i>
-
-                ${label}
-
-            </button>
-
-        `;
-
-    },
-
-
-    /*
-    |--------------------------------------------------------------------------
-    | Set Row Status
-    |--------------------------------------------------------------------------
-    */
-
-    setRowStatus(row, status) {
-
-        /*
-        |--------------------------------------------------------------------------
-        | Hidden status field
-        |--------------------------------------------------------------------------
-        */
-
-        row.find('.attendance-status')
-            .val(status);
-
-
-        /*
-        |--------------------------------------------------------------------------
-        | Active button
-        |--------------------------------------------------------------------------
-        */
-
-        row.find('.attendance-status-btn')
-            .removeClass('active');
-
-
-        row.find(
-            `.attendance-status-btn[data-status="${status}"]`
-        )
-            .addClass('active');
-
-
-        /*
-        |--------------------------------------------------------------------------
-        | Update Counter
-        |--------------------------------------------------------------------------
-        */
-
-        this.updateSummary();
+            });
 
     },
 
@@ -628,60 +674,226 @@ const Attendance = {
 
     markAll(status) {
 
-        const rows =
-            $('.attendance-row');
+        $('#attendanceTable tbody tr')
+            .each((index, element) => {
+
+                const row =
+                    $(element);
 
 
-        if (!rows.length) {
+                const select =
+                    row.find(
+                        '.attendance-status'
+                    );
+
+
+                const enrollmentId =
+                    select.data(
+                        'enrollment-id'
+                    );
+
+
+                if (!enrollmentId) {
+
+                    return;
+
+                }
+
+
+                select.val(status);
+
+
+                this.updateState(
+                    enrollmentId,
+                    {
+                        status: status
+                    }
+                );
+
+            });
+
+    },
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | Validate Complete Attendance
+    |--------------------------------------------------------------------------
+    */
+
+    validateAttendance() {
+
+        const entries =
+            Object.values(
+                this.attendanceState
+            );
+
+
+        if (!entries.length) {
+
+            Toast.error(
+                'No students found.'
+            );
+
+            return false;
+
+        }
+
+
+        const missing =
+            entries.filter(
+                item => !item.status
+            );
+
+
+        if (missing.length) {
+
+            Toast.error(
+                `Please mark attendance for all students. ${missing.length} student(s) are pending.`
+            );
+
+            return false;
+
+        }
+
+
+        return true;
+
+    },
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | Save Attendance
+    |--------------------------------------------------------------------------
+    */
+
+    save() {
+
+        if (!this.validateAttendance()) {
 
             return;
 
         }
 
 
-        rows.each((index, element) => {
-
-            this.setRowStatus(
-                $(element),
-                status
+        const attendance =
+            Object.values(
+                this.attendanceState
             );
+
+
+        const formData =
+            new FormData();
+
+
+        formData.append(
+            'academic_session_id',
+            $('#academic_session_id').val()
+        );
+
+
+        formData.append(
+            'class_id',
+            $('#class_id').val()
+        );
+
+
+        formData.append(
+            'section_id',
+            $('#section_id').val() || ''
+        );
+
+
+        formData.append(
+            'attendance_date',
+            $('#attendance_date').val()
+        );
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | IMPORTANT
+        |--------------------------------------------------------------------------
+        |
+        | Send complete class attendance as JSON.
+        |
+        |--------------------------------------------------------------------------
+        */
+
+        formData.append(
+            'attendance',
+            JSON.stringify(attendance)
+        );
+
+
+        Ajax.request({
+
+            url: ATTENDANCE_SAVE_URL,
+
+            method: 'POST',
+
+            data: formData,
+
+            success: (response) => {
+
+                /*
+                |--------------------------------------------------------------------------
+                | Clear State
+                |--------------------------------------------------------------------------
+                */
+
+                this.resetState();
+
+                /*
+                |--------------------------------------------------------------------------
+                | Reload DataTable
+                |--------------------------------------------------------------------------
+                */
+
+                this.reload();
+
+            }
 
         });
 
+    },
 
-        this.updateSummary();
+
+    /*
+    |--------------------------------------------------------------------------
+    | Reset Attendance State
+    |--------------------------------------------------------------------------
+    */
+
+    resetState() {
+
+        this.attendanceState = {};
 
     },
 
 
     /*
     |--------------------------------------------------------------------------
-    | Action Buttons
+    | Reload DataTable
     |--------------------------------------------------------------------------
     */
 
-    setActionButtons(enabled) {
+    reload() {
 
-        $('#btnSaveAttendance')
-            .prop('disabled', !enabled);
+        if (!this.table) {
 
-        $('#btnSaveAttendanceBottom')
-            .prop('disabled', !enabled);
+            return;
 
-        $('#btnMarkAllPresent')
-            .prop('disabled', !enabled);
+        }
 
-        $('#btnMarkAllAbsent')
-            .prop('disabled', !enabled);
+
+        this.table.ajax.reload(
+            null,
+            true
+        );
 
     },
-
-
-    /*
-    |--------------------------------------------------------------------------
-    | Update Summary
-    |--------------------------------------------------------------------------
-    */
 
     updateSummary() {
 
@@ -775,180 +987,63 @@ const Attendance = {
 
     },
 
+    setRowStatus(row, status) {
 
-    /*
-    |--------------------------------------------------------------------------
-    | Save Attendance
-    |--------------------------------------------------------------------------
-    */
+        /*
+        |--------------------------------------------------------------------------
+        | Hidden status field
+        |--------------------------------------------------------------------------
+        */
 
-    saveAttendance() {
-
-
-        const rows =
-            $('.attendance-row');
+        row.find('.attendance-status')
+            .val(status);
 
 
-        if (!rows.length) {
+        /*
+        |--------------------------------------------------------------------------
+        | Active button
+        |--------------------------------------------------------------------------
+        */
 
-            Toast.error(
-                'No students available.'
-            );
-
-            return;
-
-        }
-
-
-        const attendance = [];
+        row.find('.attendance-status-btn')
+            .removeClass('active');
 
 
-        rows.each(function () {
-
-            const row =
-                $(this);
-
-
-            const enrollmentId =
-                row.data('enrollment-id');
+        row.find(
+            `.attendance-status-btn[data-status="${status}"]`
+        )
+            .addClass('active');
 
 
-            const status =
-                row.find('.attendance-status')
-                    .val();
+        /*
+        |--------------------------------------------------------------------------
+        | Update Counter
+        |--------------------------------------------------------------------------
+        */
 
+        this.updateSummary();
 
-            const remarks =
-                row.find('.attendance-remarks')
-                    .val();
+    },
 
+    setActionButtons(enabled) {
 
-            attendance.push({
+        $('#btnSaveAttendance')
+            .prop('disabled', !enabled);
 
-                student_enrollment_id:
-                    enrollmentId,
+        $('#btnSaveAttendanceBottom')
+            .prop('disabled', !enabled);
 
-                status:
-                    status,
+        $('#btnMarkAllPresent')
+            .prop('disabled', !enabled);
 
-                remarks:
-                    remarks || null
-
-            });
-
-        });
-
-
-        const data = {
-
-            academic_session_id:
-                $('#academic_session_id').val(),
-
-            class_id:
-                $('#class_id').val(),
-
-            section_id:
-                $('#section_id').val(),
-
-            attendance_date:
-                $('#attendance_date').val(),
-
-            attendance:
-                attendance
-
-        };
-
-        console.log('attendance data', data);
-
-        Ajax.request({
-
-            url:
-                ATTENDANCE_SAVE_URL,
-
-            method:
-                'POST',
-
-            data:
-                data,
-
-            success:
-                (response) => {
-
-                    Toast.success(
-                        response.message
-                    );
-
-
-                    /*
-                    |--------------------------------------------------------------------------
-                    | Reload
-                    |--------------------------------------------------------------------------
-                    */
-
-                    this.loadStudents();
-
-                }
-
-        });
+        $('#btnMarkAllAbsent')
+            .prop('disabled', !enabled);
 
     },
 
 
-    /*
-    |--------------------------------------------------------------------------
-    | Escape HTML
-    |--------------------------------------------------------------------------
-    */
-
-    escapeHtml(value) {
-
-        if (
-            value === null ||
-            value === undefined
-        ) {
-
-            return '';
-
-        }
-
-
-        return String(value)
-
-            .replace(
-                /&/g,
-                '&amp;'
-            )
-
-            .replace(
-                /</g,
-                '&lt;'
-            )
-
-            .replace(
-                />/g,
-                '&gt;'
-            )
-
-            .replace(
-                /"/g,
-                '&quot;'
-            )
-
-            .replace(
-                /'/g,
-                '&#039;'
-            );
-
-    }
-
 };
 
-
-/*
-|--------------------------------------------------------------------------
-| Initialize
-|--------------------------------------------------------------------------
-*/
 
 $(function () {
 

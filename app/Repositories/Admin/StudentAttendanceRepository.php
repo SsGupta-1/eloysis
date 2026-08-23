@@ -8,48 +8,52 @@ use App\Repositories\BaseRepository;
 
 class StudentAttendanceRepository extends BaseRepository
 {
-    protected StudentEnrollment $enrollmentModel;
 
     /**
      * Create a new class instance.
      */
-    public function __construct(
-        StudentAttendance $model,
-        StudentEnrollment $enrollmentModel
-    ) {
+    public function __construct(StudentAttendance $model) {
         parent::__construct($model);
-
-        $this->enrollmentModel = $enrollmentModel;
     }
 
-    /**
-     * Get students for attendance
+     /**
+     * Get students for attendance DataTable.
      */
-    public function getStudents(array $filters = [])
-    {
-        $query = $this->enrollmentModel
+    public function getStudentsForAttendance(
+        array $filters = [],
+        int $page = 1,
+        int $perPage = 10,
+        ?int $orderColumn = null,
+        string $orderDirection = 'asc'
+    ) {
+        /*
+        |--------------------------------------------------------------------------
+        | Base Query
+        |--------------------------------------------------------------------------
+        */
+
+        $query = StudentEnrollment::query()
             ->with([
                 'student.user:id,name,email,mobile,profile_image,status',
-
-                'academicSession:id,name',
 
                 'studentClass:id,class_name',
 
                 'section:id,name',
 
+                'academicSession:id,name',
+
                 'attendances' => function ($query) use ($filters) {
 
-                    if (! empty($filters['attendance_date'])) {
+                    if (!empty($filters['attendance_date'])) {
 
                         $query->where(
                             'attendance_date',
                             $filters['attendance_date']
                         );
-
                     }
-
                 },
             ]);
+
 
         /*
         |--------------------------------------------------------------------------
@@ -57,14 +61,17 @@ class StudentAttendanceRepository extends BaseRepository
         |--------------------------------------------------------------------------
         */
 
-        if (! empty($filters['academic_session_id'])) {
+        $query->when(
+            !empty($filters['academic_session_id']),
+            function ($query) use ($filters) {
 
-            $query->where(
-                'academic_session_id',
-                $filters['academic_session_id']
-            );
+                $query->where(
+                    'academic_session_id',
+                    $filters['academic_session_id']
+                );
+            }
+        );
 
-        }
 
         /*
         |--------------------------------------------------------------------------
@@ -72,14 +79,17 @@ class StudentAttendanceRepository extends BaseRepository
         |--------------------------------------------------------------------------
         */
 
-        if (! empty($filters['class_id'])) {
+        $query->when(
+            !empty($filters['class_id']),
+            function ($query) use ($filters) {
 
-            $query->where(
-                'class_id',
-                $filters['class_id']
-            );
+                $query->where(
+                    'class_id',
+                    $filters['class_id']
+                );
+            }
+        );
 
-        }
 
         /*
         |--------------------------------------------------------------------------
@@ -87,74 +97,262 @@ class StudentAttendanceRepository extends BaseRepository
         |--------------------------------------------------------------------------
         */
 
-        if (! empty($filters['section_id'])) {
-
-            $query->where(
-                'section_id',
-                $filters['section_id']
-            );
-
-        }
-
-        /*
-        |--------------------------------------------------------------------------
-        | Active Enrollment
-        |--------------------------------------------------------------------------
-        */
-
-        $query->where('status', 1);
-
-        /*
-        |--------------------------------------------------------------------------
-        | Student Search
-        |--------------------------------------------------------------------------
-        */
-
-        if (! empty($filters['search'])) {
-
-            $search = $filters['search'];
-
-            $query->where(function ($query) use ($search) {
+        $query->when(
+            !empty($filters['section_id']),
+            function ($query) use ($filters) {
 
                 $query->where(
-                    'roll_number',
-                    'like',
-                    "%{$search}%"
-                )
-                    ->orWhereHas('student', function ($query) use ($search) {
+                    'section_id',
+                    $filters['section_id']
+                );
+            }
+        );
 
-                        $query->where(
-                            'admission_no',
-                            'like',
-                            "%{$search}%"
-                        );
 
-                    })
-                    ->orWhereHas('student.user', function ($query) use ($search) {
+        /*
+        |--------------------------------------------------------------------------
+        | Active Student
+        |--------------------------------------------------------------------------
+        */
 
-                        $query->where('name', 'like', "%{$search}%")
+        $query->whereHas(
+            'student.user',
+            function ($query) {
 
-                            ->orWhere(
-                                'email',
-                                'like',
-                                "%{$search}%"
-                            )
+                $query->where(
+                    'status',
+                    1
+                );
+            }
+        );
 
-                            ->orWhere(
-                                'mobile',
+
+        /*
+        |--------------------------------------------------------------------------
+        | Search
+        |--------------------------------------------------------------------------
+        */
+
+        $query->when(
+            !empty($filters['search']),
+            function ($query) use ($filters) {
+
+                $search = $filters['search'];
+
+                $query->where(function ($q) use ($search) {
+
+                    /*
+                    | Admission Number
+                    */
+
+                    $q->whereHas(
+                        'student',
+                        function ($studentQuery) use ($search) {
+
+                            $studentQuery->where(
+                                'admission_no',
                                 'like',
                                 "%{$search}%"
                             );
+                        }
+                    );
 
-                    });
 
-            });
+                    /*
+                    | Student Name / Email / Mobile
+                    */
+
+                    $q->orWhereHas(
+                        'student.user',
+                        function ($userQuery) use ($search) {
+
+                            $userQuery
+                                ->where(
+                                    'name',
+                                    'like',
+                                    "%{$search}%"
+                                )
+                                ->orWhere(
+                                    'email',
+                                    'like',
+                                    "%{$search}%"
+                                )
+                                ->orWhere(
+                                    'mobile',
+                                    'like',
+                                    "%{$search}%"
+                                );
+                        }
+                    );
+
+                });
+            }
+        );
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | Total Records
+        |--------------------------------------------------------------------------
+        */
+
+        $recordsTotalQuery =
+            StudentEnrollment::query();
+
+
+        $recordsTotalQuery->when(
+            !empty($filters['academic_session_id']),
+            function ($query) use ($filters) {
+
+                $query->where(
+                    'academic_session_id',
+                    $filters['academic_session_id']
+                );
+            }
+        );
+
+
+        $recordsTotalQuery->when(
+            !empty($filters['class_id']),
+            function ($query) use ($filters) {
+
+                $query->where(
+                    'class_id',
+                    $filters['class_id']
+                );
+            }
+        );
+
+
+        $recordsTotalQuery->when(
+            !empty($filters['section_id']),
+            function ($query) use ($filters) {
+
+                $query->where(
+                    'section_id',
+                    $filters['section_id']
+                );
+            }
+        );
+
+
+        $recordsTotal =
+            $recordsTotalQuery->count();
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | Filtered Records
+        |--------------------------------------------------------------------------
+        */
+
+        $recordsFiltered =
+            $query->count();
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | Sorting
+        |--------------------------------------------------------------------------
+        */
+
+        $sortableColumns = [
+
+            1 => 'id',
+
+        ];
+
+
+        if (
+            $orderColumn !== null
+            && isset($sortableColumns[$orderColumn])
+        ) {
+
+            $query->orderBy(
+                $sortableColumns[$orderColumn],
+                $orderDirection === 'desc'
+                    ? 'desc'
+                    : 'asc'
+            );
+
+        } else {
+
+            $query->latest('id');
 
         }
 
-        return $query
-            ->orderBy('roll_number')
-            ->get();
+
+        /*
+        |--------------------------------------------------------------------------
+        | Pagination
+        |--------------------------------------------------------------------------
+        */
+
+        $paginator = $query->paginate(
+            $perPage,
+            ['*'],
+            'page',
+            $page
+        );
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | DataTable Data
+        |--------------------------------------------------------------------------
+        */
+
+        $data = collect(
+            $paginator->items()
+        )->map(function ($enrollment) {
+
+            $attendance =
+                $enrollment->attendances->first();
+
+
+            return [
+
+                'id' => $enrollment->id,
+
+                'student_enrollment_id' => $enrollment->id,
+                'roll_number' => $enrollment->roll_number,
+
+                'admission_no' => $enrollment->student ?->admission_no,
+
+                'student_name' => $enrollment->student?->user?->name,
+                'profile_image_url' => $enrollment->student?->user?->profile_image_url,
+
+                'class_name' =>$enrollment->studentClass?->class_name,
+
+                'section_name' =>$enrollment->section?->name,
+
+                'attendance_status' =>$attendance?->status,
+
+                'remarks' =>$attendance?->remarks,
+
+            ];
+
+        })->values()->all();
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | DataTable Response
+        |--------------------------------------------------------------------------
+        */
+
+        return [
+
+            'recordsTotal' =>
+                $recordsTotal,
+
+            'recordsFiltered' =>
+                $recordsFiltered,
+
+            'data' =>
+                $data,
+
+        ];
     }
 
     /**
@@ -180,22 +378,25 @@ class StudentAttendanceRepository extends BaseRepository
      * Save or update attendance
      */
     public function saveAttendance(
-        int $enrollmentId,
-        string $date,
         array $data
     ) {
+
         return $this->model->updateOrCreate(
 
             [
-                'student_enrollment_id' => $enrollmentId,
+                'student_enrollment_id' =>
+                    $data['student_enrollment_id'],
 
-                'attendance_date' => $date,
+                'attendance_date' =>
+                    $data['attendance_date'],
             ],
 
             [
-                'status' => $data['status'],
+                'status' =>
+                    $data['status'],
 
-                'remarks' => $data['remarks'] ?? null,
+                'remarks' =>
+                    $data['remarks'] ?? null,
             ]
 
         );

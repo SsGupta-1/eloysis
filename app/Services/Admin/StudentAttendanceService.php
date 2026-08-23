@@ -20,10 +20,31 @@ class StudentAttendanceService
     /**
      * Get students for attendance
      */
-    public function students(array $filters = [])
-    {
-        return $this->attendanceRepository->getStudents($filters);
+    // public function students(array $filters = [])
+    // {
+    //     return $this->attendanceRepository->getStudents($filters);
+    // }
+
+     /**
+     * Get students for attendance.
+     */
+    public function getStudentsForAttendance(
+        array $filters = [],
+        int $page = 1,
+        int $perPage = 10,
+        ?int $orderColumn = null,
+        string $orderDirection = 'asc'
+    ) {
+        return $this->attendanceRepository
+            ->getStudentsForAttendance(
+                $filters,
+                $page,
+                $perPage,
+                $orderColumn,
+                $orderDirection
+            );
     }
+
 
     /**
      * Save bulk attendance
@@ -36,19 +57,13 @@ class StudentAttendanceService
 
             foreach ($data['attendance'] as $attendance) {
 
-                $this->attendanceRepository->saveAttendance(
+                $this->attendanceRepository->saveAttendance([
 
-                    (int) $attendance['student_enrollment_id'],
-
-                    $data['attendance_date'],
-
-                    [
-                        'status' => $attendance['status'],
-
-                        'remarks' => $attendance['remarks'] ?? null,
-                    ]
-
-                );
+                    'student_enrollment_id' => (int) $attendance['student_enrollment_id'],
+                    'attendance_date' => $data['attendance_date'],
+                    'status' => $attendance['status'],
+                    'remarks' => $attendance['remarks'] ?? null,
+                    ]);
 
                 $saved++;
             }

@@ -34,13 +34,77 @@ class StudentAttendanceController extends BaseController
     public function students(StudentAttendanceRequest $request)
     {
         // dd($request->all());
-        $students = $this->attendanceService->students(
-            $request->validated()
+        // $students = $this->attendanceService->students(
+        //     $request->validated()
+        // );
+
+        // return $this->success(
+        //     'Students loaded successfully.',
+        //     $students
+        // );
+
+        // dd($request->all());
+
+        $filters = [
+            'search' => $request->input('search.value'),
+
+            'academic_session_id' =>
+                $request->input('academic_session_id') ?? 2,
+
+            'class_id' =>
+                $request->input('class_id') ?? 1,
+
+            'section_id' =>
+                $request->input('section_id') ?? 1,
+
+            'attendance_date' =>
+                $request->input('attendance_date') ?? date('Y-m-d'),
+        ];
+
+
+        $length = max(
+            (int) $request->input('length', 10),
+            1
         );
 
-        return $this->success(
-            'Students loaded successfully.',
-            $students
+        $start = max(
+            (int) $request->input('start', 0),
+            0
+        );
+
+        $page = (int) floor(
+            $start / $length
+        ) + 1;
+
+
+        $orderColumn =
+            $request->input('order.0.column');
+
+        $orderDirection =
+            $request->input(
+                'order.0.dir',
+                'asc'
+            );
+
+
+        $students =
+            $this->attendanceService
+                ->getStudentsForAttendance(
+                    filters: $filters,
+                    page: $page,
+                    perPage: $length,
+                    orderColumn:
+                        $orderColumn !== null
+                            ? (int) $orderColumn
+                            : null,
+                    orderDirection:
+                        $orderDirection
+                );
+
+
+        return $this->datatable(
+            $students,
+            (int) $request->input('draw', 1)
         );
     }
 
@@ -54,8 +118,8 @@ class StudentAttendanceController extends BaseController
         );
 
         return $this->success(
-            $result,
-            'Attendance saved successfully.'
+            'Attendance saved successfully.',
+             $result,   
         );
     }
 
@@ -69,8 +133,8 @@ class StudentAttendanceController extends BaseController
         );
 
         return $this->success(
+            'Attendance history loaded successfully.',
             $history,
-            'Attendance history loaded successfully.'
         );
     }
 }
