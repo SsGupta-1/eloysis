@@ -234,8 +234,9 @@ const ClassSubject = {
 
                 Helper.clearErrors('#classSubjectForm');
                 $('#class_subject_id').val(classSubject.id);
-                $('#class_id').val(classSubject.class_id);
-                $('#subject_id').val(classSubject.subject_id);
+                $('#sub_class_id').val(classSubject.class_id);
+                $('#sub_subject_id').val(classSubject.subject_id);
+                $('#status').val(classSubject.status == true ? 1 : 0).trigger('change');
 
                 $('#classSubjectModalTitle').text('Edit Academic Class Subject');
                 $('#btnSaveClassSubject').html(

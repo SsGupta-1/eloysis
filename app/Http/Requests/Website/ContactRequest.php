@@ -53,25 +53,4 @@ class ContactRequest extends BaseRequest
 
         ];
     }
-
-    // protected function failedValidation(\Illuminate\Contracts\Validation\Validator $validator)
-    // {
-    //     dd($validator->errors()->toArray());
-    // }
-
-    protected function failedValidation(Validator $validator)
-    {
-        throw new HttpResponseException(
-            response()->json([
-
-                'status' => false,
-
-                'message' => 'Validation failed.',
-
-                'errors' => $validator->errors(),
-
-            ], 422)
-
-        );
-    }
 }

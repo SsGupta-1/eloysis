@@ -35,6 +35,7 @@ class TeacherSubjectRepository extends BaseRepository
                 'subject:id,subject_name,subject_code',
                 'teacher:id,name',
                 'teacher.teacherProfile:id,user_id,employee_id',
+                'section:id,name'
             ])
             ->when(
                 ! empty($filters['search']),
@@ -74,7 +75,14 @@ class TeacherSubjectRepository extends BaseRepository
                                     'like',
                                     "%{$search}%"
                                 );
-                            });
+                            })
+                            ->orWhereHas('section', function ($serctionQuery) use ($search) {
+                                $serctionQuery->where(
+                                    'name',
+                                    'like',
+                                    "%{$search}%"
+                                );
+                            });;
                     });
                 }
             )

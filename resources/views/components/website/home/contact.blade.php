@@ -86,62 +86,129 @@
 
             <div class="col-lg-7">
 
-                <form id="contactForm" action="{{ route('contact.store') }}" method="POST">
+               <form
+                    id="contactForm"
+                    action="{{ route('contact.store') }}"
+                    method="POST"
+                >
+
                     @csrf
-                    <div class="row">
 
-                        <div class="col-md-6 mb-3">
+                    <div id="contactFormContent">
 
-                            <input  type="text" name="name" value="{{ old('name') }}" class="form-control @error('name') is-invalid @enderror" placeholder="Your Name">
-                           
+                        <div class="row">
+
+                            <div class="col-md-6 mb-3">
+
+                                <input
+                                    type="text"
+                                    name="name"
+                                    class="form-control"
+                                    placeholder="Your Name"
+                                >
+
+                                <div class="invalid-feedback" data-error="name"></div>
+
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+
+                                <input
+                                    type="email"
+                                    name="email"
+                                    class="form-control"
+                                    placeholder="Your Email"
+                                >
+
+                                <div class="invalid-feedback" data-error="email"></div>
+
+                            </div>
+
                         </div>
 
-                        <div class="col-md-6 mb-3">
+                        <div class="mb-3">
 
-                            <input type="email" name="email" value="{{ old('email') }}" class="form-control @error('email') is-invalid @enderror" placeholder="Your Email">
-                           
+                            <input
+                                type="text"
+                                name="phone"
+                                class="form-control"
+                                placeholder="Phone Number"
+                            >
+
+                            <div class="invalid-feedback" data-error="phone"></div>
 
                         </div>
 
+                        <div class="mb-3">
+
+                            <input
+                                type="text"
+                                name="subject"
+                                class="form-control"
+                                placeholder="Subject"
+                            >
+
+                            <div class="invalid-feedback" data-error="subject"></div>
+
+                        </div>
+
+                        <div class="mb-3">
+
+                            <textarea
+                                rows="5"
+                                name="message"
+                                class="form-control"
+                                placeholder="Message"
+                            ></textarea>
+
+                            <div class="invalid-feedback" data-error="message"></div>
+
+                        </div>
+
+                        <button
+                            type="submit"
+                            class="btn btn-primary"
+                            id="contactSubmitBtn"
+                        >
+                            <span class="btn-text">
+                                Send Message
+                            </span>
+
+                            <span
+                                class="spinner-border spinner-border-sm d-none"
+                                id="contactSubmitSpinner"
+                            ></span>
+                        </button>
+
                     </div>
 
-                    <div class="mb-3">
 
-                        <input
-                            type="text"
-                            name="phone"
-                            value="{{ old('phone') }}"
-                            class="form-control @error('phone') is-invalid @enderror"
-                            placeholder="Phone Number">
+                    {{-- Thank You Message --}}
 
-                    </div>
+                    <div
+                        id="contactThankYou"
+                        class="text-center py-5 d-none"
+                    >
 
-                    <div class="mb-3">
+                        <div class="mb-3">
 
-                        <input type="text"
-                            name="subject"
-                            value="{{ old('subject') }}"
-                            class="form-control @error('subject') is-invalid @enderror"
-                            placeholder="Subject">
+                            <i
+                                class="bi bi-check-circle-fill text-success"
+                                style="font-size: 60px;"
+                            ></i>
 
-                    </div>
+                        </div>
 
-                    <div class="mb-3">
+                        <h3 class="mb-2">
+                            Thank You!
+                        </h3>
 
-                        <textarea
-                            rows="5"
-                            name="message"
-                            class="form-control @error('message') is-invalid @enderror"
-                            placeholder="Message">{{ old('message') }}
-                        </textarea>
+                        <p class="text-muted mb-0">
+                            Your message has been sent successfully.
+                            We will get back to you soon.
+                        </p>
 
                     </div>
-
-                    <button type="submit" class="btn btn-primary">
-
-                        Send Message
-
-                    </button>
 
                 </form>
 

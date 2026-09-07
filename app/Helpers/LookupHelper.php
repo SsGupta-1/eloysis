@@ -8,6 +8,8 @@ use App\Models\Role;
 use App\Models\Section;
 use App\Models\Subject;
 use App\Models\TeacherProfile;
+use App\Models\Periods;
+use App\Models\TeacherSubject;
 
 if (! function_exists('role_options')) {
 
@@ -127,5 +129,97 @@ if (! function_exists('teacher_options')) {
 
             })
             ->toArray();
+    }
+}
+
+if (! function_exists('period_options')) {
+
+    function period_options(): array
+    {
+        return Periods::query()
+            ->where('status', true)
+            ->orderBy('sort_order')
+            ->pluck('name', 'id')
+            ->toArray();
+    }
+}
+
+if (! function_exists('teacher_subject_options')) {
+
+    function teacher_subject_options(): array
+    {
+        return TeacherSubject::query()
+            ->with([
+                'teacher:id,name',
+                'subjectClass:id,class_name',
+                'section:id,name',
+                'subject:id,subject_name',
+            ])->where('status', 1)
+            ->get()
+            ->mapWithKeys(function ($teacherSubject) {
+
+                $label = implode(' → ', array_filter([
+                    $teacherSubject->teacher?->name,
+                    $teacherSubject->subjectClass?->class_name,
+                    $teacherSubject->section?->name,
+                    $teacherSubject->subject?->subject_name,
+                ]));
+
+                return [
+                    $teacherSubject->id => $label,
+                ];
+
+            })
+            ->toArray();
+    }
+}
+
+if (! function_exists('admission_enquiry_status_options')) {
+
+    function admission_enquiry_status_options(): array
+    {
+        return [
+
+            'new' => 'New',
+
+            'contacted' => 'Contacted',
+
+            'follow_up' => 'Follow Up',
+
+            'interested' => 'Interested',
+
+            'not_interested' => 'Not Interested',
+
+            'visit_scheduled' => 'Visit Scheduled',
+
+            'visited' => 'Visited',
+
+            'converted' => 'Converted',
+
+            'lost' => 'Lost',
+
+        ];
+    }
+}
+
+if (! function_exists('admission_attempt_status_options')) {
+
+    function admission_attempt_status_options(): array
+    {
+        return [
+
+            'connected' => 'Connected',
+
+            'not_connected' => 'Not Connected',
+
+            'busy' => 'Busy',
+
+            'switched_off' => 'Switched Off',
+
+            'wrong_number' => 'Wrong Number',
+
+            'callback_requested' => 'Callback Requested',
+
+        ];
     }
 }

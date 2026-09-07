@@ -28,4 +28,6 @@
 
 @include('components.website.home.contact')
 
+@include('components.website.home.admission-enquiry')
+
 @endsection

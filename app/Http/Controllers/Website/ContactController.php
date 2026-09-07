@@ -24,7 +24,7 @@ class ContactController extends BaseController
             );
 
             return $this->success(
-                'Message sent successfully.'
+                 'Thank you! Your message has been sent successfully.'
             );
 
         } catch (\Throwable $e) {

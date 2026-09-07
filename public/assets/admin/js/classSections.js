@@ -231,8 +231,9 @@ const Section = {
 
                 Helper.clearErrors('#classSectionForm');
                 $('#class_section_id').val(section.id);
-                $('#class_id').val(section.class_id);
-                $('#section_id').val(section.section_id);
+                $('#sec_class_id').val(section.class_id);
+                $('#sec_section_id').val(section.section_id);
+                $('#status').val(section.status == true ? 1 : 0).trigger('change');
 
                 $('#sectionModalTitle').text('Edit Academic Class Section');
                 $('#btnSaveSection').html(

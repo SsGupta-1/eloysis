@@ -27,6 +27,7 @@ class DatabaseSeeder extends Seeder
             PermissionSeeder::class,
             SuperAdminSeeder::class,
             AcademicSessionSeeder::class,
+            periodsSeeder::class,
         ]);
     }
 }

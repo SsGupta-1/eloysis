@@ -151,6 +151,26 @@
                     label="Teacher Subjects"
                 />
 
+                <x-admin.menu-item
+                    route="admin.teacher_attendance.index"
+                    active="admin.teacher_attendance.*"
+                    icon="bi bi-calendar-check"
+                    label="Teacher Attendance"
+                />
+
+                <x-admin.menu-item
+                    route="admin.periods.index"
+                    active="admin.periods.*"
+                    icon="bi bi-calendar-week"
+                    label="Academic Periods"
+                />
+                <x-admin.menu-item
+                    route="admin.class-timetables.index"
+                    active="admin.class-timetables.*"
+                    icon="bi bi-clock-history"
+                    label="Class Timetable"
+                />
+
             </x-admin.menu-group>
 
 
@@ -188,6 +208,13 @@
                     active="admin.attendance.*"
                     icon="bi bi-calendar-check"
                     label="Attendance"
+                />
+
+                <x-admin.menu-item
+                    route="admin.admission-enquiry.index"
+                    active="admin.admission-enquiry.*"
+                    icon="bi bi-person-lines-fill"
+                    label="Admission Enquiry"
                 />
 
             </x-admin.menu-group>

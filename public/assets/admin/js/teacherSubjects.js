@@ -81,6 +81,13 @@ const TeacherSubject = {
                     }
                 },
                 {
+                    data: 'section.name',
+                    name: 'section_id',
+                    render: function (data, type, row) {
+                        return row.section?.name ?? '-';
+                    }
+                },
+                {
                     data: 'subject.subject_name',
                     name: 'subject_id',
                     render: function (data, type, row) {
@@ -239,11 +246,12 @@ const TeacherSubject = {
             success: (response) => {
                 const item = response.data;
 
-                Helper.clearErrors('#teacherSubjectForm');
                 $('#teacher_subject_id').val(item.id);
-                $('#teacher_id').val(item.teacher_id);
-                $('#class_id').val(item.class_id);
-                $('#subject_id').val(item.subject_id);
+                $('#form_teacher_id').val(item.teacher_id).trigger('change');
+                $('#form_class_id').val(item.class_id);
+                $('#form_subject_id').val(item.subject_id);
+                $('#form_section_id').val(item.section_id);
+                $('#status').val(item.status == true ? 1 : 0).trigger('change');
 
                 $('#teacherSubjectModalTitle').text('Edit Academic Teacher Subject');
                 $('#btnSaveClassSubject').html(

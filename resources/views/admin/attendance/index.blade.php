@@ -28,9 +28,9 @@
                         id="academic_session_id"
                         :options="$academicSessions"
                         placeholder="Select Session"
+                        :value=2
+                        label="Academic Session"
                         required>
-
-                        Academic Session
 
                     </x-ui.select>
 
@@ -45,9 +45,9 @@
                         id="class_id"
                         :options="$classes"
                         placeholder="Select Class"
+                        :value=1
+                        label="Class"
                         required>
-
-                        Class
 
                     </x-ui.select>
 
@@ -61,9 +61,9 @@
                         name="section_id"
                         id="section_id"
                         :options="$sections"
-                        placeholder="Select Section">
-
-                        Section
+                        :value=1
+                        placeholder="Select Section"
+                        label="Section" required>
 
                     </x-ui.select>
 
@@ -131,7 +131,7 @@
 
             <div class="d-flex gap-2 flex-wrap">
 
-                <button
+                <!-- <button
                     type="button"
                     class="btn btn-outline-success"
                     id="btnMarkAllPresent"
@@ -154,7 +154,7 @@
 
                     Mark All Absent
 
-                </button>
+                </button> -->
 
 
                 <button
@@ -294,81 +294,6 @@
         border-bottom: 1px solid #dee2e6;
     }
 
-    .attendance-status-group {
-        display: flex;
-        gap: 5px;
-        flex-wrap: wrap;
-    }
-
-    .attendance-status-btn {
-        min-width: 75px;
-        border-radius: 6px;
-        font-size: 13px;
-        padding: 6px 10px;
-        transition: all 0.15s ease;
-    }
-
-    .attendance-status-btn.active {
-        color: #fff !important;
-        font-weight: 600;
-    }
-
-    .attendance-status-btn[data-status="present"].active {
-        background: #198754;
-        border-color: #198754;
-    }
-
-    .attendance-status-btn[data-status="absent"].active {
-        background: #dc3545;
-        border-color: #dc3545;
-    }
-
-    .attendance-status-btn[data-status="late"].active {
-        background: #ffc107;
-        border-color: #ffc107;
-        color: #212529 !important;
-    }
-
-    .attendance-status-btn[data-status="leave"].active {
-        background: #0dcaf0;
-        border-color: #0dcaf0;
-        color: #212529 !important;
-    }
-
-    .attendance-status-btn[data-status="present"]:not(.active) {
-        color: #198754;
-    }
-
-    .attendance-status-btn[data-status="absent"]:not(.active) {
-        color: #dc3545;
-    }
-
-    .attendance-status-btn[data-status="late"]:not(.active) {
-        color: #856404;
-    }
-
-    .attendance-status-btn[data-status="leave"]:not(.active) {
-        color: #087990;
-    }
-
-    .student-avatar {
-        width: 42px;
-        height: 42px;
-        object-fit: cover;
-        border-radius: 50%;
-    }
-
-    .student-avatar-placeholder {
-        width: 42px;
-        height: 42px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        border-radius: 50%;
-        background: #f1f3f5;
-        color: #6c757d;
-        font-size: 20px;
-    }
 
     .attendance-remarks {
         min-width: 200px;

@@ -22,9 +22,8 @@ class ContactService
             'subject' => $data['subject'],
 
             'message' => $data['message'],
-
+            'status' => 'pending',
             'ip_address' => request()->ip(),
-
             'user_agent' => request()->userAgent(),
 
         ]);

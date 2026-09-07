@@ -22,9 +22,10 @@ class HomeController extends BaseController
         return view('website.home', compact('pageData'));
     }
 
-    public function about(): View
+    public function admission(): View
     {
-        return view('website.about');
+        $pageData = $this->homePageService->getPageData();
+        return view('website.admission.index', compact('pageData'));
     }
 
     public function contact(): View
@@ -34,7 +35,8 @@ class HomeController extends BaseController
 
     public function news(): View
     {
-        return view('website.news');
+        $pageData = $this->homePageService->getPageData();
+        return view('website.news', compact('pageData'));
     }
 
     public function events(): View

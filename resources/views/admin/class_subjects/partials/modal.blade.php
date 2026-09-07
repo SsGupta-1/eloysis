@@ -36,7 +36,7 @@
                 <x-ui.select
                     label="Subject"
                     name="subject_id"
-                    id="form_subject_id"
+                    id="sub_subject_id"
                     
                     :options="$subjects"
                     required />

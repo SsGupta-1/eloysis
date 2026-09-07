@@ -275,7 +275,7 @@ const Teacher = {
                 $('#employee_id').val(teacher.employee_id);
                 $('#qualification').val(teacher.qualification);
                 $('#specialization').val(teacher.specialization);
-                $('#joining_date').val(teacher.joining_date);
+                $('#joining_date').val(teacher.joining_date ? teacher.joining_date.substring(0, 10) : '');
                 $('#experience_years').val(teacher.experience_years);
                 $('#status').val(user.status ? 1 : 0);
                 $('#address').val(teacher.address);
@@ -290,7 +290,8 @@ const Teacher = {
                 $('#dob').val(teacher.dob ? teacher.dob.substring(0, 10) : '');
                 $('#gender').val(teacher.gender);
 
-                $('#teacherModalLabel').text('Edit Teacher');
+                $('#teacherModalTitle').text('Edit Teacher');
+                $('#btnSaveTeacher').text('Update Teacher');
                 this.modal.show();
             },
             error: (xhr) => {
@@ -356,7 +357,7 @@ const Teacher = {
                 $('#viewEmployee').text(teacher.employee_id ?? '-');
                 $('#viewQualification').text(teacher.qualification ?? '-');
                 $('#viewSpecialization').text(teacher.specialization ?? '-');
-                $('#viewJoiningDate').text(teacher.joining_date ?? '-');
+                $('#viewJoiningDate').text(Helper.formatDate(teacher.joining_date));
                 $('#viewExperience').text(
                     teacher.experience_years ? teacher.experience_years + ' Years' : '-'
                 );
@@ -382,8 +383,8 @@ const Teacher = {
                 $('#viewPincode').text(teacher.pincode ?? '-');
                 $('#viewAddress').text(teacher.address ?? '-');
                 $('#viewGender').text(teacher.gender ? Helper.capitalize(teacher.gender) : '-');
-                $('#viewEmergencyName').text(teacher.emergency_contact_name ?? '-');
-                $('#viewEmergencyMobile').text(teacher.emergency_contact_mobile ?? '-');
+                $('#viewEmergencyContactName').text(teacher.emergency_contact_name ?? '-');
+                $('#viewEmergencyContactMobile').text(teacher.emergency_contact_mobile ?? '-');
 
                 this.viewModal.show();
             },

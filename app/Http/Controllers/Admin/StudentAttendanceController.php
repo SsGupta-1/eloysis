@@ -33,17 +33,6 @@ class StudentAttendanceController extends BaseController
      */
     public function students(StudentAttendanceRequest $request)
     {
-        // dd($request->all());
-        // $students = $this->attendanceService->students(
-        //     $request->validated()
-        // );
-
-        // return $this->success(
-        //     'Students loaded successfully.',
-        //     $students
-        // );
-
-        // dd($request->all());
 
         $filters = [
             'search' => $request->input('search.value'),

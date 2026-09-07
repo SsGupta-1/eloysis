@@ -226,6 +226,7 @@ const Section = {
                 $('#section_id').val(section.id);
                 $('#section_name').val(section.name);
                 $('#section_code').val(section.code);
+                $('#status').val(section.status == true ? 1 : 0).trigger('change');
 
                 $('#sectionModalTitle').text('Edit Academic Class Section');
                 $('#btnSaveSection').html(

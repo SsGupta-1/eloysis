@@ -23,6 +23,7 @@ return new class extends Migration
                 'present',
                 'absent',
                 'late',
+                'half_day',
                 'leave',
             ])->default('present');
 

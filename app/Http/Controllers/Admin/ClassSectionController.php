@@ -63,7 +63,7 @@ class ClassSectionController extends BaseController
 
         // dd($class);
         return $this->success(
-            'Section Create modal open successfully',
+            'Class Section Create modal open successfully',
             $data ?? []
         );
     }

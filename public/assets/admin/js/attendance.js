@@ -68,18 +68,10 @@ const Attendance = {
                 type: 'GET',
 
                 data: function (d) {
-
-                    d.academic_session_id =
-                        $('#academic_session_id').val();
-
-                    d.class_id =
-                        $('#class_id').val();
-
-                    d.section_id =
-                        $('#section_id').val();
-
-                    d.attendance_date =
-                        $('#attendance_date').val();
+                    d.academic_session_id = $('#academic_session_id').val() ?? 2;
+                    d.class_id = $('#class_id').val() ?? 1;
+                    d.section_id = $('#section_id').val() ?? 1;
+                    d.attendance_date = $('#attendance_date').val();
 
                 },
 
@@ -89,12 +81,8 @@ const Attendance = {
                         xhr.responseJSON?.message ??
                         'Unable to load students.'
                     );
-
-
                 }
-
             },
-
 
             /*
             |--------------------------------------------------------------------------
@@ -105,8 +93,8 @@ const Attendance = {
             drawCallback: () => {
 
                 this.restoreAttendanceState();
-
-
+                this.updateSummary();
+                this.setActionButtons(true);
             },
 
             createdRow: function (row, data, dataIndex) {
@@ -130,11 +118,8 @@ const Attendance = {
 
                 {
                     data: null,
-
                     name: null,
-
                     orderable: false,
-
                     searchable: false,
 
                     render: function (
@@ -276,19 +261,19 @@ const Attendance = {
                                     Select
                                 </option>
 
-                                <option value="present">
+                                <option value="present"  ${row.attendance_status == 'present' ? 'selected' : ''}>
                                     Present
                                 </option>
 
-                                <option value="absent">
+                                <option value="absent" ${row.attendance_status == 'absent' ? 'selected' : ''}>
                                     Absent
                                 </option>
 
-                                <option value="late">
+                                <option value="late" ${row.attendance_status == 'late' ? 'selected' : ''}>
                                     Late
                                 </option>
 
-                                <option value="leave">
+                                <option value="leave" ${row.attendance_status == 'leave' ? 'selected' : ''}>
                                     Leave
                                 </option>
 
@@ -340,10 +325,6 @@ const Attendance = {
             ]
 
         });
-
-        this.setActionButtons(true);
-        this.updateSummary();
-
     },
 
 
@@ -364,12 +345,11 @@ const Attendance = {
         $('#filterForm').on(
             'submit',
             (e) => {
-
                 e.preventDefault();
 
                 this.resetState();
 
-                this.reload();
+                this.table.ajax.reload();
 
             }
         );
@@ -388,8 +368,7 @@ const Attendance = {
                 $('#filterForm')[0].reset();
 
                 this.resetState();
-
-                this.reload();
+                this.table.ajax.reload();
 
             }
         );
@@ -419,39 +398,10 @@ const Attendance = {
                     }
                 );
 
-                const row =
-                    select.closest('.attendance-row');
-
-                this.setRowStatus(
-                    row,
-                    select.val()
-                );
+                this.updateSummary();
 
             }
         );
-
-        // $(document).on(
-        //     'click',
-        //     '.attendance-status-btn',
-        //     (e) => {
-
-        //         const button =
-        //             $(e.currentTarget);
-
-        //         const status =
-        //             button.data('status');
-
-        //         const row =
-        //             button.closest('.attendance-row');
-
-
-        //         this.setRowStatus(
-        //             row,
-        //             status
-        //         );
-
-        //     }
-        // );
 
 
         /*
@@ -477,9 +427,6 @@ const Attendance = {
                         remarks: input.val()
                     }
                 );
-
-                this.updateSummary();
-
             }
         );
 
@@ -490,14 +437,14 @@ const Attendance = {
         |--------------------------------------------------------------------------
         */
 
-        $('#btnMarkAllPresent').on(
-            'click',
-            () => {
+        // $('#btnMarkAllPresent').on(
+        //     'click',
+        //     () => {
 
-                this.markAll('present');
+        //         this.markAll('present');
 
-            }
-        );
+        //     }
+        // );
 
 
         /*
@@ -506,14 +453,14 @@ const Attendance = {
         |--------------------------------------------------------------------------
         */
 
-        $('#btnMarkAllAbsent').on(
-            'click',
-            () => {
+        // $('#btnMarkAllAbsent').on(
+        //     'click',
+        //     () => {
 
-                this.markAll('absent');
+        //         this.markAll('absent');
 
-            }
-        );
+        //     }
+        // );
 
 
         /*
@@ -672,47 +619,47 @@ const Attendance = {
     |--------------------------------------------------------------------------
     */
 
-    markAll(status) {
+    // markAll(status) {
 
-        $('#attendanceTable tbody tr')
-            .each((index, element) => {
+    //     $('#attendanceTable tbody tr')
+    //         .each((index, element) => {
 
-                const row =
-                    $(element);
-
-
-                const select =
-                    row.find(
-                        '.attendance-status'
-                    );
+    //             const row =
+    //                 $(element);
 
 
-                const enrollmentId =
-                    select.data(
-                        'enrollment-id'
-                    );
+    //             const select =
+    //                 row.find(
+    //                     '.attendance-status'
+    //                 );
 
 
-                if (!enrollmentId) {
-
-                    return;
-
-                }
-
-
-                select.val(status);
+    //             const enrollmentId =
+    //                 select.data(
+    //                     'enrollment-id'
+    //                 );
 
 
-                this.updateState(
-                    enrollmentId,
-                    {
-                        status: status
-                    }
-                );
+    //             if (!enrollmentId) {
 
-            });
+    //                 return;
 
-    },
+    //             }
+
+
+    //             select.val(status);
+
+
+    //             this.updateState(
+    //                 enrollmentId,
+    //                 {
+    //                     status: status
+    //                 }
+    //             );
+
+    //         });
+
+    // },
 
 
     /*
@@ -775,8 +722,6 @@ const Attendance = {
             return;
 
         }
-
-
         const attendance =
             Object.values(
                 this.attendanceState
@@ -897,13 +842,8 @@ const Attendance = {
 
     updateSummary() {
 
-        const rows =
-            $('.attendance-row');
-
-
-        const total =
-            rows.length;
-
+        const rows = $('.attendance-row');
+        const total = rows.length;
 
         let present = 0;
 
@@ -987,46 +927,10 @@ const Attendance = {
 
     },
 
-    setRowStatus(row, status) {
-
-        /*
-        |--------------------------------------------------------------------------
-        | Hidden status field
-        |--------------------------------------------------------------------------
-        */
-
-        row.find('.attendance-status')
-            .val(status);
-
-
-        /*
-        |--------------------------------------------------------------------------
-        | Active button
-        |--------------------------------------------------------------------------
-        */
-
-        row.find('.attendance-status-btn')
-            .removeClass('active');
-
-
-        row.find(
-            `.attendance-status-btn[data-status="${status}"]`
-        )
-            .addClass('active');
-
-
-        /*
-        |--------------------------------------------------------------------------
-        | Update Counter
-        |--------------------------------------------------------------------------
-        */
-
-        this.updateSummary();
-
-    },
-
     setActionButtons(enabled) {
 
+        const rows = $('.attendance-row');
+        enabled = rows.length == 0 ? !enabled : enabled;
         $('#btnSaveAttendance')
             .prop('disabled', !enabled);
 

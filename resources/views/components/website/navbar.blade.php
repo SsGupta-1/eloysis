@@ -67,6 +67,27 @@
 
                 </li>
 
+                <!-- <li>
+
+                    <a class="nav-link"
+                        href="#">
+
+                        Admission   
+
+                    </a>
+
+                </li> -->
+                <li>
+
+                    <a class="nav-link"
+                        href="#admission-enquiry">
+
+                        Admission   
+
+                    </a>
+
+                </li>
+
             </ul>
 
         </div>

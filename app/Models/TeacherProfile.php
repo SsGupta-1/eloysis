@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class TeacherProfile extends Model
 {
@@ -53,4 +54,14 @@ class TeacherProfile extends Model
     {
         return $this->belongsTo(User::class);
     }
+
+    public function attendances(): HasMany
+    {
+        return $this->hasMany(
+            TeacherAttendance::class,
+            'teacher_profile_id'
+        );
+    }
+
+
 }

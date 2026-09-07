@@ -20,7 +20,11 @@ use App\Http\Controllers\Admin\StudentPromotionController;
 use App\Http\Controllers\Admin\SubjectController;
 use App\Http\Controllers\Admin\TeacherController;
 use App\Http\Controllers\Admin\TeacherSubjectController;
+use App\Http\Controllers\Admin\TeacherAttendanceController;
 use App\Http\Controllers\Admin\LogController;
+use App\Http\Controllers\Admin\PeriodsController;
+use App\Http\Controllers\Admin\ClassTimetableController;
+use App\Http\Controllers\Admin\AdmissionEnquiryController;
 use Illuminate\Support\Facades\Route;
 
 require __DIR__.'/website.php';
@@ -160,6 +164,36 @@ Route::prefix('admin')->name('admin.')->middleware('activity.log')->group(functi
                 Route::get('/history', 'history')->name('history');
 
             });
+
+         // **********************Teacher Attendance******************************* */
+
+        Route::prefix('teacher-attendance') 
+            ->name('teacher_attendance.')
+            ->controller(TeacherAttendanceController::class)
+            ->group(function () {
+
+                Route::get('/', 'index')->name('index');
+                Route::get('/list', 'list')->name('list');
+                Route::post('/save', 'save')->name('save');
+                Route::get('/history', 'history')->name('history');
+
+            });
+
+        // ************Academic Periods route*******************
+        Route::get('periods/list', [PeriodsController::class, 'list'])->name('periods.list');
+        Route::patch('periods/{periods}/status', [PeriodsController::class, 'changeStatus'])->name('periods.status');
+        Route::resource('periods', PeriodsController::class);
+
+        // ************Class Timetable*******************
+        Route::get('class-timetables/list', [ClassTimetableController::class, 'list'])->name('class-timetables.list');
+        Route::patch('class-timetables/{class_timetable}/status', [ClassTimetableController::class, 'changeStatus'])->name('class-timetables.status');
+        Route::resource('class-timetables', ClassTimetableController::class);
+
+        //***************************Admission Enquiry******************************* */
+        Route::get('admission-enquiry/list', [AdmissionEnquiryController::class, 'list'])->name('admission_enquiry.list');
+        Route::patch('admission-enquiry/{admission_enquiry}/status', [AdmissionEnquiryController::class, 'changeStatus'])->name('admission_enquiry.status');
+        Route::resource('admission-enquiry', AdmissionEnquiryController::class);
+
 
         // **********************Log Management******************************* */
         Route::prefix('logs')

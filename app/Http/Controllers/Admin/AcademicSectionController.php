@@ -74,7 +74,7 @@ class AcademicSectionController extends BaseController
         );
 
         return $this->success(
-            'Academic Class Sections create successfully.',
+            'Academic Sections create successfully.',
             $sections
         );
     }
@@ -96,7 +96,7 @@ class AcademicSectionController extends BaseController
 
         // dd($section);
         return $this->success(
-            'Academic Class Sections fetch successfully.',
+            'Academic Sections fetch successfully.',
             $section
         );
     }
@@ -112,7 +112,7 @@ class AcademicSectionController extends BaseController
         );
 
         return $this->success(
-            'Academic Class Sections update successfully.',
+            'Academic Sections update successfully.',
         );
     }
 
@@ -126,7 +126,7 @@ class AcademicSectionController extends BaseController
         );
 
         return $this->success(
-            'Academic Class Sections Deleted successfully.',
+            'Academic Sections Deleted successfully.',
         );
     }
 
@@ -138,7 +138,7 @@ class AcademicSectionController extends BaseController
         $this->AcademicSectionService->changeStatus($sections->id);
 
         return $this->success(
-            'Academic Class Section status updated successfully.'
+            'Academic Section status updated successfully.'
         );
     }
 }

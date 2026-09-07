@@ -48,4 +48,9 @@ class TeacherSubject extends Model
     {
         return $this->belongsTo(Subject::class);
     }
+
+    public function section()
+    {
+        return $this->belongsTo(Section::class);
+    }
 }

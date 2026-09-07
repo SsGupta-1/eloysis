@@ -92,6 +92,11 @@
                 Class 
 
             </x-ui.table.col>
+            <x-ui.table.col>
+
+                Section 
+
+            </x-ui.table.col>
 
             <x-ui.table.col>
 

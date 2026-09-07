@@ -23,12 +23,15 @@ if (! function_exists('menu_active')) {
                 'admin.clsubject.*',
                 'admin.teachers.*',
                 'admin.teacher-subject.*',
+                'admin.periods.*',
+                'admin.class-timetables.*',
             ],
 
             'students' => [
                 'admin.students.*',
                 'admin.student-promotions.*',
                 'admin.attendance.*',
+                'admin.admission-enquiry.*',
             ],
 
             'examinations' => [
