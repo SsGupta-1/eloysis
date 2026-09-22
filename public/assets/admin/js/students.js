@@ -215,6 +215,32 @@ const Student = {
             this.table.search('').ajax.reload();
         });
 
+        // Auto-fetch suggested roll number on student create form
+        $('#academic_session_id, #form_class_id, #form_section_id').on('change', () => {
+            if ($('#studentForm').length && !$('#studentForm').find('input[name="_method"]').val()) {
+                const sessionId = $('#academic_session_id').val();
+                const classId = $('#form_class_id').val();
+                const sectionId = $('#form_section_id').val();
+
+                if (sessionId && classId && sectionId) {
+                    $.ajax({
+                        url: '/admin/students/suggested-roll-number',
+                        type: 'GET',
+                        data: {
+                            academic_session_id: sessionId,
+                            class_id: classId,
+                            section_id: sectionId
+                        },
+                        success: (res) => {
+                            if (res && res.status && res.suggested_roll_number) {
+                                $('#roll_number').val(res.suggested_roll_number);
+                            }
+                        }
+                    });
+                }
+            }
+        });
+
         // Student Form Submit (Create / Edit pages)
         $('#studentForm').on('submit', (e) => {
             e.preventDefault();

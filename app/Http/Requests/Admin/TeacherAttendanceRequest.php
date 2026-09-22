@@ -2,8 +2,8 @@
 
 namespace App\Http\Requests\Admin;
 
-use Illuminate\Contracts\Validation\ValidationRule;
 use App\Http\Requests\BaseRequest;
+use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Validation\Rule;
 
 class TeacherAttendanceRequest extends BaseRequest
@@ -16,7 +16,7 @@ class TeacherAttendanceRequest extends BaseRequest
         return true;
     }
 
-     protected function prepareForValidation(): void
+    protected function prepareForValidation(): void
     {
         $attendance = $this->input('attendance');
 
@@ -123,35 +123,25 @@ class TeacherAttendanceRequest extends BaseRequest
     {
         return [
 
-            'attendance_date.required' =>
-                'Attendance date is required.',
+            'attendance_date.required' => 'Attendance date is required.',
 
-            'attendance_date.date' =>
-                'Please provide a valid attendance date.',
+            'attendance_date.date' => 'Please provide a valid attendance date.',
 
-            'attendance.required' =>
-                'Please select at least one teacher.',
+            'attendance.required' => 'Please select at least one teacher.',
 
-            'attendance.min' =>
-                'Please select at least one teacher.',
+            'attendance.min' => 'Please select at least one teacher.',
 
-            'attendance.*.teacher_id.required' =>
-                'Teacher is required.',
+            'attendance.*.teacher_id.required' => 'Teacher is required.',
 
-            'attendance.*.teacher_id.exists' =>
-                'Selected teacher is invalid.',
+            'attendance.*.teacher_id.exists' => 'Selected teacher is invalid.',
 
-            'attendance.*.teacher_id.distinct' =>
-                'Duplicate teacher attendance is not allowed.',
+            'attendance.*.teacher_id.distinct' => 'Duplicate teacher attendance is not allowed.',
 
-            'attendance.*.status.required' =>
-                'Attendance status is required.',
+            'attendance.*.status.required' => 'Attendance status is required.',
 
-            'attendance.*.status.in' =>
-                'Invalid attendance status.',
+            'attendance.*.status.in' => 'Invalid attendance status.',
 
-            'attendance.*.remarks.max' =>
-                'Remarks cannot exceed 500 characters.',
+            'attendance.*.remarks.max' => 'Remarks cannot exceed 500 characters.',
 
         ];
     }

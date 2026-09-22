@@ -19,7 +19,7 @@ class AdmissionController extends BaseController
     {
         try {
 
-           $enquiry = $this->admissionService->store(
+            $enquiry = $this->admissionService->store(
                 $request->validated()
             );
 
@@ -32,7 +32,8 @@ class AdmissionController extends BaseController
 
         } catch (\Throwable $e) {
 
-            \Log::error('Error in admission enquiry: ' . $e->getMessage());
+            \Log::error('Error in admission enquiry: '.$e->getMessage());
+
             return $this->error(
                 'Unable to send message.'
             );

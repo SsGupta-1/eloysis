@@ -37,19 +37,14 @@ class StudentAttendanceController extends BaseController
         $filters = [
             'search' => $request->input('search.value'),
 
-            'academic_session_id' =>
-                $request->input('academic_session_id') ?? 2,
+            'academic_session_id' => $request->input('academic_session_id') ?? 2,
 
-            'class_id' =>
-                $request->input('class_id') ?? 1,
+            'class_id' => $request->input('class_id') ?? 1,
 
-            'section_id' =>
-                $request->input('section_id') ?? 1,
+            'section_id' => $request->input('section_id') ?? 1,
 
-            'attendance_date' =>
-                $request->input('attendance_date') ?? date('Y-m-d'),
+            'attendance_date' => $request->input('attendance_date') ?? date('Y-m-d'),
         ];
-
 
         $length = max(
             (int) $request->input('length', 10),
@@ -65,7 +60,6 @@ class StudentAttendanceController extends BaseController
             $start / $length
         ) + 1;
 
-
         $orderColumn =
             $request->input('order.0.column');
 
@@ -75,21 +69,17 @@ class StudentAttendanceController extends BaseController
                 'asc'
             );
 
-
         $students =
             $this->attendanceService
                 ->getStudentsForAttendance(
                     filters: $filters,
                     page: $page,
                     perPage: $length,
-                    orderColumn:
-                        $orderColumn !== null
+                    orderColumn: $orderColumn !== null
                             ? (int) $orderColumn
                             : null,
-                    orderDirection:
-                        $orderDirection
+                    orderDirection: $orderDirection
                 );
-
 
         return $this->datatable(
             $students,
@@ -108,7 +98,7 @@ class StudentAttendanceController extends BaseController
 
         return $this->success(
             'Attendance saved successfully.',
-             $result,   
+            $result,
         );
     }
 

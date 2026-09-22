@@ -4,8 +4,8 @@ namespace App\Http\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Symfony\Component\HttpFoundation\Response;
 
 class ActivityLoggerMiddleware
@@ -109,7 +109,7 @@ class ActivityLoggerMiddleware
      */
     protected function sanitize(mixed $data): mixed
     {
-        if (!is_array($data)) {
+        if (! is_array($data)) {
             return $data;
         }
 
@@ -135,7 +135,7 @@ class ActivityLoggerMiddleware
         return $data;
     }
 
-    function getAuthenticatedUser(): ?array
+    public function getAuthenticatedUser(): ?array
     {
         $guards = [
             'admin',
@@ -151,10 +151,10 @@ class ActivityLoggerMiddleware
                 $user = Auth::guard($guard)->user();
 
                 return [
-                    'id'    => $user->id ?? null,
+                    'id' => $user->id ?? null,
                     'email' => $user->email ?? null,
                     'guard' => $guard,
-                    'name'  => $user->name ?? null,
+                    'name' => $user->name ?? null,
                 ];
             }
         }

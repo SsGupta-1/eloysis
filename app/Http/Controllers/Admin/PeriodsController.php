@@ -2,20 +2,22 @@
 
 namespace App\Http\Controllers\Admin;
 
-use Illuminate\Http\Request;
 use App\Http\Controllers\BaseController;
-use App\Services\Admin\PeriodService;
 use App\Http\Requests\Admin\PeriodRequest;
 use App\Models\Periods;
+use App\Services\Admin\PeriodService;
+use Illuminate\Http\Request;
 
 class PeriodsController extends BaseController
 {
     protected $periodService;
+
     public function __construct(PeriodService $periodService)
     {
         $this->periodService = $periodService;
     }
-    //index
+
+    // index
     public function index()
     {
         return view('admin.periods.index');
@@ -129,5 +131,4 @@ class PeriodsController extends BaseController
             'Period status updated successfully.'
         );
     }
-    
 }

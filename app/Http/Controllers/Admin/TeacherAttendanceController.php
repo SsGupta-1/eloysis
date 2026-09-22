@@ -27,22 +27,20 @@ class TeacherAttendanceController extends BaseController
             'attendance_date' => $request->input('attendance_date') ?? date('Y-m-d'),
         ];
 
-        $length = max((int) $request->input('length', 10),1);
-        $start = max((int) $request->input('start', 0),0);
+        $length = max((int) $request->input('length', 10), 1);
+        $start = max((int) $request->input('start', 0), 0);
         $page = (int) floor($start / $length) + 1;
         $orderColumn = $request->input('order.0.column');
-        $orderDirection = $request->input('order.0.dir','asc');
-
+        $orderDirection = $request->input('order.0.dir', 'asc');
 
         $teachers = $this->teacherAttendanceService
-                ->getTeachersForAttendance(
-                    filters: $filters,
-                    page: $page,
-                    perPage: $length,
-                    orderColumn: $orderColumn !== null ? (int) $orderColumn : null,
-                    orderDirection: $orderDirection
-                );
-
+            ->getTeachersForAttendance(
+                filters: $filters,
+                page: $page,
+                perPage: $length,
+                orderColumn: $orderColumn !== null ? (int) $orderColumn : null,
+                orderDirection: $orderDirection
+            );
 
         return $this->datatable(
             $teachers,
@@ -50,7 +48,7 @@ class TeacherAttendanceController extends BaseController
         );
     }
 
-     /**
+    /**
      * Save bulk attendance
      */
     public function save(TeacherAttendanceRequest $request)
@@ -61,8 +59,7 @@ class TeacherAttendanceController extends BaseController
 
         return $this->success(
             'Attendance saved successfully.',
-            $result,   
+            $result,
         );
     }
-
 }

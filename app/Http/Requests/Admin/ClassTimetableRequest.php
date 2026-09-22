@@ -2,11 +2,11 @@
 
 namespace App\Http\Requests\Admin;
 
-use Illuminate\Contracts\Validation\ValidationRule;
 use App\Http\Requests\BaseRequest;
-use Illuminate\Validation\Rule;
 use App\Models\ClassTimetables;
 use App\Models\TeacherSubject;
+use Illuminate\Contracts\Validation\ValidationRule;
+use Illuminate\Validation\Rule;
 
 class ClassTimetableRequest extends BaseRequest
 {
@@ -33,7 +33,7 @@ class ClassTimetableRequest extends BaseRequest
                 'required',
                 'exists:periods,id',
             ],
-           
+
             'teacher_subject_id' => [
                 'required',
 
@@ -45,7 +45,7 @@ class ClassTimetableRequest extends BaseRequest
                     $query->where('status', 1);
                 }),
             ],
-            
+
             'day' => [
                 'required',
                 'max:20',
@@ -57,7 +57,7 @@ class ClassTimetableRequest extends BaseRequest
         ];
     }
 
-     /**
+    /**
      * Custom Messages
      */
     public function messages(): array
@@ -107,7 +107,7 @@ class ClassTimetableRequest extends BaseRequest
                 ->where('status', 1)
                 ->first();
 
-            if (!$teacherSubject) {
+            if (! $teacherSubject) {
                 return;
             }
 
@@ -127,12 +127,12 @@ class ClassTimetableRequest extends BaseRequest
                 ->where('status', 1)
                 ->whereHas('teacherSubject', function ($query) use ($teacherSubject) {
 
-                    $query->where('teacher_id',$teacherSubject->teacher_id);
+                    $query->where('teacher_id', $teacherSubject->teacher_id);
 
                 })
                 ->when($timetableId, function ($query) use ($timetableId) {
 
-                    $query->where('id','!=',$timetableId);
+                    $query->where('id', '!=', $timetableId);
 
                 })
                 ->exists();
@@ -163,13 +163,13 @@ class ClassTimetableRequest extends BaseRequest
                 ->where('status', 1)
                 ->whereHas('teacherSubject', function ($query) use ($teacherSubject) {
 
-                    $query->where('class_id',$teacherSubject->class_id)
-                        ->where('section_id',$teacherSubject->section_id);
+                    $query->where('class_id', $teacherSubject->class_id)
+                        ->where('section_id', $teacherSubject->section_id);
 
                 })
                 ->when($timetableId, function ($query) use ($timetableId) {
 
-                    $query->where('id','!=',$timetableId);
+                    $query->where('id', '!=', $timetableId);
 
                 }
                 )
@@ -184,5 +184,4 @@ class ClassTimetableRequest extends BaseRequest
             }
         });
     }
-    
 }

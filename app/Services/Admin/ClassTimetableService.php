@@ -38,9 +38,9 @@ class ClassTimetableService
 
             // Create class timetable record
             $classTimetable = $this->classTimetableRepository->create($data);
-            
+
             DB::commit();
-            
+
             return $classTimetable;
         } catch (Exception $exception) {
             DB::rollBack();
@@ -55,12 +55,12 @@ class ClassTimetableService
     {
         try {
             DB::beginTransaction();
-            
+
             // Update class timetable record
             $classTimetable = $this->classTimetableRepository->update($id, $data);
-            
+
             DB::commit();
-            
+
             return $classTimetable;
         } catch (Exception $exception) {
             DB::rollBack();
@@ -75,12 +75,12 @@ class ClassTimetableService
     {
         try {
             DB::beginTransaction();
-            
+
             // Delete class timetable record
             $classTimetable = $this->classTimetableRepository->delete($id);
-            
+
             DB::commit();
-            
+
             return $classTimetable;
         } catch (Exception $exception) {
             DB::rollBack();

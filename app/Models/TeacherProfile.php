@@ -3,8 +3,8 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class TeacherProfile extends Model
 {
@@ -62,6 +62,4 @@ class TeacherProfile extends Model
             'teacher_profile_id'
         );
     }
-
-
 }

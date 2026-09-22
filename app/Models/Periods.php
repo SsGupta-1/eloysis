@@ -11,6 +11,6 @@ class Periods extends Model
         'start_time',
         'end_time',
         'sort_order',
-        'status'
+        'status',
     ];
 }

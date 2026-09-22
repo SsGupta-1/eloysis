@@ -3,82 +3,70 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\BaseController;
-use Illuminate\Http\Request;
 use App\Http\Requests\Admin\AdmissionEnquiryRequest;
-use App\Services\Admin\AdmissionEnquiryService;
-use App\Models\AdmissionEnquiry;
+use App\Http\Requests\Admin\StudentRequest;
 use App\Models\User;
+use App\Services\Admin\AdmissionEnquiryService;
+use App\Services\Admin\StudentService;
+use Exception;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
+use Illuminate\View\View;
 
 class AdmissionEnquiryController extends BaseController
 {
-    protected $AdmissionEnquiryService;
-
-    public function __construct(AdmissionEnquiryService $AdmissionEnquiryService)
-    {
-        $this->AdmissionEnquiryService = $AdmissionEnquiryService;
-    }
-    
+    public function __construct(
+        protected AdmissionEnquiryService $admissionEnquiryService,
+        protected StudentService $studentService
+    ) {}
 
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(): View
     {
-        
-         return view(
+        return view(
             'admin.admission_enquiries.index',
             [
-
-                'academicSessions' =>
-                    academic_session_options(),
-
-                'classes' =>
-                    class_options(),
-
-                'statuses' =>
-                    admission_enquiry_status_options(),
-
+                'academicSessions' => academic_session_options(),
+                'classes' => class_options(),
+                'statuses' => admission_enquiry_status_options(),
                 'sources' => [
-
                     'website' => 'Website',
-
-                    'reference' => 'Reference',
-
                     'walk_in' => 'Walk In',
-
+                    'reference' => 'Reference',
+                    'google' => 'Google',
+                    'facebook' => 'Facebook',
+                    'instagram' => 'Instagram',
+                    'advertisement' => 'Advertisement',
                     'phone' => 'Phone',
-
                     'other' => 'Other',
-
                 ],
-
-                'users' =>
-                    User::query()
-                        ->where('status', true)
-                        ->orderBy('name')
-                        ->pluck('name', 'id')
-                        ->toArray(),
-
+                'users' => User::query()
+                    ->where('status', true)
+                    ->orderBy('name')
+                    ->pluck('name', 'id')
+                    ->toArray(),
             ]
         );
     }
 
     /**
-     * Summary of list
-     * @param \Illuminate\Http\Request $request
-     * @return \Illuminate\Http\JsonResponse
+     * DataTables AJAX list
      */
-    public function list(Request $request)
+    public function list(Request $request): JsonResponse
     {
         $filters = [
             'search' => $request->input('search.value'),
             'academic_session_id' => $request->input('academic_session_id'),
             'status' => $request->input('status'),
             'source' => $request->input('source'),
-            'class' => $request->input('class'),
-            'handled_by' => $request->input('assigned_to'),
+            'class_id' => $request->input('class_id'),
+            'assigned_to' => $request->input('assigned_to'),
             'start_date' => $request->input('start_date'),
             'end_date' => $request->input('end_date'),
+            'draw' => (int) $request->input('draw', 1),
         ];
 
         $length = max((int) $request->input('length', 10), 1);
@@ -88,7 +76,7 @@ class AdmissionEnquiryController extends BaseController
         $orderColumn = $request->input('order.0.column');
         $orderDirection = $request->input('order.0.dir', 'asc');
 
-        $admissionEnquiry = $this->AdmissionEnquiryService->getAdmissionEnquiries(
+        $admissionEnquiry = $this->admissionEnquiryService->getAdmissionEnquiries(
             $filters,
             $length,
             $page,
@@ -100,119 +88,266 @@ class AdmissionEnquiryController extends BaseController
     }
 
     /**
-     * Show the form for creating a new resource.
+     * Show the form for creating a new enquiry manually in admin panel.
      */
-    public function create()
-    {
-        return view('admin.admission_enquiry.create');
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(AdmissionEnquiryRequest $request)
-    {
-        $admissionEnquiry = $this->AdmissionEnquiryService->create($request->validated());
-
-        return $this->success(
-            'Admission Enquiry created successfully.',
-            $admissionEnquiry
-        );
-    }
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(AdmissionEnquiry $admissionEnquiry): View
+    public function create(): View
     {
         return view(
-            'admin.admission_enquiries.view',
+            'admin.admission_enquiries.create',
             [
-                'enquiry' => $admissionEnquiry,
+                'academicSessions' => academic_session_options(),
+                'classes' => class_options(),
                 'statuses' => admission_enquiry_status_options(),
-                'attemptStatuses' => admission_attempt_status_options(),
-                'users' => User::query()->where('status', true)->orderBy('name')->pluck('name', 'id')
-                        ->toArray(),
-
+                'sources' => [
+                    'walk_in' => 'Walk In',
+                    'phone' => 'Phone Call',
+                    'website' => 'Website',
+                    'reference' => 'Reference',
+                    'google' => 'Google Search',
+                    'facebook' => 'Facebook',
+                    'instagram' => 'Instagram',
+                    'advertisement' => 'Advertisement',
+                    'other' => 'Other',
+                ],
+                'users' => User::query()
+                    ->where('status', true)
+                    ->orderBy('name')
+                    ->pluck('name', 'id')
+                    ->toArray(),
             ]
         );
     }
-   
+
     /**
-     * Show the form for editing the specified resource.
+     * Store a newly created enquiry.
      */
-    public function edit(string $id)
+    public function store(AdmissionEnquiryRequest $request): JsonResponse
     {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-     public function update(
-        AdmissionEnquiryRequest $request,
-        int $id
-    ): JsonResponse {
-
-        $enquiry =
-            $this->service->find($id);
-
-
-        abort_if(
-            ! $enquiry,
-            404
-        );
-
-
-        $enquiry =
-            $this->service->update(
-                $enquiry,
-                $request->validated()
-            );
-
+        $admissionEnquiry = $this->admissionEnquiryService->create($request->validated());
 
         return response()->json([
-
             'status' => true,
-
-            'message' =>
-                'Admission enquiry updated successfully.',
-
-            'data' => [
-
-                'id' =>
-                    $enquiry->id,
-
-                'status' =>
-                    $enquiry->status,
-
-                'attempt_count' =>
-                    $enquiry->attempt_count,
-
-            ],
-
+            'message' => 'Admission Enquiry created successfully.',
+            'redirect_url' => route('admin.admission-enquiry.show', $admissionEnquiry->id),
+            'data' => $admissionEnquiry,
         ]);
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Display the specified enquiry detail.
      */
-    public function destroy(string $id)
+    public function show(int|string $id): View
     {
-        //
+        $enquiry = $this->admissionEnquiryService->find($id);
+
+        abort_if(! $enquiry, 404, 'Admission Enquiry not found.');
+
+        $duplicates = $this->admissionEnquiryService->checkDuplicates($enquiry);
+
+        return view(
+            'admin.admission_enquiries.view',
+            [
+                'enquiry' => $enquiry,
+                'statuses' => admission_enquiry_status_options(),
+                'attemptStatuses' => admission_attempt_status_options(),
+                'users' => User::query()
+                    ->where('status', true)
+                    ->orderBy('name')
+                    ->pluck('name', 'id')
+                    ->toArray(),
+                'duplicates' => $duplicates,
+            ]
+        );
     }
 
     /**
-     * Change status
+     * Update enquiry CRM details
      */
-    public function changeStatus(string $id)
+    public function update(Request $request, int|string $id): JsonResponse
     {
-        $admissionEnquiry = $this->AdmissionEnquiryService->changeStatus($id);
+        $enquiry = $this->admissionEnquiryService->find($id);
+
+        abort_if(! $enquiry, 404, 'Admission Enquiry not found.');
+
+        $validated = $request->validate([
+            'status' => 'required|string',
+            'assigned_to' => 'nullable|exists:users,id',
+            'attempt_status' => 'nullable|string',
+            'attempt_remarks' => 'nullable|string|max:1000',
+            'next_followup_at' => 'nullable|date',
+        ]);
+
+        $enquiry = $this->admissionEnquiryService->update($enquiry, $validated);
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Admission enquiry updated successfully.',
+            'data' => [
+                'id' => $enquiry->id,
+                'status' => $enquiry->status,
+                'attempt_count' => $enquiry->attempt_count,
+            ],
+        ]);
+    }
+
+    /**
+     * Assign / Reassign Staff
+     */
+    public function assignStaff(Request $request, int|string $id): JsonResponse
+    {
+        $enquiry = $this->admissionEnquiryService->find($id);
+
+        abort_if(! $enquiry, 404, 'Admission Enquiry not found.');
+
+        $validated = $request->validate([
+            'assigned_to' => 'nullable|exists:users,id',
+            'remarks' => 'nullable|string|max:500',
+        ]);
+
+        $enquiry = $this->admissionEnquiryService->assignStaff(
+            $enquiry,
+            $validated['assigned_to'] ? (int) $validated['assigned_to'] : null,
+            $validated['remarks'] ?? null
+        );
+
+        return $this->success(
+            'Staff assigned successfully.',
+            $enquiry
+        );
+    }
+
+    /**
+     * Add Followup Remark
+     */
+    public function addFollowup(Request $request, int|string $id): JsonResponse
+    {
+        $enquiry = $this->admissionEnquiryService->find($id);
+
+        abort_if(! $enquiry, 404, 'Admission Enquiry not found.');
+
+        $validated = $request->validate([
+            'attempt_status' => 'nullable|string',
+            'status' => 'nullable|string',
+            'remarks' => 'required|string|max:1000',
+            'next_follow_up_at' => 'nullable|date',
+        ]);
+
+        $followup = $this->admissionEnquiryService->addFollowup($enquiry, $validated);
+
+        return $this->success(
+            'Follow-up recorded successfully.',
+            $followup
+        );
+    }
+
+    /**
+     * Check duplicate student/user records
+     */
+    public function checkDuplicates(int|string $id): JsonResponse
+    {
+        $enquiry = $this->admissionEnquiryService->find($id);
+
+        abort_if(! $enquiry, 404, 'Admission Enquiry not found.');
+
+        $duplicates = $this->admissionEnquiryService->checkDuplicates($enquiry);
+
+        return response()->json([
+            'status' => true,
+            'has_duplicates' => count($duplicates) > 0,
+            'duplicates' => $duplicates,
+        ]);
+    }
+
+    /**
+     * Display Convert to Admission Form
+     */
+    public function convert(int|string $id): View|RedirectResponse
+    {
+        $enquiry = $this->admissionEnquiryService->find($id);
+
+        abort_if(! $enquiry, 404, 'Admission Enquiry not found.');
+
+        if ($enquiry->isConverted()) {
+            return redirect()
+                ->route('admin.admission-enquiry.show', $enquiry->id)
+                ->with('error', 'This enquiry has already been converted to an admission.');
+        }
+
+        $duplicates = $this->admissionEnquiryService->checkDuplicates($enquiry);
+
+        // Auto-generate suggested admission number if not provided
+        $suggestedAdmissionNo = 'ADM-'.date('Y').'-'.str_pad($enquiry->id, 4, '0', STR_PAD_LEFT);
+
+        $sections = section_options();
+        $firstSectionId = ! empty($sections) ? array_key_first($sections) : null;
+        $suggestedRollNo = $this->studentService->generateSuggestedRollNumber(
+            $enquiry->academic_session_id,
+            $enquiry->class_id,
+            $firstSectionId
+        );
+
+        return view('admin.admission_enquiries.convert', [
+            'enquiry' => $enquiry,
+            'academicSessions' => academic_session_options(),
+            'classes' => class_options(),
+            'sections' => $sections,
+            'duplicates' => $duplicates,
+            'suggestedAdmissionNo' => $suggestedAdmissionNo,
+            'suggestedRollNo' => $suggestedRollNo,
+        ]);
+    }
+
+    /**
+     * Process Convert to Admission
+     */
+    public function storeConversion(StudentRequest $request, int|string $id): JsonResponse
+    {
+        $enquiry = $this->admissionEnquiryService->find($id);
+
+        abort_if(! $enquiry, 404, 'Admission Enquiry not found.');
+
+        if ($enquiry->isConverted()) {
+            return response()->json([
+                'status' => false,
+                'message' => 'This enquiry has already been converted to an admission.',
+            ], 422);
+        }
+
+        try {
+            $result = $this->admissionEnquiryService->convertToAdmission(
+                $enquiry,
+                $request->validated()
+            );
+
+            return response()->json([
+                'status' => true,
+                'message' => 'Enquiry successfully converted to Student Admission!',
+                'redirect_url' => route('admin.students.show', $result['enrollment']?->id ?? $result['student']->id),
+                'data' => $result,
+            ]);
+        } catch (Exception $e) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Conversion failed: '.$e->getMessage(),
+            ], 500);
+        }
+    }
+
+    /**
+     * Change status toggle
+     */
+    public function changeStatus(int|string $id): JsonResponse
+    {
+        $enquiry = $this->admissionEnquiryService->find($id);
+
+        abort_if(! $enquiry, 404, 'Admission Enquiry not found.');
+
+        $newStatus = $enquiry->status === 'cancelled' ? 'new' : 'cancelled';
+        $enquiry = $this->admissionEnquiryService->update($enquiry, ['status' => $newStatus]);
 
         return $this->success(
             'Admission Enquiry status updated successfully.',
-            $admissionEnquiry
+            $enquiry
         );
     }
 }
-    

@@ -30,7 +30,7 @@ class AdmissionService
             $datePrefix = now()->format('dmY');
 
             $lastEnquiry = AdmissionEnquiry::query()
-                ->where('application_no', 'like', $datePrefix . '%')
+                ->where('application_no', 'like', $datePrefix.'%')
                 ->orderByDesc('id')
                 ->lockForUpdate()
                 ->first();
@@ -70,9 +70,8 @@ class AdmissionService
             */
 
             $enquiryNo =
-                $datePrefix .
+                $datePrefix.
                 $sequenceNumber;
-
 
             /*
             |--------------------------------------------------------------------------

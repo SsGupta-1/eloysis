@@ -2,8 +2,8 @@
 
 namespace App\Repositories\Admin;
 
-use App\Repositories\BaseRepository;
 use App\Models\ClassTimetables;
+use App\Repositories\BaseRepository;
 
 class ClassTimetableRepository extends BaseRepository
 {
@@ -26,7 +26,7 @@ class ClassTimetableRepository extends BaseRepository
     //             'teacher:id,name',
     //             'classSection.section:id,name'
     //         ]);
-            
+
     //     $query->when(
     //         !empty($filters['academic_session_id']),
     //         function ($query) use ($filters) {
@@ -153,7 +153,7 @@ class ClassTimetableRepository extends BaseRepository
     //     }
     // }
 
-     /**
+    /**
      * Get Class Timetable List.
      */
     public function getLists(
@@ -197,9 +197,9 @@ class ClassTimetableRepository extends BaseRepository
             |--------------------------------------------------------------------------
             */
 
-            $query->when(!empty($filters['academic_session_id']),
+            $query->when(! empty($filters['academic_session_id']),
                 function ($query) use ($filters) {
-                    $query->where('academic_session_id',$filters['academic_session_id']);
+                    $query->where('academic_session_id', $filters['academic_session_id']);
 
                 }
             );
@@ -210,13 +210,13 @@ class ClassTimetableRepository extends BaseRepository
             |--------------------------------------------------------------------------
             */
 
-            $query->when(!empty($filters['class_id']),
+            $query->when(! empty($filters['class_id']),
                 function ($query) use ($filters) {
 
-                    $query->whereHas('teacherSubject',function ($teacherSubjectQuery) use ($filters) {
+                    $query->whereHas('teacherSubject', function ($teacherSubjectQuery) use ($filters) {
 
-                            $teacherSubjectQuery->where('class_id',$filters['class_id']);
-                        });
+                        $teacherSubjectQuery->where('class_id', $filters['class_id']);
+                    });
                 }
             );
 
@@ -226,13 +226,13 @@ class ClassTimetableRepository extends BaseRepository
             |--------------------------------------------------------------------------
             */
 
-            $query->when(!empty($filters['section_id']),
+            $query->when(! empty($filters['section_id']),
                 function ($query) use ($filters) {
 
-                    $query->whereHas('teacherSubject',function ($teacherSubjectQuery) use ($filters) {
+                    $query->whereHas('teacherSubject', function ($teacherSubjectQuery) use ($filters) {
 
-                            $teacherSubjectQuery->where('section_id',$filters['section_id']);
-                        }
+                        $teacherSubjectQuery->where('section_id', $filters['section_id']);
+                    }
                     );
                 }
             );
@@ -243,13 +243,13 @@ class ClassTimetableRepository extends BaseRepository
             |--------------------------------------------------------------------------
             */
 
-            $query->when(!empty($filters['teacher_id']),
+            $query->when(! empty($filters['teacher_id']),
                 function ($query) use ($filters) {
 
-                    $query->whereHas('teacherSubject',function ($teacherSubjectQuery) use ($filters) {
+                    $query->whereHas('teacherSubject', function ($teacherSubjectQuery) use ($filters) {
 
-                            $teacherSubjectQuery->where('teacher_id',$filters['teacher_id']);
-                        }
+                        $teacherSubjectQuery->where('teacher_id', $filters['teacher_id']);
+                    }
                     );
                 }
             );
@@ -260,10 +260,10 @@ class ClassTimetableRepository extends BaseRepository
             |--------------------------------------------------------------------------
             */
 
-            $query->when(!empty($filters['day']),
+            $query->when(! empty($filters['day']),
                 function ($query) use ($filters) {
 
-                    $query->where('day',$filters['day']);
+                    $query->where('day', $filters['day']);
                 }
             );
 
@@ -276,7 +276,7 @@ class ClassTimetableRepository extends BaseRepository
             $query->when(isset($filters['status']) && $filters['status'] !== '',
                 function ($query) use ($filters) {
 
-                    $query->where('status',$filters['status']);
+                    $query->where('status', $filters['status']);
                 }
             );
 
@@ -287,7 +287,7 @@ class ClassTimetableRepository extends BaseRepository
             */
 
             $query->when(
-                !empty($filters['search']),
+                ! empty($filters['search']),
                 function ($query) use ($filters) {
 
                     $search = $filters['search'];
@@ -298,7 +298,7 @@ class ClassTimetableRepository extends BaseRepository
                         | Day
                         */
 
-                        $q->where('day','like',"%{$search}%");
+                        $q->where('day', 'like', "%{$search}%");
 
                         /*
                         | Teacher
@@ -308,9 +308,9 @@ class ClassTimetableRepository extends BaseRepository
                             function ($teacherQuery) use ($search) {
 
                                 $teacherQuery
-                                    ->where('name','like',"%{$search}%" )
-                                    ->orWhere('email','like',"%{$search}%" )
-                                    ->orWhere('mobile','like',"%{$search}%" );
+                                    ->where('name', 'like', "%{$search}%")
+                                    ->orWhere('email', 'like', "%{$search}%")
+                                    ->orWhere('mobile', 'like', "%{$search}%");
                             }
                         );
 
@@ -321,7 +321,7 @@ class ClassTimetableRepository extends BaseRepository
                         $q->orWhereHas('teacherSubject.subjectClass',
                             function ($classQuery) use ($search) {
 
-                                $classQuery->where('class_name','like',"%{$search}%");
+                                $classQuery->where('class_name', 'like', "%{$search}%");
                             }
                         );
 
@@ -333,8 +333,8 @@ class ClassTimetableRepository extends BaseRepository
                             function ($subjectQuery) use ($search) {
 
                                 $subjectQuery
-                                    ->where('subject_name','like',"%{$search}%")
-                                    ->orWhere('subject_code','like',"%{$search}%");
+                                    ->where('subject_name', 'like', "%{$search}%")
+                                    ->orWhere('subject_code', 'like', "%{$search}%");
                             }
                         );
 

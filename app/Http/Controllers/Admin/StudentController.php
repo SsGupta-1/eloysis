@@ -7,6 +7,7 @@ use App\Http\Requests\Admin\StudentRequest;
 use App\Models\StudentEnrollment;
 use App\Models\StudentProfile;
 use App\Services\Admin\StudentService;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class StudentController extends BaseController
@@ -14,6 +15,27 @@ class StudentController extends BaseController
     public function __construct(
         protected StudentService $studentService
     ) {}
+
+    /**
+     * Get suggested roll number for session, class, and section
+     */
+    public function getSuggestedRollNumber(Request $request): JsonResponse
+    {
+        $sessionId = $request->input('academic_session_id');
+        $classId = $request->input('class_id');
+        $sectionId = $request->input('section_id');
+
+        $suggestedRollNo = $this->studentService->generateSuggestedRollNumber(
+            $sessionId ? (int) $sessionId : null,
+            $classId ? (int) $classId : null,
+            $sectionId ? (int) $sectionId : null
+        );
+
+        return response()->json([
+            'status' => true,
+            'suggested_roll_number' => $suggestedRollNo,
+        ]);
+    }
 
     /**
      * Student Management Page

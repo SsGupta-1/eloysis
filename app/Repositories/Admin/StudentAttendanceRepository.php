@@ -8,15 +8,15 @@ use App\Repositories\BaseRepository;
 
 class StudentAttendanceRepository extends BaseRepository
 {
-
     /**
      * Create a new class instance.
      */
-    public function __construct(StudentAttendance $model) {
+    public function __construct(StudentAttendance $model)
+    {
         parent::__construct($model);
     }
 
-     /**
+    /**
      * Get students for attendance DataTable.
      */
     public function getStudentsForAttendance(
@@ -44,7 +44,7 @@ class StudentAttendanceRepository extends BaseRepository
 
                 'attendances' => function ($query) use ($filters) {
 
-                    if (!empty($filters['attendance_date'])) {
+                    if (! empty($filters['attendance_date'])) {
 
                         $query->where(
                             'attendance_date',
@@ -54,7 +54,6 @@ class StudentAttendanceRepository extends BaseRepository
                 },
             ]);
 
-
         /*
         |--------------------------------------------------------------------------
         | Academic Session
@@ -62,7 +61,7 @@ class StudentAttendanceRepository extends BaseRepository
         */
 
         $query->when(
-            !empty($filters['academic_session_id']),
+            ! empty($filters['academic_session_id']),
             function ($query) use ($filters) {
 
                 $query->where(
@@ -72,7 +71,6 @@ class StudentAttendanceRepository extends BaseRepository
             }
         );
 
-
         /*
         |--------------------------------------------------------------------------
         | Class
@@ -80,7 +78,7 @@ class StudentAttendanceRepository extends BaseRepository
         */
 
         $query->when(
-            !empty($filters['class_id']),
+            ! empty($filters['class_id']),
             function ($query) use ($filters) {
 
                 $query->where(
@@ -90,7 +88,6 @@ class StudentAttendanceRepository extends BaseRepository
             }
         );
 
-
         /*
         |--------------------------------------------------------------------------
         | Section
@@ -98,7 +95,7 @@ class StudentAttendanceRepository extends BaseRepository
         */
 
         $query->when(
-            !empty($filters['section_id']),
+            ! empty($filters['section_id']),
             function ($query) use ($filters) {
 
                 $query->where(
@@ -107,7 +104,6 @@ class StudentAttendanceRepository extends BaseRepository
                 );
             }
         );
-
 
         /*
         |--------------------------------------------------------------------------
@@ -126,7 +122,6 @@ class StudentAttendanceRepository extends BaseRepository
             }
         );
 
-
         /*
         |--------------------------------------------------------------------------
         | Search
@@ -134,7 +129,7 @@ class StudentAttendanceRepository extends BaseRepository
         */
 
         $query->when(
-            !empty($filters['search']),
+            ! empty($filters['search']),
             function ($query) use ($filters) {
 
                 $search = $filters['search'];
@@ -156,7 +151,6 @@ class StudentAttendanceRepository extends BaseRepository
                             );
                         }
                     );
-
 
                     /*
                     | Student Name / Email / Mobile
@@ -189,7 +183,6 @@ class StudentAttendanceRepository extends BaseRepository
             }
         );
 
-
         /*
         |--------------------------------------------------------------------------
         | Total Records
@@ -199,9 +192,8 @@ class StudentAttendanceRepository extends BaseRepository
         $recordsTotalQuery =
             StudentEnrollment::query();
 
-
         $recordsTotalQuery->when(
-            !empty($filters['academic_session_id']),
+            ! empty($filters['academic_session_id']),
             function ($query) use ($filters) {
 
                 $query->where(
@@ -211,9 +203,8 @@ class StudentAttendanceRepository extends BaseRepository
             }
         );
 
-
         $recordsTotalQuery->when(
-            !empty($filters['class_id']),
+            ! empty($filters['class_id']),
             function ($query) use ($filters) {
 
                 $query->where(
@@ -223,9 +214,8 @@ class StudentAttendanceRepository extends BaseRepository
             }
         );
 
-
         $recordsTotalQuery->when(
-            !empty($filters['section_id']),
+            ! empty($filters['section_id']),
             function ($query) use ($filters) {
 
                 $query->where(
@@ -235,10 +225,8 @@ class StudentAttendanceRepository extends BaseRepository
             }
         );
 
-
         $recordsTotal =
             $recordsTotalQuery->count();
-
 
         /*
         |--------------------------------------------------------------------------
@@ -248,7 +236,6 @@ class StudentAttendanceRepository extends BaseRepository
 
         $recordsFiltered =
             $query->count();
-
 
         /*
         |--------------------------------------------------------------------------
@@ -261,7 +248,6 @@ class StudentAttendanceRepository extends BaseRepository
             1 => 'id',
 
         ];
-
 
         if (
             $orderColumn !== null
@@ -281,7 +267,6 @@ class StudentAttendanceRepository extends BaseRepository
 
         }
 
-
         /*
         |--------------------------------------------------------------------------
         | Pagination
@@ -294,7 +279,6 @@ class StudentAttendanceRepository extends BaseRepository
             'page',
             $page
         );
-
 
         /*
         |--------------------------------------------------------------------------
@@ -309,7 +293,6 @@ class StudentAttendanceRepository extends BaseRepository
             $attendance =
                 $enrollment->attendances->first();
 
-
             return [
 
                 'id' => $enrollment->id,
@@ -317,23 +300,22 @@ class StudentAttendanceRepository extends BaseRepository
                 'student_enrollment_id' => $enrollment->id,
                 'roll_number' => $enrollment->roll_number,
 
-                'admission_no' => $enrollment->student ?->admission_no,
+                'admission_no' => $enrollment->student?->admission_no,
 
                 'student_name' => $enrollment->student?->user?->name,
                 'profile_image_url' => $enrollment->student?->user?->profile_image_url,
 
-                'class_name' =>$enrollment->studentClass?->class_name,
+                'class_name' => $enrollment->studentClass?->class_name,
 
-                'section_name' =>$enrollment->section?->name,
+                'section_name' => $enrollment->section?->name,
 
-                'attendance_status' =>$attendance?->status,
+                'attendance_status' => $attendance?->status,
 
-                'remarks' =>$attendance?->remarks,
+                'remarks' => $attendance?->remarks,
 
             ];
 
         })->values()->all();
-
 
         /*
         |--------------------------------------------------------------------------
@@ -343,14 +325,11 @@ class StudentAttendanceRepository extends BaseRepository
 
         return [
 
-            'recordsTotal' =>
-                $recordsTotal,
+            'recordsTotal' => $recordsTotal,
 
-            'recordsFiltered' =>
-                $recordsFiltered,
+            'recordsFiltered' => $recordsFiltered,
 
-            'data' =>
-                $data,
+            'data' => $data,
 
         ];
     }
@@ -384,19 +363,15 @@ class StudentAttendanceRepository extends BaseRepository
         return $this->model->updateOrCreate(
 
             [
-                'student_enrollment_id' =>
-                    $data['student_enrollment_id'],
+                'student_enrollment_id' => $data['student_enrollment_id'],
 
-                'attendance_date' =>
-                    $data['attendance_date'],
+                'attendance_date' => $data['attendance_date'],
             ],
 
             [
-                'status' =>
-                    $data['status'],
+                'status' => $data['status'],
 
-                'remarks' =>
-                    $data['remarks'] ?? null,
+                'remarks' => $data['remarks'] ?? null,
             ]
 
         );

@@ -190,47 +190,33 @@ class StudentAttendanceRequest extends BaseRequest
     {
         return [
 
-            'academic_session_id.required' =>
-                'Academic session is required.',
+            'academic_session_id.required' => 'Academic session is required.',
 
-            'academic_session_id.exists' =>
-                'Selected academic session is invalid.',
+            'academic_session_id.exists' => 'Selected academic session is invalid.',
 
-            'class_id.required' =>
-                'Class is required.',
+            'class_id.required' => 'Class is required.',
 
-            'class_id.exists' =>
-                'Selected class is invalid.',
+            'class_id.exists' => 'Selected class is invalid.',
 
-            'attendance_date.required' =>
-                'Attendance date is required.',
+            'attendance_date.required' => 'Attendance date is required.',
 
-            'attendance_date.date' =>
-                'Please provide a valid attendance date.',
+            'attendance_date.date' => 'Please provide a valid attendance date.',
 
-            'attendance.required' =>
-                'Please select at least one student.',
+            'attendance.required' => 'Please select at least one student.',
 
-            'attendance.min' =>
-                'Please select at least one student.',
+            'attendance.min' => 'Please select at least one student.',
 
-            'attendance.*.student_enrollment_id.required' =>
-                'Student enrollment is required.',
+            'attendance.*.student_enrollment_id.required' => 'Student enrollment is required.',
 
-            'attendance.*.student_enrollment_id.exists' =>
-                'Selected student enrollment is invalid.',
+            'attendance.*.student_enrollment_id.exists' => 'Selected student enrollment is invalid.',
 
-            'attendance.*.student_enrollment_id.distinct' =>
-                'Duplicate student enrollment is not allowed.',
+            'attendance.*.student_enrollment_id.distinct' => 'Duplicate student enrollment is not allowed.',
 
-            'attendance.*.status.required' =>
-                'Attendance status is required.',
+            'attendance.*.status.required' => 'Attendance status is required.',
 
-            'attendance.*.status.in' =>
-                'Invalid attendance status.',
+            'attendance.*.status.in' => 'Invalid attendance status.',
 
-            'attendance.*.remarks.max' =>
-                'Remarks cannot exceed 500 characters.',
+            'attendance.*.remarks.max' => 'Remarks cannot exceed 500 characters.',
 
         ];
     }

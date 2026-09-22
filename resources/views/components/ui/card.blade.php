@@ -6,7 +6,7 @@
     'class' => '',
 ])
 
-<div {{ $attributes->merge(['class' => "card shadow-sm border-0 h-100 {$class}"]) }}>
+<div {{ $attributes->merge(['class' => "card shadow-sm border-0 {$class}"]) }}>
 
     @if($title || $icon)
 

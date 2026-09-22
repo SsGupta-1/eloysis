@@ -2,36 +2,36 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
 use App\Http\Controllers\BaseController;
-use App\Services\Admin\ClassTimetableService;
 use App\Http\Requests\Admin\ClassTimetableRequest;
 use App\Models\ClassTimetables;
-
+use App\Services\Admin\ClassTimetableService;
+use Illuminate\Http\Request;
 
 class ClassTimetableController extends BaseController
 {
     protected $classTimetableService;
-    public function __construct(ClassTimetableService $classTimetableService)    
+
+    public function __construct(ClassTimetableService $classTimetableService)
     {
         $this->classTimetableService = $classTimetableService;
     }
-    //index
+
+    // index
     public function index()
     {
-        return view('admin.class_timetables.index',[
+        return view('admin.class_timetables.index', [
             'academicSessions' => academic_session_options(1),
             'classes' => class_options(),
             'sections' => section_options(),
             'teachers' => teacher_options(),
             'periods' => period_options(),
-            'teacherSubjects' => teacher_subject_options()
-            
+            'teacherSubjects' => teacher_subject_options(),
+
         ]);
     }
 
-    //list
+    // list
     public function list(Request $request)
     {
         $filters = [
@@ -62,13 +62,13 @@ class ClassTimetableController extends BaseController
         return $this->datatable($classTimetables, (int) $request->input('draw', 1));
     }
 
-    //create
+    // create
     public function create()
     {
-        //return view('admin.class-timetables.create');
+        // return view('admin.class-timetables.create');
     }
 
-    //store
+    // store
     public function store(ClassTimetableRequest $request)
     {
         $this->classTimetableService->create(
@@ -80,16 +80,16 @@ class ClassTimetableController extends BaseController
         );
     }
 
-    //edit
+    // edit
     public function edit(ClassTimetables $classTimetable)
     {
-         return $this->success(
+        return $this->success(
             'Class timetable fetched successfully.',
             $classTimetable
         );
     }
 
-    //update
+    // update
     public function update(ClassTimetableRequest $request, ClassTimetables $classTimetable)
     {
         $this->classTimetableService->update(
@@ -102,7 +102,7 @@ class ClassTimetableController extends BaseController
         );
     }
 
-    //destroy
+    // destroy
     public function destroy(ClassTimetables $classTimetable)
     {
         $this->classTimetableService->delete(
@@ -114,7 +114,7 @@ class ClassTimetableController extends BaseController
         );
     }
 
-    //change status
+    // change status
     public function changeStatus(ClassTimetables $classTimetable)
     {
         $this->classTimetableService->changeStatus($classTimetable->id);

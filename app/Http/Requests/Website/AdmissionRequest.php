@@ -2,8 +2,8 @@
 
 namespace App\Http\Requests\Website;
 
-use Illuminate\Contracts\Validation\ValidationRule;
 use App\Http\Requests\BaseRequest;
+use Illuminate\Contracts\Validation\ValidationRule;
 
 class AdmissionRequest extends BaseRequest
 {
@@ -46,7 +46,7 @@ class AdmissionRequest extends BaseRequest
                 'required',
                 'date',
                 'before:today',
-            'after:2000-01-01',
+                'after:2000-01-01',
             ],
 
             'gender' => [

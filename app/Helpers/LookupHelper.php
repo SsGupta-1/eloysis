@@ -4,11 +4,11 @@ use App\Models\AcademicClass;
 use App\Models\AcademicSession;
 use App\Models\ClassSection;
 use App\Models\ClassSubject;
+use App\Models\Periods;
 use App\Models\Role;
 use App\Models\Section;
 use App\Models\Subject;
 use App\Models\TeacherProfile;
-use App\Models\Periods;
 use App\Models\TeacherSubject;
 
 if (! function_exists('role_options')) {
@@ -179,25 +179,18 @@ if (! function_exists('admission_enquiry_status_options')) {
     function admission_enquiry_status_options(): array
     {
         return [
-
             'new' => 'New',
-
+            'assigned' => 'Assigned',
             'contacted' => 'Contacted',
-
             'follow_up' => 'Follow Up',
-
             'interested' => 'Interested',
-
-            'not_interested' => 'Not Interested',
-
             'visit_scheduled' => 'Visit Scheduled',
-
             'visited' => 'Visited',
-
+            'admission_ready' => 'Admission Ready',
             'converted' => 'Converted',
-
+            'not_interested' => 'Not Interested',
             'lost' => 'Lost',
-
+            'cancelled' => 'Cancelled',
         ];
     }
 }

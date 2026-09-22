@@ -4,8 +4,6 @@ namespace App\Http\Requests\Website;
 
 use App\Http\Requests\BaseRequest;
 use Illuminate\Contracts\Validation\ValidationRule;
-use Illuminate\Contracts\Validation\Validator;
-use Illuminate\Http\Exceptions\HttpResponseException;
 
 class ContactRequest extends BaseRequest
 {

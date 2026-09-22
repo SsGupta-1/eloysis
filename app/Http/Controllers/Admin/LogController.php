@@ -6,7 +6,6 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Response;
-use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class LogController extends Controller
 {
@@ -135,16 +134,16 @@ class LogController extends Controller
 
         $search = trim((string) $request->get('search', ''));
 
-        if (!$file || !preg_match('/^laravel-\d{4}-\d{2}-\d{2}\.log$/', $file)) {
+        if (! $file || ! preg_match('/^laravel-\d{4}-\d{2}-\d{2}\.log$/', $file)) {
             return response()->json([
                 'success' => false,
                 'message' => 'Invalid log file.',
             ], 400);
         }
 
-        $path = $this->logDirectory . DIRECTORY_SEPARATOR . $file;
+        $path = $this->logDirectory.DIRECTORY_SEPARATOR.$file;
 
-        if (!File::exists($path)) {
+        if (! File::exists($path)) {
             return response()->json([
                 'success' => false,
                 'message' => 'Log file not found.',
@@ -190,8 +189,7 @@ class LogController extends Controller
             $entries = array_values(
                 array_filter(
                     $entries,
-                    fn ($entry) =>
-                        stripos($entry, $search) !== false
+                    fn ($entry) => stripos($entry, $search) !== false
                 )
             );
         }
@@ -248,7 +246,7 @@ class LogController extends Controller
      */
     protected function safePath(string $filename): string
     {
-        if (!preg_match(
+        if (! preg_match(
             '/^laravel-\d{4}-\d{2}-\d{2}\.log$/',
             $filename
         )) {
@@ -258,15 +256,15 @@ class LogController extends Controller
         $basePath = realpath($this->logDirectory);
 
         $path = realpath(
-            $this->logDirectory . DIRECTORY_SEPARATOR . $filename
+            $this->logDirectory.DIRECTORY_SEPARATOR.$filename
         );
 
         if (
-            !$basePath ||
-            !$path ||
-            !str_starts_with(
+            ! $basePath ||
+            ! $path ||
+            ! str_starts_with(
                 $path,
-                $basePath . DIRECTORY_SEPARATOR
+                $basePath.DIRECTORY_SEPARATOR
             )
         ) {
             abort(404);
@@ -288,7 +286,7 @@ class LogController extends Controller
 
         $buffer = [];
 
-        while (!$file->eof()) {
+        while (! $file->eof()) {
 
             $line = $file->fgets();
 

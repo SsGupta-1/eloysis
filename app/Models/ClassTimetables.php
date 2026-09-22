@@ -26,8 +26,6 @@ class ClassTimetables extends Model
 
     public function teacherSubject()
     {
-        return $this->belongsTo(TeacherSubject::class,'teacher_subject_id');
+        return $this->belongsTo(TeacherSubject::class, 'teacher_subject_id');
     }
-
 }
-    

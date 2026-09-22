@@ -2,8 +2,8 @@
 
 namespace App\Http\Requests\Admin;
 
-use Illuminate\Contracts\Validation\ValidationRule;
 use App\Http\Requests\BaseRequest;
+use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Validation\Rule;
 
 class PeriodRequest extends BaseRequest
@@ -23,7 +23,7 @@ class PeriodRequest extends BaseRequest
      */
     public function rules(): array
     {
-       $periodId = $this->route('period')?->id;
+        $periodId = $this->route('period')?->id;
 
         return [
 
@@ -65,7 +65,7 @@ class PeriodRequest extends BaseRequest
         ];
     }
 
-     /**
+    /**
      * Custom Messages
      */
     public function messages(): array

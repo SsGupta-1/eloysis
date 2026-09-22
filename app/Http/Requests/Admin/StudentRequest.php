@@ -3,6 +3,8 @@
 namespace App\Http\Requests\Admin;
 
 use App\Http\Requests\BaseRequest;
+use App\Models\StudentEnrollment;
+use App\Models\StudentProfile;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Validation\Rule;
 
@@ -23,8 +25,27 @@ class StudentRequest extends BaseRequest
      */
     public function rules(): array
     {
-        $studentId = $this->route('student')?->id;
-        $studentProfileId = $this->route('student')?->stu_profile_id;
+        $studentParam = $this->route('student') ?? $this->route('students');
+        $studentEnrollmentId = null;
+        $studentProfileId = null;
+        $userId = null;
+
+        if ($studentParam instanceof StudentEnrollment) {
+            $studentEnrollmentId = $studentParam->id;
+            $studentProfileId = $studentParam->stu_profile_id;
+            $userId = $studentParam->user_id;
+        } elseif ($studentParam instanceof StudentProfile) {
+            $studentProfileId = $studentParam->id;
+            $userId = $studentParam->user_id;
+            $studentEnrollmentId = $studentParam->enrollments()->latest('id')->value('id');
+        } elseif (is_numeric($studentParam)) {
+            $enrollment = StudentEnrollment::find($studentParam);
+            if ($enrollment) {
+                $studentEnrollmentId = $enrollment->id;
+                $studentProfileId = $enrollment->stu_profile_id;
+                $userId = $enrollment->user_id;
+            }
+        }
 
         return [
 
@@ -49,9 +70,7 @@ class StudentRequest extends BaseRequest
                 'max:150',
 
                 Rule::unique('users', 'email')
-                    ->ignore(
-                        $this->route('student')?->user_id
-                    ),
+                    ->ignore($userId ?? $this->route('student')?->user_id),
 
             ],
 
@@ -93,6 +112,15 @@ class StudentRequest extends BaseRequest
                 'string',
 
                 'max:50',
+
+                Rule::unique('student_enrollments', 'roll_number')
+                    ->where(function ($query) {
+                        return $query->where('academic_session_id', $this->input('academic_session_id'))
+                            ->where('class_id', $this->input('class_id'))
+                            ->where('section_id', $this->input('section_id'))
+                            ->whereNull('deleted_at');
+                    })
+                    ->ignore($studentEnrollmentId),
 
             ],
 

@@ -48,7 +48,6 @@ class AcademicClassController extends BaseController
                 orderDirection: $orderDirection
             );
 
-       
         return $this->datatable(
             $classes,
             (int) $request->input('draw', 1)

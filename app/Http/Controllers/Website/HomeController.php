@@ -25,6 +25,7 @@ class HomeController extends BaseController
     public function admission(): View
     {
         $pageData = $this->homePageService->getPageData();
+
         return view('website.admission.index', compact('pageData'));
     }
 
@@ -36,6 +37,7 @@ class HomeController extends BaseController
     public function news(): View
     {
         $pageData = $this->homePageService->getPageData();
+
         return view('website.news', compact('pageData'));
     }
 

@@ -25,7 +25,7 @@ class StudentAttendanceService
     //     return $this->attendanceRepository->getStudents($filters);
     // }
 
-     /**
+    /**
      * Get students for attendance.
      */
     public function getStudentsForAttendance(
@@ -45,7 +45,6 @@ class StudentAttendanceService
             );
     }
 
-
     /**
      * Save bulk attendance
      */
@@ -63,7 +62,7 @@ class StudentAttendanceService
                     'attendance_date' => $data['attendance_date'],
                     'status' => $attendance['status'],
                     'remarks' => $attendance['remarks'] ?? null,
-                    ]);
+                ]);
 
                 $saved++;
             }

@@ -1,4 +1,5 @@
 <?php
+
 use Illuminate\Support\Facades\Route;
 
 if (! function_exists('menu_active')) {
@@ -56,7 +57,6 @@ if (! function_exists('menu_active')) {
             && Route::is($menus[$menu]);
     }
 }
-
 
 if (! function_exists('menu_item_active')) {
 

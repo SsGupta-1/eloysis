@@ -4,6 +4,7 @@ namespace App\Services\Admin;
 
 use App\Helpers\UploadHelper;
 use App\Models\Role;
+use App\Models\StudentEnrollment;
 use App\Repositories\Admin\StudentEnrollmentRepository;
 use App\Repositories\Admin\StudentRepository;
 use App\Repositories\Admin\UserRepository;
@@ -127,6 +128,15 @@ class StudentService
             |--------------------------------------------------------------------------
             */
 
+            $rollNumber = $data['roll_number'] ?? null;
+            if (empty($rollNumber)) {
+                $rollNumber = $this->generateSuggestedRollNumber(
+                    $data['academic_session_id'] ?? null,
+                    $data['class_id'] ?? null,
+                    $data['section_id'] ?? null
+                );
+            }
+
             $this->enrollmentRepository->create([
                 'user_id' => $user->id,
                 'stu_profile_id' => $student->id,
@@ -137,7 +147,7 @@ class StudentService
 
                 'section_id' => $data['section_id'],
 
-                'roll_number' => $data['roll_number'],
+                'roll_number' => $rollNumber,
 
                 'admission_date' => $data['admission_date'] ?? now(),
 
@@ -149,6 +159,39 @@ class StudentService
 
         });
 
+    }
+
+    /**
+     * Generate next suggested unique roll number for session, class, and section
+     */
+    public function generateSuggestedRollNumber(?int $academicSessionId, ?int $classId, ?int $sectionId): string
+    {
+        if (! $academicSessionId || ! $classId || ! $sectionId) {
+            return '1';
+        }
+
+        $existingRolls = StudentEnrollment::query()
+            ->where('academic_session_id', $academicSessionId)
+            ->where('class_id', $classId)
+            ->where('section_id', $sectionId)
+            ->whereNotNull('roll_number')
+            ->where('roll_number', '!=', '')
+            ->pluck('roll_number')
+            ->toArray();
+
+        if (empty($existingRolls)) {
+            return '1';
+        }
+
+        $numericRolls = array_values(array_filter(array_map(function ($val) {
+            return is_numeric(trim((string) $val)) ? (int) trim((string) $val) : null;
+        }, $existingRolls), fn ($val) => ! is_null($val)));
+
+        if (empty($numericRolls)) {
+            return (string) (count($existingRolls) + 1);
+        }
+
+        return (string) (max($numericRolls) + 1);
     }
 
     // *******************Student Action By Student profile start*************************************** */

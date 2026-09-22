@@ -3,13 +3,17 @@
 use App\Http\Controllers\Admin\AcademicClassController;
 use App\Http\Controllers\Admin\AcademicSectionController;
 use App\Http\Controllers\Admin\AcademicSessionController;
+use App\Http\Controllers\Admin\AdmissionEnquiryController;
 use App\Http\Controllers\Admin\AuthController;
 use App\Http\Controllers\Admin\ClassSectionController;
 use App\Http\Controllers\Admin\ClassSubjectController;
+use App\Http\Controllers\Admin\ClassTimetableController;
 use App\Http\Controllers\Admin\CommonController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\ExamController;
 use App\Http\Controllers\Admin\ExamQuestionController;
+use App\Http\Controllers\Admin\LogController;
+use App\Http\Controllers\Admin\PeriodsController;
 use App\Http\Controllers\Admin\QuestionController;
 use App\Http\Controllers\Admin\ResultController;
 use App\Http\Controllers\Admin\RoleController;
@@ -18,13 +22,9 @@ use App\Http\Controllers\Admin\StudentAttendanceController;
 use App\Http\Controllers\Admin\StudentController;
 use App\Http\Controllers\Admin\StudentPromotionController;
 use App\Http\Controllers\Admin\SubjectController;
+use App\Http\Controllers\Admin\TeacherAttendanceController;
 use App\Http\Controllers\Admin\TeacherController;
 use App\Http\Controllers\Admin\TeacherSubjectController;
-use App\Http\Controllers\Admin\TeacherAttendanceController;
-use App\Http\Controllers\Admin\LogController;
-use App\Http\Controllers\Admin\PeriodsController;
-use App\Http\Controllers\Admin\ClassTimetableController;
-use App\Http\Controllers\Admin\AdmissionEnquiryController;
 use Illuminate\Support\Facades\Route;
 
 require __DIR__.'/website.php';
@@ -106,6 +106,7 @@ Route::prefix('admin')->name('admin.')->middleware('activity.log')->group(functi
 
         // ************Academic Student route*******************
         Route::get('students/list', [StudentController::class, 'list'])->name('students.list');
+        Route::get('students/suggested-roll-number', [StudentController::class, 'getSuggestedRollNumber'])->name('students.suggested-roll-number');
         Route::patch('students/{students}/status', [StudentController::class, 'changeStatus'])->name('students.status');
         Route::resource('students', StudentController::class);
 
@@ -165,9 +166,9 @@ Route::prefix('admin')->name('admin.')->middleware('activity.log')->group(functi
 
             });
 
-         // **********************Teacher Attendance******************************* */
+        // **********************Teacher Attendance******************************* */
 
-        Route::prefix('teacher-attendance') 
+        Route::prefix('teacher-attendance')
             ->name('teacher_attendance.')
             ->controller(TeacherAttendanceController::class)
             ->group(function () {
@@ -189,11 +190,16 @@ Route::prefix('admin')->name('admin.')->middleware('activity.log')->group(functi
         Route::patch('class-timetables/{class_timetable}/status', [ClassTimetableController::class, 'changeStatus'])->name('class-timetables.status');
         Route::resource('class-timetables', ClassTimetableController::class);
 
-        //***************************Admission Enquiry******************************* */
+        // ***************************Admission Enquiry******************************* */
         Route::get('admission-enquiry/list', [AdmissionEnquiryController::class, 'list'])->name('admission_enquiry.list');
         Route::patch('admission-enquiry/{admission_enquiry}/status', [AdmissionEnquiryController::class, 'changeStatus'])->name('admission_enquiry.status');
+        Route::post('admission-enquiry/{admission_enquiry}/assign', [AdmissionEnquiryController::class, 'assignStaff'])->name('admission-enquiry.assign');
+        Route::post('admission-enquiry/{admission_enquiry}/followup', [AdmissionEnquiryController::class, 'addFollowup'])->name('admission-enquiry.followup');
+        Route::get('admission-enquiry/{admission_enquiry}/check-duplicates', [AdmissionEnquiryController::class, 'checkDuplicates'])->name('admission-enquiry.check-duplicates');
+        Route::get('admission-enquiry/{admission_enquiry}/convert', [AdmissionEnquiryController::class, 'convert'])->name('admission-enquiry.convert');
+        Route::post('admission-enquiry/{admission_enquiry}/convert', [AdmissionEnquiryController::class, 'storeConversion'])->name('admission-enquiry.convert-store');
+        Route::put('admission-enquiry/{admission_enquiry}', [AdmissionEnquiryController::class, 'update'])->name('admission.enquiries.update');
         Route::resource('admission-enquiry', AdmissionEnquiryController::class);
-
 
         // **********************Log Management******************************* */
         Route::prefix('logs')

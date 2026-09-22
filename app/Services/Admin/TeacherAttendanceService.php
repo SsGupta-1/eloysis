@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\DB;
 class TeacherAttendanceService
 {
     protected TeacherAttendanceRepository $teacherAttendanceRepository;
+
     /**
      * Create a new class instance.
      */
@@ -15,6 +16,7 @@ class TeacherAttendanceService
     {
         $this->teacherAttendanceRepository = $teacherAttendanceRepository;
     }
+
     public function getTeachersForAttendance(
         array $filters = [],
         int $page = 1,
@@ -49,7 +51,7 @@ class TeacherAttendanceService
                     'attendance_date' => $data['attendance_date'],
                     'status' => $attendance['status'],
                     'remarks' => $attendance['remarks'] ?? null,
-                    ]);
+                ]);
 
                 $saved++;
             }

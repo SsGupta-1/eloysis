@@ -3,7 +3,7 @@
 namespace App\Repositories\Admin;
 
 use App\Models\TeacherAttendance;
-Use App\Models\TeacherProfile;
+use App\Models\TeacherProfile;
 use App\Repositories\BaseRepository;
 
 class TeacherAttendanceRepository extends BaseRepository
@@ -13,7 +13,7 @@ class TeacherAttendanceRepository extends BaseRepository
      */
     public function __construct(TeacherAttendance $model)
     {
-        parent::__construct($model);    
+        parent::__construct($model);
     }
 
     public function getTeachersForAttendance(
@@ -28,7 +28,7 @@ class TeacherAttendanceRepository extends BaseRepository
                 'user:id,name,email,mobile,profile_image,status',
                 'attendances' => function ($query) use ($filters) {
 
-                    if (!empty($filters['attendance_date'])) {
+                    if (! empty($filters['attendance_date'])) {
 
                         $query->where(
                             'attendance_date',
@@ -46,20 +46,20 @@ class TeacherAttendanceRepository extends BaseRepository
         */
 
         $query->when(
-            !empty($filters['search']),
+            ! empty($filters['search']),
             function ($query) use ($filters) {
 
                 $search = $filters['search'];
 
                 $query->where(function ($q) use ($search) {
 
-                   $q->where('employee_id','like',"%{$search}%");
+                    $q->where('employee_id', 'like', "%{$search}%");
 
-                    $q->orWhereHas('user',function ($userQuery) use ($search) {
+                    $q->orWhereHas('user', function ($userQuery) use ($search) {
 
-                        $userQuery->where('name','like',"%{$search}%")
-                            ->orWhere('email','like',"%{$search}%")
-                            ->orWhere('mobile','like',"%{$search}%");
+                        $userQuery->where('name', 'like', "%{$search}%")
+                            ->orWhere('email', 'like', "%{$search}%")
+                            ->orWhere('mobile', 'like', "%{$search}%");
 
                     });
                 });
@@ -72,11 +72,11 @@ class TeacherAttendanceRepository extends BaseRepository
         |--------------------------------------------------------------------------
         */
 
-        $query->when(!empty($filters['status']), function ($query) use ($filters) {
+        $query->when(! empty($filters['status']), function ($query) use ($filters) {
 
             $query->whereHas('user', function ($userQuery) use ($filters) {
 
-                $userQuery->where('status',$filters['status']);
+                $userQuery->where('status', $filters['status']);
             });
         });
 
@@ -121,7 +121,6 @@ class TeacherAttendanceRepository extends BaseRepository
             $attendance =
                 $teacher->attendances->first();
 
-
             return [
 
                 'id' => $teacher->id,
@@ -130,8 +129,8 @@ class TeacherAttendanceRepository extends BaseRepository
                 'teacher_name' => $teacher->user?->name,
                 'mobile' => $teacher->user?->mobile,
                 'profile_image_url' => $teacher->user?->profile_image_url,
-                'attendance_status' =>$attendance?->status,
-                'remarks' =>$attendance?->remarks,
+                'attendance_status' => $attendance?->status,
+                'remarks' => $attendance?->remarks,
 
             ];
 
@@ -144,7 +143,7 @@ class TeacherAttendanceRepository extends BaseRepository
         ];
     }
 
-     /**
+    /**
      * Save or update attendance
      */
     public function saveAttendance(
@@ -160,9 +159,9 @@ class TeacherAttendanceRepository extends BaseRepository
             ],
 
             [
-                'status' =>$data['status'],
+                'status' => $data['status'],
 
-                'remarks' =>$data['remarks'] ?? null,
+                'remarks' => $data['remarks'] ?? null,
             ]
 
         );

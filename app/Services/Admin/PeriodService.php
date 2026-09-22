@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\DB;
 class PeriodService
 {
     protected $periodRepository;
+
     /**
      * Create a new class instance.
      */
@@ -16,6 +17,7 @@ class PeriodService
     {
         $this->periodRepository = $periodRepository;
     }
+
     /**
      * Get Academic Class
      */

@@ -2,9 +2,8 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
-use Illuminate\Database\Seeder;
 use App\Models\Periods;
+use Illuminate\Database\Seeder;
 
 class periodsSeeder extends Seeder
 {
@@ -31,7 +30,7 @@ class periodsSeeder extends Seeder
                 [
                     'start_time' => $period['start_time'],
                     'end_time' => $period['end_time'],
-                    'sort_order' => $period['sort_order']
+                    'sort_order' => $period['sort_order'],
                 ]
             );
         }
