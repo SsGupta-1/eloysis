@@ -29,9 +29,7 @@ const AdmissionConvert = {
     },
 
     fetchSuggestedRollNumber() {
-        alert('sss');
-        const form = $('#convertAdmissionForm');
-        const url = form.data('suggested-roll-url') || '/admin/students/suggested-roll-number';
+        const url = BASE_URL + '/admin/students/suggested-roll-number';
         const sessionId = $('#academic_session_id').val();
         const classId = $('#form_class_id').val();
         const sectionId = $('#form_section_id').val();

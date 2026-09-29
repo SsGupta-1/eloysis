@@ -79,31 +79,80 @@
 
     {{-- Table --}}
     <x-ui.card>
-        <div class="table-responsive">
-            <table
-                class="table table-hover align-middle mb-0"
-                id="admissionEnquiryTable"
-                style="width: 100%"
-            >
-                <thead class="table-light">
-                    <tr>
-                        <th width="40">#</th>
-                        <th>Application No</th>
-                        <th>Student Name</th>
-                        <th>Student Contact</th>
-                        <th>Parent Details</th>
-                        <th>Class / Session</th>
-                        <th>Source</th>
-                        <th>Status</th>
-                        <th>Assigned Staff</th>
-                        <th class="text-center">Attempts</th>
-                        <th>Next Follow-up</th>
-                        <th width="120" class="text-end">Actions</th>
-                    </tr>
-                </thead>
-                <tbody></tbody>
-            </table>
-        </div>
+
+        <x-ui.datatable id="admissionEnquiryTable">
+            <x-ui.table.thead>
+                <x-ui.table.col width="60">
+
+                #
+
+            </x-ui.table.col>
+
+
+            <x-ui.table.col>
+
+                Application No
+
+            </x-ui.table.col>
+
+            <x-ui.table.col>
+
+                Student Name
+
+            </x-ui.table.col>
+
+            <x-ui.table.col>
+
+                Contact
+
+            </x-ui.table.col>
+
+            <x-ui.table.col>
+
+                Class / Session
+
+            </x-ui.table.col>
+
+            <x-ui.table.col>
+
+                Source
+
+            </x-ui.table.col>
+
+            <x-ui.table.col>
+
+                Status
+
+            </x-ui.table.col>
+
+            <x-ui.table.col>
+
+                Assigned Staff
+
+            </x-ui.table.col>
+
+            <x-ui.table.col class="text-center">
+
+                Attempts
+
+            </x-ui.table.col>
+
+            <x-ui.table.col>
+
+                Next Follow-up
+
+            </x-ui.table.col>
+
+            <x-ui.table.col class="text-end">
+
+                Actions
+
+            </x-ui.table.col>
+
+            </x-ui.table.thead>
+            <x-ui.table.tbody id="admissionEnquiryTableBody">
+            </x-ui.table.tbody>
+        </x-ui.datatable>
     </x-ui.card>
 
 </div>

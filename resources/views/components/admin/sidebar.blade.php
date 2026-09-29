@@ -227,26 +227,33 @@
                 icon="bi bi-journal-check"
                 :active="menu_active('examinations')">
 
-                <li>
-                    <a href="#">
-                        <i class="bi bi-journal-text me-2"></i>
-                        <span>Exams</span>
-                    </a>
-                </li>
+                <x-admin.menu-item
+                    route="admin.questions.index"
+                    active="admin.questions.*"
+                    icon="bi bi-patch-question"
+                    label="Question Bank"
+                />
 
-                <li>
-                    <a href="#">
-                        <i class="bi bi-patch-question me-2"></i>
-                        <span>Questions</span>
-                    </a>
-                </li>
+                <x-admin.menu-item
+                    route="admin.question-papers.index"
+                    active="admin.question-papers.*"
+                    icon="bi bi-file-earmark-text"
+                    label="Question Papers"
+                />
 
-                <li>
-                    <a href="#">
-                        <i class="bi bi-award me-2"></i>
-                        <span>Results</span>
-                    </a>
-                </li>
+                <x-admin.menu-item
+                    route="admin.exams.index"
+                    active="admin.exams.*"
+                    icon="bi bi-journal-text"
+                    label="Exams"
+                />
+
+                <x-admin.menu-item
+                    route="admin.results.index"
+                    active="admin.results.*"
+                    icon="bi bi-award"
+                    label="Results"
+                />
 
             </x-admin.menu-group>
 

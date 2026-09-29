@@ -80,11 +80,9 @@
 
 <script>
 
-    const STUDENT_INDEX_URL =
-        "{{ route('admin.students.index') }}";
-
-    const STUDENT_UPDATE_URL =
-        "{{ route('admin.students.update', $enrollment->id) }}";
+    const STUDENT_INDEX_URL ="{{ route('admin.students.index') }}";
+    const STUDENT_UPDATE_URL ="{{ route('admin.students.update', $enrollment->id) }}";
+    const STUDENT_LIST_URL = "{{ route('admin.students.list') }}";
 
 </script>
 

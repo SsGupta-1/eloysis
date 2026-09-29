@@ -17,7 +17,7 @@
                 icon="bi-plus-lg"
                 id="btnAddSection">
 
-                Add Class
+                Add Class Section
 
             </x-ui.button>
 

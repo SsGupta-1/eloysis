@@ -11,10 +11,10 @@ use App\Http\Controllers\Admin\ClassTimetableController;
 use App\Http\Controllers\Admin\CommonController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\ExamController;
-use App\Http\Controllers\Admin\ExamQuestionController;
 use App\Http\Controllers\Admin\LogController;
 use App\Http\Controllers\Admin\PeriodsController;
 use App\Http\Controllers\Admin\QuestionController;
+use App\Http\Controllers\Admin\QuestionPaperController;
 use App\Http\Controllers\Admin\ResultController;
 use App\Http\Controllers\Admin\RoleController;
 use App\Http\Controllers\Admin\StaffController;
@@ -212,12 +212,21 @@ Route::prefix('admin')->name('admin.')->middleware('activity.log')->group(functi
                 Route::get('/download', 'download')->name('download');
             });
 
-        Route::resource('exams', ExamController::class);
+        // **********************Examination & Question Paper Management******************************* */
+        Route::get('questions/list', [QuestionController::class, 'list'])->name('questions.list');
+        Route::get('questions/search-selection', [QuestionController::class, 'searchForSelection'])->name('questions.search-selection');
+        Route::patch('questions/{question}/status', [QuestionController::class, 'changeStatus'])->name('questions.status');
         Route::resource('questions', QuestionController::class);
 
-        // Route::get('exams/{exam}/questions', [ExamQuestionController::class, 'index'])->name('exams.questions.index');
-        // Route::post('exams/{exam}/questions', [ExamQuestionController::class, 'store'])->name('exams.questions.store');
-        // Route::delete('exams/{exam}/questions/{question}', [ExamQuestionController::class, 'destroy'])->name('exams.questions.destroy');
+        Route::get('question-papers/list', [QuestionPaperController::class, 'list'])->name('question-papers.list');
+        Route::post('question-papers/auto-blueprint', [QuestionPaperController::class, 'autoGenerateBlueprint'])->name('question-papers.auto-blueprint');
+        Route::patch('question-papers/{question_paper}/lock', [QuestionPaperController::class, 'toggleLock'])->name('question-papers.lock');
+        Route::post('question-papers/{question_paper}/approval', [QuestionPaperController::class, 'handleApproval'])->name('question-papers.approval');
+        Route::post('question-papers/{question_paper}/generate-sets', [QuestionPaperController::class, 'generateSets'])->name('question-papers.generate-sets');
+        Route::get('question-papers/{question_paper}/print', [QuestionPaperController::class, 'print'])->name('question-papers.print');
+        Route::resource('question-papers', QuestionPaperController::class);
+
+        Route::resource('exams', ExamController::class);
 
         Route::get('results', [ResultController::class, 'index'])->name('results.index');
         Route::get('results/exam/{exam}', [ResultController::class, 'examResults'])->name('results.exam');

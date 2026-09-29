@@ -4,26 +4,20 @@ use App\Http\Controllers\Api\AttemptController;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\DashboardController;
 use App\Http\Controllers\Api\ExamController;
-use App\Http\Controllers\Api\ProfileController;
 use App\Http\Controllers\Api\ResultController;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-
-Route::get('/user', function (Request $request) {
-    return $request->user();
-})->middleware('auth:sanctum');
 
 Route::prefix('v1')->group(function () {
 
     // Public
-    Route::post('/login', [AuthController::class, 'login']);
+    Route::post('/login', [AuthController::class, 'login'])->name('login');
 
     // Protected student routes
     Route::middleware(['auth:sanctum'])->group(function () {
 
         Route::post('/logout', [AuthController::class, 'logout']);
 
-        Route::get('/profile', [ProfileController::class, 'show']);
+        Route::get('/profile', [AuthController::class, 'getProfile']);
         Route::get('/dashboard', [DashboardController::class, 'index']);
 
         Route::get('/exams', [ExamController::class, 'index']);

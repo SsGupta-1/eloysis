@@ -15,6 +15,16 @@ class StudentApiMiddleware
      */
     public function handle(Request $request, Closure $next): Response
     {
+        $user = $request->user();
+
+        if (! $user || $user->role !== 'student') {
+            return response()->json([
+                'success' => false,
+                'message' => 'Unauthorized - Student role required.',
+                'data' => null,
+            ], 403);
+        }
+
         return $next($request);
     }
 }

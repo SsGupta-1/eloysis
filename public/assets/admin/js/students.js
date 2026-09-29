@@ -23,7 +23,7 @@ const Student = {
             serverSide: true,
 
             ajax: {
-                url: STUDENT_LIST_URL,
+                url: BASE_URL + '/admin/students/list',
                 type: 'GET',
                 data: function (d) {
                     d.academic_session_id = $('#academic_session_id').val();
@@ -224,7 +224,7 @@ const Student = {
 
                 if (sessionId && classId && sectionId) {
                     $.ajax({
-                        url: '/admin/students/suggested-roll-number',
+                        url: BASE_URL + '/admin/students/suggested-roll-number',
                         type: 'GET',
                         data: {
                             academic_session_id: sessionId,

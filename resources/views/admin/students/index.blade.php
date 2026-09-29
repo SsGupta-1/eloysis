@@ -185,26 +185,19 @@
 
 <script>
 
-    const STUDENT_LIST_URL =
-        "{{ route('admin.students.list') }}";
+    const STUDENT_LIST_URL = "{{ route('admin.students.list') }}";
 
-    const STUDENT_STORE_URL =
-        "{{ route('admin.students.store') }}";
+    const STUDENT_STORE_URL = "{{ route('admin.students.store') }}";
 
-    const STUDENT_SHOW_URL =
-        "{{ route('admin.students.show', ':id') }}";
+    const STUDENT_SHOW_URL = "{{ route('admin.students.show', ':id') }}";
 
-    const STUDENT_UPDATE_URL =
-        "{{ route('admin.students.update', ':id') }}";
+    const STUDENT_UPDATE_URL = "{{ route('admin.students.update', ':id') }}";
 
-    const STUDENT_DELETE_URL =
-        "{{ route('admin.students.destroy', ':id') }}";
+    const STUDENT_DELETE_URL = "{{ route('admin.students.destroy', ':id') }}";
 
-    const STUDENT_STATUS_URL =
-        "{{ route('admin.students.status', ':id') }}";
+    const STUDENT_STATUS_URL = "{{ route('admin.students.status', ':id') }}";
 
-    const DEFAULT_AVATAR =
-        "{{ asset('assets/images/default-avatar.png') }}";
+    const DEFAULT_AVATAR = "{{ asset('assets/images/default-avatar.png') }}";
     
     const SECTION_BY_CLASS_URL = "{{ route('admin.sections.byClass', ':id') }}";
 
