@@ -284,34 +284,147 @@ class ExamService
         return $savedCount;
     }
 
-    protected function calculateGrade(float $percentage, bool $isAbsent = false, bool $isExempted = false): array
+    public function updateStatus(int $id, string $status): Exam
+    {
+        $exam = Exam::findOrFail($id);
+        $exam->update(['status' => $status]);
+
+        return $exam;
+    }
+
+    public function getEnrolledStudentsWithDetails(int $examId, ?int $sectionId = null)
+    {
+        $query = ExamStudentEnrollment::with([
+            'studentEnrollment.student.user',
+            'studentEnrollment.studentClass',
+            'studentEnrollment.section',
+        ])->where('exam_id', $examId);
+
+        if ($sectionId) {
+            $query->whereHas('studentEnrollment', function ($q) use ($sectionId) {
+                $q->where('section_id', $sectionId);
+            });
+        }
+
+        return $query->get()->sortBy(function ($item) {
+            return $item->studentEnrollment?->roll_number ?? 0;
+        });
+    }
+
+    public function getAdmitCardsData(int $examId, ?int $sectionId = null, ?int $studentEnrollmentId = null): array
+    {
+        $exam = Exam::with([
+            'academicSession',
+            'academicClass',
+            'schedules' => function ($q) {
+                $q->with(['subject', 'invigilator'])->orderBy('exam_date')->orderBy('start_time');
+            },
+        ])->findOrFail($examId);
+
+        $enrollmentsQuery = ExamStudentEnrollment::with([
+            'studentEnrollment.student.user',
+            'studentEnrollment.studentClass',
+            'studentEnrollment.section',
+        ])->where('exam_id', $examId)
+            ->where('eligibility_status', ExamStudentEnrollment::ELIGIBLE);
+
+        if ($studentEnrollmentId) {
+            $enrollmentsQuery->where('student_enrollment_id', $studentEnrollmentId);
+        } elseif ($sectionId) {
+            $enrollmentsQuery->whereHas('studentEnrollment', function ($q) use ($sectionId) {
+                $q->where('section_id', $sectionId);
+            });
+        }
+
+        $students = $enrollmentsQuery->get()->sortBy(function ($item) {
+            return $item->studentEnrollment?->roll_number ?? 0;
+        });
+
+        return [
+            'exam' => $exam,
+            'students' => $students,
+            'schedules' => $exam->schedules,
+        ];
+    }
+
+    public function saveIndividualSchedule(int $examId, array $data, ?int $scheduleId = null): ExamSchedule
+    {
+        $exam = Exam::findOrFail($examId);
+        $data['exam_id'] = $exam->id;
+        $data['created_by'] = Auth::guard('admin')->id();
+
+        if ($scheduleId) {
+            $schedule = ExamSchedule::where('exam_id', $examId)->findOrFail($scheduleId);
+            $schedule->update($data);
+
+            return $schedule->fresh(['subject', 'academicClass', 'section', 'questionPaper', 'invigilator']);
+        }
+
+        return ExamSchedule::create($data);
+    }
+
+    public function deleteSchedule(int $scheduleId): bool
+    {
+        $schedule = ExamSchedule::findOrFail($scheduleId);
+        $schedule->marks()->delete();
+
+        return (bool) $schedule->delete();
+    }
+
+    public function getExamOverview(int $examId): array
+    {
+        $exam = $this->find($examId);
+        if (! $exam) {
+            throw new Exception('Exam not found.');
+        }
+
+        $totalSchedules = $exam->schedules->count();
+        $totalEnrolled = $exam->enrolledStudents->count();
+        $totalEligible = $exam->enrolledStudents->where('eligibility_status', ExamStudentEnrollment::ELIGIBLE)->count();
+
+        // Calculate marks entry completion percentage
+        $totalExpectedMarks = $totalSchedules * $totalEnrolled;
+        $totalEnteredMarks = ExamMark::whereIn('exam_schedule_id', $exam->schedules->pluck('id'))->count();
+        $marksCompletionPercentage = $totalExpectedMarks > 0 ? round(($totalEnteredMarks / $totalExpectedMarks) * 100, 1) : 0;
+
+        return [
+            'exam' => $exam,
+            'total_schedules' => $totalSchedules,
+            'total_enrolled' => $totalEnrolled,
+            'total_eligible' => $totalEligible,
+            'total_entered_marks' => $totalEnteredMarks,
+            'marks_completion_percentage' => min(100, $marksCompletionPercentage),
+        ];
+    }
+
+    public function calculateGrade(float $percentage, bool $isAbsent = false, bool $isExempted = false): array
     {
         if ($isAbsent) {
-            return ['grade' => 'AB', 'point' => 0.00];
+            return ['grade' => 'AB', 'point' => 0.00, 'status' => 'Absent'];
         }
         if ($isExempted) {
-            return ['grade' => 'EX', 'point' => 0.00];
+            return ['grade' => 'EX', 'point' => 0.00, 'status' => 'Exempted'];
         }
 
         if ($percentage >= 90) {
-            return ['grade' => 'A+', 'point' => 10.00];
+            return ['grade' => 'A+', 'point' => 10.00, 'status' => 'Outstanding'];
         }
         if ($percentage >= 80) {
-            return ['grade' => 'A', 'point' => 9.00];
+            return ['grade' => 'A', 'point' => 9.00, 'status' => 'Excellent'];
         }
         if ($percentage >= 70) {
-            return ['grade' => 'B+', 'point' => 8.00];
+            return ['grade' => 'B+', 'point' => 8.00, 'status' => 'Very Good'];
         }
         if ($percentage >= 60) {
-            return ['grade' => 'B', 'point' => 7.00];
+            return ['grade' => 'B', 'point' => 7.00, 'status' => 'Good'];
         }
         if ($percentage >= 50) {
-            return ['grade' => 'C', 'point' => 6.00];
+            return ['grade' => 'C', 'point' => 6.00, 'status' => 'Average'];
         }
         if ($percentage >= 33) {
-            return ['grade' => 'D', 'point' => 4.00];
+            return ['grade' => 'D', 'point' => 4.00, 'status' => 'Pass'];
         }
 
-        return ['grade' => 'F', 'point' => 0.00];
+        return ['grade' => 'F', 'point' => 0.00, 'status' => 'Fail'];
     }
 }

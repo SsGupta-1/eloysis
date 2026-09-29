@@ -166,7 +166,7 @@ class StudentService
      */
     public function generateSuggestedRollNumber(?int $academicSessionId, ?int $classId, ?int $sectionId): string
     {
-        if (!$academicSessionId || !$classId || !$sectionId) {
+        if (! $academicSessionId || ! $classId || ! $sectionId) {
             return '1';
         }
 

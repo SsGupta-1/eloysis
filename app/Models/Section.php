@@ -24,4 +24,9 @@ class Section extends Model
     {
         return $this->belongsTo(AcademicClass::class, 'class_id');
     }
+
+    public function getSectionNameAttribute(): ?string
+    {
+        return $this->name;
+    }
 }

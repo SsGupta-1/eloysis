@@ -226,10 +226,20 @@ Route::prefix('admin')->name('admin.')->middleware('activity.log')->group(functi
         Route::get('question-papers/{question_paper}/print', [QuestionPaperController::class, 'print'])->name('question-papers.print');
         Route::resource('question-papers', QuestionPaperController::class);
 
+        Route::get('exams/list', [ExamController::class, 'list'])->name('exams.list');
+        Route::patch('exams/{exam}/status', [ExamController::class, 'changeStatus'])->name('exams.status');
+        Route::get('exams/{exam}/enrollments', [ExamController::class, 'enrollments'])->name('exams.enrollments');
+        Route::post('exams/{exam}/enrollment-eligibility', [ExamController::class, 'updateStudentEligibility'])->name('exams.enrollment-eligibility');
+        Route::get('exams/{exam}/admit-cards', [ExamController::class, 'admitCards'])->name('exams.admit-cards');
+        Route::get('exams/schedules/{schedule}/marks-entry', [ExamController::class, 'marksEntry'])->name('exams.schedules.marks-entry');
+        Route::post('exams/schedules/{schedule}/save-marks', [ExamController::class, 'saveMarks'])->name('exams.schedules.save-marks');
         Route::resource('exams', ExamController::class);
 
         Route::get('results', [ResultController::class, 'index'])->name('results.index');
+        Route::get('results/list', [ResultController::class, 'list'])->name('results.list');
         Route::get('results/exam/{exam}', [ResultController::class, 'examResults'])->name('results.exam');
+        Route::post('results/exam/{exam}/publish', [ResultController::class, 'publishToggle'])->name('results.publish');
+        Route::get('results/exam/{exam}/tabulation-print', [ResultController::class, 'tabulationPrint'])->name('results.tabulation-print');
         Route::get('results/student/{student}', [ResultController::class, 'studentResults'])->name('results.student');
     });
 });

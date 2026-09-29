@@ -8,12 +8,17 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class ExamStudentEnrollment extends Model
 {
     public const ELIGIBLE = 'eligible';
+
     public const DETAINED = 'detained';
+
     public const EXEMPTED = 'exempted';
+
     public const FEE_DEFAULTER = 'fee_defaulter';
 
     public const ATTENDANCE_PRESENT = 'present';
+
     public const ATTENDANCE_ABSENT = 'absent';
+
     public const ATTENDANCE_MEDICAL = 'medical_leave';
 
     protected $fillable = [

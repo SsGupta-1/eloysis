@@ -11,14 +11,13 @@ class LoginService
 {
     public function __construct(
         protected LoginRepository $login_repository
-    ) {
-    }
+    ) {}
 
     public function login(string $login, string $password, ?string $ip = null): array
     {
         $user = $this->login_repository->find_for_login($login);
 
-        if (!$user || !Hash::check($password, $user->password)) {
+        if (! $user || ! Hash::check($password, $user->password)) {
             throw ValidationException::withMessages([
                 'login' => ['Invalid login credentials.'],
             ]);

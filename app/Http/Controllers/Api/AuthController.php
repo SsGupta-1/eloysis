@@ -12,8 +12,7 @@ class AuthController extends BaseController
 {
     public function __construct(
         protected LoginService $loginService
-    ) {
-    }
+    ) {}
 
     public function login(LoginRequest $request): JsonResponse
     {

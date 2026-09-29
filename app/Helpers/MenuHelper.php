@@ -38,6 +38,7 @@ if (! function_exists('menu_active')) {
             'examinations' => [
                 'admin.exams.*',
                 'admin.questions.*',
+                'admin.question-papers.*',
                 'admin.results.*',
             ],
 

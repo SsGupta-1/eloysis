@@ -12,7 +12,7 @@ class DashboardController extends BaseController
     {
         $user = $request->user();
         $student = $user->studentProfile;
-        
+
         $totalTests = 0;
         $upcomingTests = 0;
         $activeTests = 0;
@@ -21,7 +21,7 @@ class DashboardController extends BaseController
         if ($student) {
             $batches = $student->batches()
                 ->with([
-                    'batchesSubjects.batchesTests.exam'
+                    'batchesSubjects.batchesTests.exam',
                 ])
                 ->whereHas('batchesSubjects.batchesTests', function ($query) {
                     $query->where('status', 1);

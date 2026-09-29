@@ -10,21 +10,33 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class Exam extends Model
 {
     public const MODE_OFFLINE = 'offline';
+
     public const MODE_ONLINE = 'online';
+
     public const MODE_BOTH = 'both';
 
     public const TYPE_UNIT_TEST = 'unit_test';
+
     public const TYPE_MID_TERM = 'mid_term';
+
     public const TYPE_QUARTERLY = 'quarterly';
+
     public const TYPE_HALF_YEARLY = 'half_yearly';
+
     public const TYPE_ANNUAL = 'annual';
+
     public const TYPE_PRACTICAL = 'practical';
+
     public const TYPE_ENTRANCE = 'entrance';
+
     public const TYPE_MOCK = 'mock';
+
     public const TYPE_OTHER = 'other';
 
     public const STATUS_DRAFT = 'draft';
+
     public const STATUS_PUBLISHED = 'published';
+
     public const STATUS_CLOSED = 'closed';
 
     protected $fillable = [
