@@ -24,12 +24,12 @@
 
             <div class="col-lg-4 col-md-6 mb-4">
 
-                <a href="{{ asset('assets/website/images/'.$image['image']) }}"
+                <a href="{{ asset($image['image']) }}"
                     target="_blank"
                     class="gallery-item">
 
                     <img
-                        src="{{ asset('assets/website/images/'.$image['image']) }}"
+                        src="{{ asset($image['image']) }}"
                         class="img-fluid rounded"
                         alt="Gallery">
 

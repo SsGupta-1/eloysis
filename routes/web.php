@@ -9,9 +9,14 @@ use App\Http\Controllers\Admin\ClassSectionController;
 use App\Http\Controllers\Admin\ClassSubjectController;
 use App\Http\Controllers\Admin\ClassTimetableController;
 use App\Http\Controllers\Admin\CommonController;
+use App\Http\Controllers\Admin\ContactMessageController;
 use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Admin\EventController as AdminEventController;
 use App\Http\Controllers\Admin\ExamController;
+use App\Http\Controllers\Admin\GalleryController;
+use App\Http\Controllers\Admin\HomeSliderController;
 use App\Http\Controllers\Admin\LogController;
+use App\Http\Controllers\Admin\NewsController as AdminNewsController;
 use App\Http\Controllers\Admin\PeriodsController;
 use App\Http\Controllers\Admin\QuestionController;
 use App\Http\Controllers\Admin\QuestionPaperController;
@@ -25,6 +30,7 @@ use App\Http\Controllers\Admin\SubjectController;
 use App\Http\Controllers\Admin\TeacherAttendanceController;
 use App\Http\Controllers\Admin\TeacherController;
 use App\Http\Controllers\Admin\TeacherSubjectController;
+use App\Http\Controllers\Admin\WebsiteSettingController;
 use Illuminate\Support\Facades\Route;
 
 require __DIR__.'/website.php';
@@ -50,6 +56,36 @@ Route::prefix('admin')->name('admin.')->middleware('activity.log')->group(functi
         Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
         Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+
+        // ************Website Management Routes*******************
+        // Home Sliders
+        Route::get('home-slider/list', [HomeSliderController::class, 'list'])->name('home-slider.list');
+        Route::patch('home-slider/{home_slider}/status', [HomeSliderController::class, 'changeStatus'])->name('home-slider.status');
+        Route::resource('home-slider', HomeSliderController::class);
+
+        // News
+        Route::get('news/list', [AdminNewsController::class, 'list'])->name('news.list');
+        Route::patch('news/{news}/status', [AdminNewsController::class, 'changeStatus'])->name('news.status');
+        Route::resource('news', AdminNewsController::class);
+
+        // Events
+        Route::get('events/list', [AdminEventController::class, 'list'])->name('events.list');
+        Route::patch('events/{event}/status', [AdminEventController::class, 'changeStatus'])->name('events.status');
+        Route::resource('events', AdminEventController::class);
+
+        // Gallery
+        Route::get('gallery/list', [GalleryController::class, 'list'])->name('gallery.list');
+        Route::patch('gallery/{gallery}/status', [GalleryController::class, 'changeStatus'])->name('gallery.status');
+        Route::resource('gallery', GalleryController::class);
+
+        // Contact Messages
+        Route::get('contact-messages/list', [ContactMessageController::class, 'list'])->name('contact-messages.list');
+        Route::patch('contact-messages/{contact_message}/status', [ContactMessageController::class, 'updateStatus'])->name('contact-messages.status');
+        Route::resource('contact-messages', ContactMessageController::class)->only(['index', 'show', 'destroy']);
+
+        // Website Settings
+        Route::get('website-settings', [WebsiteSettingController::class, 'index'])->name('website-settings.index');
+        Route::post('website-settings', [WebsiteSettingController::class, 'update'])->name('website-settings.update');
 
         // ************Roles route*******************
         Route::prefix('roles')

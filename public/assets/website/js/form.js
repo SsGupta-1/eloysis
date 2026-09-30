@@ -123,7 +123,18 @@ const Form = {
                     |--------------------------------------------------------------------------
                     */
 
-                    alert(xhr.responseJSON?.message ?? 'Something went wrong. Please try again.');
+                    const errorMsg = xhr.responseJSON?.message ?? 'Something went wrong. Please try again.';
+                    if (typeof Swal !== 'undefined') {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: errorMsg
+                        });
+                    } else if (typeof Toast !== 'undefined' && typeof Toast.error === 'function') {
+                        Toast.error(errorMsg);
+                    } else {
+                        alert(errorMsg);
+                    }
 
                 },
 
@@ -259,7 +270,18 @@ const Form = {
                     |--------------------------------------------------------------------------
                     */
 
-                    alert(xhr.responseJSON?.message ?? 'Something went wrong. Please try again.');
+                    const errorMsg = xhr.responseJSON?.message ?? 'Something went wrong. Please try again.';
+                    if (typeof Swal !== 'undefined') {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: errorMsg
+                        });
+                    } else if (typeof Toast !== 'undefined' && typeof Toast.error === 'function') {
+                        Toast.error(errorMsg);
+                    } else {
+                        alert(errorMsg);
+                    }
 
                 },
 

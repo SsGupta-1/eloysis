@@ -2,6 +2,7 @@
 
 namespace App\Services\Website;
 
+use App\Models\AcademicSession;
 use App\Models\AdmissionEnquiry;
 use Illuminate\Support\Facades\DB;
 
@@ -79,11 +80,15 @@ class AdmissionService
             |--------------------------------------------------------------------------
             */
 
+            $sessionId = array_key_first(academic_session_options(1))
+                ?? AcademicSession::where('is_current', 1)->value('id')
+                ?? AcademicSession::latest('id')->value('id');
+
             return AdmissionEnquiry::create([
 
                 'application_no' => $enquiryNo,
 
-                'academic_session_id' => array_key_first(academic_session_options(1)) ?? null,
+                'academic_session_id' => $sessionId,
 
                 'student_name' => $data['student_name'],
                 'student_email' => $data['student_email'],

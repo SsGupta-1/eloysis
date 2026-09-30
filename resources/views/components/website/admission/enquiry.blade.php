@@ -29,19 +29,23 @@
 
                         <form
                             id="admissionEnquiryForm"
-                            action="{{ route('admission') }}"
+                            action="{{ route('admission.store') }}"
                             method="POST"
                         >
 
                             @csrf
 
 
-                            <div class="row g-3">
+                             <div
+                                id="admissionEnquiryFormContent"
+                                class="row g-3"
+                            >
 
+                                {{-- Student Name --}}
                                 <div class="col-md-6">
 
                                     <label class="form-label">
-                                        Student Name
+                                        Student Name <span class="text-danger">*</span>
                                     </label>
 
                                     <input
@@ -58,11 +62,136 @@
 
                                 </div>
 
+                                {{-- Student Email --}}
+                                <div class="col-md-6">
 
+                                    <label class="form-label">
+                                        Email <span class="text-danger">*</span>
+                                    </label>
+
+                                    <input
+                                        type="email"
+                                        name="student_email"
+                                        class="form-control"
+                                        placeholder="Email Address"
+                                    >
+
+                                    <div
+                                        class="invalid-feedback"
+                                        data-error="student_email"
+                                    ></div>
+
+                                </div>
+
+
+                                {{-- Student Phone --}}
+                                <div class="col-md-6">
+
+                                    <label class="form-label">
+                                        Phone
+                                        <span class="text-danger">*</span>
+                                    </label>
+
+                                    <input
+                                        type="text"
+                                        name="student_phone"
+                                        class="form-control"
+                                        placeholder="Phone Number"
+                                    >
+
+                                    <div
+                                        class="invalid-feedback"
+                                        data-error="student_phone"
+                                    ></div>
+
+                                </div>
+
+                                 {{-- Alternate Phone --}}
+                                <div class="col-md-6">
+
+                                    <label class="form-label">
+                                        Alternate Phone
+                                    </label>
+
+                                    <input
+                                        type="text"
+                                        name="alternate_phone"
+                                        class="form-control"
+                                        placeholder="Alternate Phone Number"
+                                    >
+
+                                    <div
+                                        class="invalid-feedback"
+                                        data-error="student_phone"
+                                    ></div>
+
+                                </div>
+
+
+                                {{-- Date of Birth --}}
+                                <div class="col-md-6">
+
+                                    <label class="form-label">
+                                        Date of Birth <span class="text-danger">*</span>
+                                    </label>
+
+                                    <input
+                                        type="date"
+                                        name="date_of_birth"
+                                        class="form-control"
+                                    >
+
+                                    <div
+                                        class="invalid-feedback"
+                                        data-error="date_of_birth"
+                                    ></div>
+
+                                </div>
+
+
+                                {{-- Gender --}}
+                                <div class="col-md-6">
+
+                                    <label class="form-label">
+                                        Gender <span class="text-danger">*</span>
+                                    </label>
+
+                                    <select
+                                        name="gender"
+                                        class="form-select"
+                                    >
+
+                                        <option value="">
+                                            Select Gender
+                                        </option>
+
+                                        <option value="male">
+                                            Male
+                                        </option>
+
+                                        <option value="female">
+                                            Female
+                                        </option>
+
+                                        <option value="other">
+                                            Other
+                                        </option>
+
+                                    </select>
+
+                                    <div
+                                        class="invalid-feedback"
+                                        data-error="gender"
+                                    ></div>
+
+                                </div>
+
+                                {{-- Parent Name --}}
                                 <div class="col-md-6">
 
                                     <label class="form-label">
                                         Parent / Guardian Name
+                                        <span class="text-danger">*</span>
                                     </label>
 
                                     <input
@@ -78,54 +207,34 @@
                                     ></div>
 
                                 </div>
-
-
+                                {{-- Parent Phone --}}
                                 <div class="col-md-6">
 
                                     <label class="form-label">
-                                        Email
-                                    </label>
-
-                                    <input
-                                        type="email"
-                                        name="email"
-                                        class="form-control"
-                                        placeholder="Email Address"
-                                    >
-
-                                    <div
-                                        class="invalid-feedback"
-                                        data-error="email"
-                                    ></div>
-
-                                </div>
-
-
-                                <div class="col-md-6">
-
-                                    <label class="form-label">
-                                        Phone
+                                        Parent / Guardian Phone
+                                        <span class="text-danger">*</span>
                                     </label>
 
                                     <input
                                         type="text"
-                                        name="phone"
+                                        name="parent_phone"
                                         class="form-control"
-                                        placeholder="Phone Number"
+                                        placeholder="Parent / Guardian Phone"
                                     >
 
                                     <div
                                         class="invalid-feedback"
-                                        data-error="phone"
+                                        data-error="parent_phone"
                                     ></div>
 
                                 </div>
 
 
+                                {{-- Applying For Class --}}
                                 <div class="col-md-12">
 
                                     <label class="form-label">
-                                        Applying For Class
+                                        Applying For Class <span class="text-danger">*</span>
                                     </label>
 
                                     <select
@@ -137,7 +246,19 @@
                                             Select Class
                                         </option>
 
-                                        {{-- Classes --}}
+                                        @forelse (class_options() as $class_id => $class_name)
+
+                                            <option value="{{ $class_id }}">
+                                                {{ $class_name }}
+                                            </option>
+
+                                        @empty
+
+                                            <option value="">
+                                                No classes available
+                                            </option>
+
+                                        @endforelse
 
                                     </select>
 
@@ -149,6 +270,162 @@
                                 </div>
 
 
+                                {{-- How did you hear about us --}}
+                                <div class="col-md-12">
+
+                                    <label class="form-label">
+                                        How did you hear about us?
+                                    </label>
+
+                                    <select
+                                        name="source"
+                                        id="admissionSource"
+                                        class="form-select"
+                                    >
+
+                                        <option value="website">
+                                            Website
+                                        </option>
+
+                                        <option value="google">
+                                            Google
+                                        </option>
+
+                                        <option value="facebook">
+                                            Facebook
+                                        </option>
+
+                                        <option value="instagram">
+                                            Instagram
+                                        </option>
+
+                                        <option value="advertisement">
+                                            Advertisement
+                                        </option>
+
+                                        <option value="reference">
+                                            Reference
+                                        </option>
+
+                                        <option value="walk_in">
+                                            Walk-in
+                                        </option>
+
+                                        <option value="other">
+                                            Other
+                                        </option>
+
+                                    </select>
+
+                                    <div
+                                        class="invalid-feedback"
+                                        data-error="source"
+                                    ></div>
+
+                                </div>
+
+
+                                {{-- Reference Type --}}
+                                <div
+                                    class="col-md-6 d-none"
+                                    id="referenceTypeWrapper"
+                                >
+
+                                    <label class="form-label">
+                                        Reference Type
+                                    </label>
+
+                                    <select
+                                        name="reference_type"
+                                        id="referenceType"
+                                        class="form-select"
+                                    >
+
+                                        <option value="">
+                                            Select Reference Type
+                                        </option>
+
+                                        <option value="student">
+                                            Student
+                                        </option>
+
+                                        <option value="parent">
+                                            Parent
+                                        </option>
+
+                                        <option value="teacher">
+                                            Teacher
+                                        </option>
+
+                                        <option value="staff">
+                                            Staff
+                                        </option>
+
+                                        <option value="other">
+                                            Other
+                                        </option>
+
+                                    </select>
+
+                                    <div
+                                        class="invalid-feedback"
+                                        data-error="reference_type"
+                                    ></div>
+
+                                </div>
+
+
+                                {{-- Reference Name --}}
+                                <div
+                                    class="col-md-6 d-none"
+                                    id="referenceNameWrapper"
+                                >
+
+                                    <label class="form-label">
+                                        Reference Name
+                                    </label>
+
+                                    <input
+                                        type="text"
+                                        name="reference_name"
+                                        class="form-control"
+                                        placeholder="Reference Person Name"
+                                    >
+
+                                    <div
+                                        class="invalid-feedback"
+                                        data-error="reference_name"
+                                    ></div>
+
+                                </div>
+
+
+                                {{-- Reference Phone --}}
+                                <div
+                                    class="col-md-6 d-none"
+                                    id="referencePhoneWrapper"
+                                >
+
+                                    <label class="form-label">
+                                        Reference Phone
+                                    </label>
+
+                                    <input
+                                        type="text"
+                                        name="reference_phone"
+                                        class="form-control"
+                                        placeholder="Reference Phone Number"
+                                    >
+
+                                    <div
+                                        class="invalid-feedback"
+                                        data-error="reference_phone"
+                                    ></div>
+
+                                </div>
+
+
+                                {{-- Message --}}
                                 <div class="col-md-12">
 
                                     <label class="form-label">
@@ -170,6 +447,7 @@
                                 </div>
 
 
+                                {{-- Submit --}}
                                 <div class="col-md-12">
 
                                     <button
@@ -184,6 +462,7 @@
 
                                         <span
                                             class="spinner-border spinner-border-sm d-none"
+                                            role="status"
                                         ></span>
 
                                     </button>

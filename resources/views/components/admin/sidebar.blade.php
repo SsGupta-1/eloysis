@@ -57,31 +57,37 @@
                 :active="menu_active('website')">
 
                 <x-admin.menu-item
-                    route="#"
+                    route="admin.website-settings.index"
+                    icon="bi bi-gear"
+                    label="Website Settings"
+                />
+
+                <x-admin.menu-item
+                    route="admin.home-slider.index"
                     icon="bi bi-images"
                     label="Home Slider"
                 />
 
                 <x-admin.menu-item
-                    route="#"
+                    route="admin.news.index"
                     icon="bi bi-newspaper"
-                    label="News"
+                    label="News & Notices"
                 />
 
                 <x-admin.menu-item
-                    route="#"
+                    route="admin.events.index"
                     icon="bi bi-calendar-event"
                     label="Events"
                 />
 
                 <x-admin.menu-item
-                    route="#"
+                    route="admin.gallery.index"
                     icon="bi bi-image"
                     label="Gallery"
                 />
 
                 <x-admin.menu-item
-                    route="#"
+                    route="admin.contact-messages.index"
                     icon="bi bi-envelope"
                     label="Contact Messages"
                 />
@@ -253,6 +259,58 @@
                     active="admin.results.*"
                     icon="bi bi-award"
                     label="Results"
+                />
+
+            </x-admin.menu-group>
+
+
+            {{-- Website Management --}}
+            <x-admin.menu-group
+                id="websiteMenu"
+                title="Website Management"
+                icon="bi bi-globe"
+                :active="menu_active('website')">
+
+                <x-admin.menu-item
+                    route="admin.home-slider.index"
+                    active="admin.home-slider.*"
+                    icon="bi bi-images"
+                    label="Home Sliders"
+                />
+
+                <x-admin.menu-item
+                    route="admin.news.index"
+                    active="admin.news.*"
+                    icon="bi bi-newspaper"
+                    label="News & Notices"
+                />
+
+                <x-admin.menu-item
+                    route="admin.events.index"
+                    active="admin.events.*"
+                    icon="bi bi-calendar-event"
+                    label="Events"
+                />
+
+                <x-admin.menu-item
+                    route="admin.gallery.index"
+                    active="admin.gallery.*"
+                    icon="bi bi-camera"
+                    label="Photo Gallery"
+                />
+
+                <x-admin.menu-item
+                    route="admin.contact-messages.index"
+                    active="admin.contact-messages.*"
+                    icon="bi bi-envelope"
+                    label="Contact Messages"
+                />
+
+                <x-admin.menu-item
+                    route="admin.website-settings.index"
+                    active="admin.website-settings.*"
+                    icon="bi bi-sliders"
+                    label="Website Settings"
                 />
 
             </x-admin.menu-group>

@@ -22,7 +22,7 @@
 
                 <div class="news-card">
 
-                    <img src="{{ asset('assets/website/images/'.$news['image']) }}"
+                    <img src="{{ $news['image'] }}"
                         alt="{{ $news['title'] }}">
 
                     <div class="news-body">

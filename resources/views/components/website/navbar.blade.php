@@ -24,68 +24,33 @@
             <ul class="navbar-nav ms-auto">
 
                 <li class="nav-item">
-
-                    <a class="nav-link"
-                        href="#about">
-
+                    <a class="nav-link {{ Route::is('about') ? 'active' : '' }}" href="{{ route('about') }}">
                         About
-
                     </a>
-
                 </li>
 
-                <li>
-
-                    <a class="nav-link"
-                        href="#news">
-
+                <li class="nav-item">
+                    <a class="nav-link {{ Route::is('news') ? 'active' : '' }}" href="{{ route('news') }}">
                         News
-
                     </a>
-
                 </li>
 
-                <li>
-
-                    <a class="nav-link"
-                        href="#events">
-
+                <li class="nav-item">
+                    <a class="nav-link {{ Route::is('events') ? 'active' : '' }}" href="{{ route('events') }}">
                         Events
-
                     </a>
-
                 </li>
 
-                <li>
-
-                    <a class="nav-link"
-                        href="#contact">
-
+                <li class="nav-item">
+                    <a class="nav-link {{ Route::is('contact') ? 'active' : '' }}" href="{{ route('contact') }}">
                         Contact
-
                     </a>
-
                 </li>
 
-                <!-- <li>
-
-                    <a class="nav-link"
-                        href="#">
-
-                        Admission   
-
+                <li class="nav-item">
+                    <a class="nav-link {{ Route::is('admission') ? 'active' : '' }}" href="{{ route('admission') }}">
+                        Admission
                     </a>
-
-                </li> -->
-                <li>
-
-                    <a class="nav-link"
-                        href="#admission-enquiry">
-
-                        Admission   
-
-                    </a>
-
                 </li>
 
             </ul>

@@ -18,7 +18,6 @@ class ContactController extends BaseController
     public function store(ContactRequest $request)
     {
         try {
-            // dd($request->validated());
             $this->contactService->store(
                 $request->validated()
             );
@@ -28,11 +27,13 @@ class ContactController extends BaseController
             );
 
         } catch (\Throwable $e) {
+            \Log::error('Error storing contact message: '.$e->getMessage(), [
+                'exception' => $e,
+            ]);
 
             return $this->error(
-                'Unable to send message.'
+                'Unable to send message. Please try again.'
             );
-
         }
     }
 }

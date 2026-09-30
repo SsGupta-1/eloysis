@@ -7,7 +7,7 @@
             <div class="col-lg-4 text-center mb-4">
 
                 <img
-                    src="{{ asset('assets/website/images/'.$pageData['principal']['image']) }}"
+                    src="{{ $pageData['principal']['image'] }}"
                     class="img-fluid rounded shadow principal-image"
                     alt="Principal">
 
@@ -34,7 +34,7 @@
                 </p>
 
                 <img
-                    src="{{ asset('assets/website/images/'.$pageData['principal']['signature']) }}"
+                    src="{{ $pageData['principal']['signature'] }}"
                     class="signature"
                     alt="Signature">
 

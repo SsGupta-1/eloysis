@@ -8,6 +8,7 @@ if (! function_exists('menu_active')) {
     {
         $menus = [
             'website' => [
+                'admin.website-settings.*',
                 'admin.home-slider.*',
                 'admin.news.*',
                 'admin.events.*',
