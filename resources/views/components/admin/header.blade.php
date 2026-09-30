@@ -2,6 +2,10 @@
 
     <div class="header-left">
 
+        <button class="sidebar-toggle me-2" id="sidebarToggle" type="button" aria-label="Toggle Sidebar">
+            <i class="bi bi-list fs-4"></i>
+        </button>
+
         <div class="header-brand">
 
             <a href="{{ route('admin.dashboard') }}" class="brand-link">
@@ -15,6 +19,7 @@
         </div>
 
     </div>
+
 
     <div class="header-right">
 

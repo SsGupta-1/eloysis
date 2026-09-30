@@ -1,33 +1,28 @@
 @extends('layouts.website.master')
 
-@section('title','Home')
+@section('title', 'Home')
 
 @section('content')
 
-@include('components.website.home.hero')
+@forelse($pageData['sections'] ?? [] as $section)
+    @php
+        $viewPath = "components.website.sections.{$section['type']}.{$section['layout']}";
+        $fallbackView = "components.website.sections.{$section['type']}.{$section['type']}_01";
+    @endphp
 
-@include('components.website.home.quick-links')
-
-@include('components.website.home.about')
-
-@include('components.website.home.features')
-
-@include('components.website.home.courses')
-
-@include('components.website.home.statistics')
-
-@include('components.website.home.news')
-
-@include('components.website.home.events')
-
-@include('components.website.home.principal')
-
-@include('components.website.home.gallery')
-
-@include('components.website.home.testimonials')
-
-@include('components.website.home.contact')
-
-@include('components.website.home.admission-enquiry')
+    @if(view()->exists($viewPath))
+        @include($viewPath, ['section' => $section, 'pageData' => $pageData])
+    @elseif(view()->exists($fallbackView))
+        @include($fallbackView, ['section' => $section, 'pageData' => $pageData])
+    @endif
+@empty
+    <div class="container py-5 text-center">
+        <div class="p-5 bg-light rounded-4">
+            <i class="bi bi-info-circle text-primary fs-1 mb-3"></i>
+            <h3 class="fw-bold">Welcome to {{ $pageData['institute']['name'] ?? 'Our School' }}</h3>
+            <p class="text-muted">Homepage sections are currently being configured by the administration.</p>
+        </div>
+    </div>
+@endforelse
 
 @endsection

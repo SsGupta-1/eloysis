@@ -26,7 +26,6 @@ class HomeSlider extends Model
         'image_url',
     ];
 
-
     public function getImageUrlAttribute(): string
     {
         if (empty($this->image)) {

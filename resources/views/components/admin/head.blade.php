@@ -45,7 +45,13 @@
 
     {{-- Admin CSS --}}
     <link rel="stylesheet"
-        href="{{ asset('assets/admin/css/app.css') }}">
+        href="{{ asset('assets/admin/css/app.css') }}?v={{ time() }}">
+
+    <link rel="stylesheet"
+        href="{{ asset('assets/admin/css/sidebar.css') }}?v={{ time() }}">
+
+    <link rel="stylesheet"
+        href="{{ asset('assets/admin/css/responsive.css') }}?v={{ time() }}">
 
     <script>
 
@@ -67,9 +73,10 @@
     
     {{-- Theme CSS --}}
     <link rel="stylesheet"
-        href="{{ asset('assets/admin/css/theme.css') }}">
+        href="{{ asset('assets/admin/css/theme.css') }}?v={{ time() }}">
 
     {{-- Page CSS --}}
     @stack('styles')
+
 
 </head>

@@ -3,10 +3,13 @@
 namespace App\Models;
 
 use App\Helpers\UploadHelper;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Testimonial extends Model
 {
+    use HasFactory;
+
     protected $fillable = [
         'name',
         'role',
@@ -26,6 +29,11 @@ class Testimonial extends Model
     protected $appends = [
         'image_url',
     ];
+
+    public function scopeActive($query)
+    {
+        return $query->where('status', true)->orderBy('sort_order', 'asc')->latest('id');
+    }
 
     public function getImageUrlAttribute(): string
     {

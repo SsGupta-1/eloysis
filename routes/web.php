@@ -4,6 +4,7 @@ use App\Http\Controllers\Admin\AcademicClassController;
 use App\Http\Controllers\Admin\AcademicSectionController;
 use App\Http\Controllers\Admin\AcademicSessionController;
 use App\Http\Controllers\Admin\AdmissionEnquiryController;
+use App\Http\Controllers\Admin\AnnouncementController;
 use App\Http\Controllers\Admin\AuthController;
 use App\Http\Controllers\Admin\ClassSectionController;
 use App\Http\Controllers\Admin\ClassSubjectController;
@@ -14,12 +15,15 @@ use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\EventController as AdminEventController;
 use App\Http\Controllers\Admin\ExamController;
 use App\Http\Controllers\Admin\GalleryController;
+use App\Http\Controllers\Admin\HomePageBuilderController;
 use App\Http\Controllers\Admin\HomeSliderController;
+use App\Http\Controllers\Admin\ImportantMessageController;
 use App\Http\Controllers\Admin\LogController;
 use App\Http\Controllers\Admin\NewsController as AdminNewsController;
 use App\Http\Controllers\Admin\PeriodsController;
 use App\Http\Controllers\Admin\QuestionController;
 use App\Http\Controllers\Admin\QuestionPaperController;
+use App\Http\Controllers\Admin\QuickLinkController;
 use App\Http\Controllers\Admin\ResultController;
 use App\Http\Controllers\Admin\RoleController;
 use App\Http\Controllers\Admin\StaffController;
@@ -30,6 +34,7 @@ use App\Http\Controllers\Admin\SubjectController;
 use App\Http\Controllers\Admin\TeacherAttendanceController;
 use App\Http\Controllers\Admin\TeacherController;
 use App\Http\Controllers\Admin\TeacherSubjectController;
+use App\Http\Controllers\Admin\TestimonialController;
 use App\Http\Controllers\Admin\WebsiteSettingController;
 use Illuminate\Support\Facades\Route;
 
@@ -58,10 +63,60 @@ Route::prefix('admin')->name('admin.')->middleware('activity.log')->group(functi
         Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
         // ************Website Management Routes*******************
+        // Home Page Builder
+        Route::get('homepage-builder', [HomePageBuilderController::class, 'index'])->name('homepage-builder.index');
+        Route::post('homepage-builder/orders', [HomePageBuilderController::class, 'updateOrders'])->name('homepage-builder.orders');
+        Route::match(['patch', 'post'], 'homepage-builder/sections/{section}/status', [HomePageBuilderController::class, 'toggleStatus'])->name('homepage-builder.status');
+        Route::match(['patch', 'post'], 'homepage-builder/sections/{section}/layout', [HomePageBuilderController::class, 'updateLayout'])->name('homepage-builder.layout');
+        Route::match(['put', 'post'], 'homepage-builder/sections/{section}', [HomePageBuilderController::class, 'updateSection'])->name('homepage-builder.update');
+        Route::post('homepage-builder/custom-section', [HomePageBuilderController::class, 'storeCustomSection'])->name('homepage-builder.custom-section.store');
+        Route::match(['delete', 'post'], 'homepage-builder/custom-section/{section}', [HomePageBuilderController::class, 'destroyCustomSection'])->name('homepage-builder.custom-section.destroy');
+        Route::get('homepage-builder/preview', [HomePageBuilderController::class, 'preview'])->name('homepage-builder.preview');
+
+        // Announcements
+        Route::post('homepage-builder/announcements', [HomePageBuilderController::class, 'storeAnnouncement'])->name('homepage-builder.announcements.store');
+        Route::match(['put', 'post'], 'homepage-builder/announcements/{announcement}', [HomePageBuilderController::class, 'updateAnnouncement'])->name('homepage-builder.announcements.update');
+        Route::match(['delete', 'post'], 'homepage-builder/announcements/{announcement}', [HomePageBuilderController::class, 'destroyAnnouncement'])->name('homepage-builder.announcements.destroy');
+
+        // Important Messages
+        Route::post('homepage-builder/messages', [HomePageBuilderController::class, 'storeImportantMessage'])->name('homepage-builder.messages.store');
+        Route::match(['put', 'post'], 'homepage-builder/messages/{message}', [HomePageBuilderController::class, 'updateImportantMessage'])->name('homepage-builder.messages.update');
+        Route::match(['delete', 'post'], 'homepage-builder/messages/{message}', [HomePageBuilderController::class, 'destroyImportantMessage'])->name('homepage-builder.messages.destroy');
+
+        // Testimonials
+        Route::post('homepage-builder/testimonials', [HomePageBuilderController::class, 'storeTestimonial'])->name('homepage-builder.testimonials.store');
+        Route::match(['put', 'post'], 'homepage-builder/testimonials/{testimonial}', [HomePageBuilderController::class, 'updateTestimonial'])->name('homepage-builder.testimonials.update');
+        Route::match(['delete', 'post'], 'homepage-builder/testimonials/{testimonial}', [HomePageBuilderController::class, 'destroyTestimonial'])->name('homepage-builder.testimonials.destroy');
+
+        // Quick Links
+        Route::post('homepage-builder/quick-links', [HomePageBuilderController::class, 'storeQuickLink'])->name('homepage-builder.quick-links.store');
+        Route::match(['put', 'post'], 'homepage-builder/quick-links/{quick_link}', [HomePageBuilderController::class, 'updateQuickLink'])->name('homepage-builder.quick-links.update');
+        Route::match(['delete', 'post'], 'homepage-builder/quick-links/{quick_link}', [HomePageBuilderController::class, 'destroyQuickLink'])->name('homepage-builder.quick-links.destroy');
+
         // Home Sliders
         Route::get('home-slider/list', [HomeSliderController::class, 'list'])->name('home-slider.list');
         Route::patch('home-slider/{home_slider}/status', [HomeSliderController::class, 'changeStatus'])->name('home-slider.status');
         Route::resource('home-slider', HomeSliderController::class);
+
+        // Important Messages
+        Route::get('important-messages/list', [ImportantMessageController::class, 'list'])->name('important-messages.list');
+        Route::patch('important-messages/{important_message}/status', [ImportantMessageController::class, 'changeStatus'])->name('important-messages.status');
+        Route::resource('important-messages', ImportantMessageController::class);
+
+        // Announcements
+        Route::get('announcements/list', [AnnouncementController::class, 'list'])->name('announcements.list');
+        Route::patch('announcements/{announcement}/status', [AnnouncementController::class, 'changeStatus'])->name('announcements.status');
+        Route::resource('announcements', AnnouncementController::class);
+
+        // Quick Links
+        Route::get('quick-links/list', [QuickLinkController::class, 'list'])->name('quick-links.list');
+        Route::patch('quick-links/{quick_link}/status', [QuickLinkController::class, 'changeStatus'])->name('quick-links.status');
+        Route::resource('quick-links', QuickLinkController::class);
+
+        // Testimonials
+        Route::get('testimonials/list', [TestimonialController::class, 'list'])->name('testimonials.list');
+        Route::patch('testimonials/{testimonial}/status', [TestimonialController::class, 'changeStatus'])->name('testimonials.status');
+        Route::resource('testimonials', TestimonialController::class);
 
         // News
         Route::get('news/list', [AdminNewsController::class, 'list'])->name('news.list');

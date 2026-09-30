@@ -8,12 +8,17 @@ if (! function_exists('menu_active')) {
     {
         $menus = [
             'website' => [
-                'admin.website-settings.*',
+                'admin.homepage-builder.*',
                 'admin.home-slider.*',
+                'admin.important-messages.*',
+                'admin.announcements.*',
+                'admin.quick-links.*',
+                'admin.testimonials.*',
                 'admin.news.*',
                 'admin.events.*',
                 'admin.gallery.*',
                 'admin.contact-messages.*',
+                'admin.website-settings.*',
             ],
 
             'academic' => [

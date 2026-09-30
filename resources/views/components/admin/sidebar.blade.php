@@ -49,7 +49,7 @@
             />
 
 
-            {{-- Website --}}
+            <!-- {{-- Website --}}
             <x-admin.menu-group
                 id="websiteMenu"
                 title="Website Management"
@@ -92,7 +92,7 @@
                     label="Contact Messages"
                 />
 
-            </x-admin.menu-group>
+            </x-admin.menu-group> -->
 
 
             {{-- Academic --}}
@@ -272,10 +272,45 @@
                 :active="menu_active('website')">
 
                 <x-admin.menu-item
+                    route="admin.homepage-builder.index"
+                    active="admin.homepage-builder.*"
+                    icon="bi bi-layout-text-window-reverse"
+                    label="Home Page Builder"
+                />
+
+                <x-admin.menu-item
                     route="admin.home-slider.index"
                     active="admin.home-slider.*"
                     icon="bi bi-images"
                     label="Home Sliders"
+                />
+
+                <x-admin.menu-item
+                    route="admin.important-messages.index"
+                    active="admin.important-messages.*"
+                    icon="bi bi-exclamation-octagon"
+                    label="Important Messages"
+                />
+
+                <x-admin.menu-item
+                    route="admin.announcements.index"
+                    active="admin.announcements.*"
+                    icon="bi bi-megaphone"
+                    label="Announcements"
+                />
+
+                <x-admin.menu-item
+                    route="admin.quick-links.index"
+                    active="admin.quick-links.*"
+                    icon="bi bi-link-45deg"
+                    label="Quick Links"
+                />
+
+                <x-admin.menu-item
+                    route="admin.testimonials.index"
+                    active="admin.testimonials.*"
+                    icon="bi bi-chat-quote"
+                    label="Testimonials"
                 />
 
                 <x-admin.menu-item
@@ -314,7 +349,6 @@
                 />
 
             </x-admin.menu-group>
-
 
             {{-- Administration --}}
             <li class="menu-title">

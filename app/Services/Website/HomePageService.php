@@ -3,21 +3,25 @@
 namespace App\Services\Website;
 
 use App\Models\AcademicClass;
+use App\Models\Announcement;
 use App\Models\Event;
 use App\Models\Gallery;
+use App\Models\HomePageSection;
 use App\Models\HomeSlider;
+use App\Models\ImportantMessage;
 use App\Models\News;
+use App\Models\QuickLink;
 use App\Models\Testimonial;
 use App\Models\WebsiteSetting;
 
 class HomePageService
 {
     /**
-     * Get Home Page Data
+     * Get Complete Dynamic Home Page Data including ordered sections.
      */
     public function getPageData(): array
     {
-        return [
+        $baseData = [
             'institute' => $this->getInstitute(),
             'sliders' => $this->getSliders(),
             'quick_links' => $this->getQuickLinks(),
@@ -32,7 +36,178 @@ class HomePageService
             'footer' => $this->getFooter(),
             'testimonials' => $this->getTestimonials(),
             'contact' => $this->getContact(),
+            'important_messages' => $this->getImportantMessages(),
+            'announcements' => $this->getAnnouncements(),
         ];
+
+        $baseData['sections'] = $this->getOrderedSections($baseData);
+
+        // dd($baseData);
+        return $baseData;
+    }
+
+    /**
+     * Get dynamic ordered homepage sections.
+     */
+    public function getOrderedSections(array $pageData): array
+    {
+        $sections = HomePageSection::enabled()->get();
+
+        // If no sections in DB, fallback to default order
+        if ($sections->isEmpty()) {
+            return $this->getDefaultSectionsFallback($pageData);
+        }
+
+        return $sections->map(function ($section) use ($pageData) {
+            $layoutKey = HomePageLayoutRegistry::resolveLayout($section->section_type, $section->layout_key);
+
+            return [
+                'id' => $section->id,
+                'key' => $section->section_key,
+                'type' => $section->section_type,
+                'title' => $section->title,
+                'subtitle' => $section->subtitle,
+                'layout' => $layoutKey,
+                'custom_class' => $section->custom_class,
+                'settings' => $section->settings ?? [],
+                'data' => $this->resolveSectionData($section->section_type, $section->settings ?? [], $pageData),
+            ];
+        })->toArray();
+    }
+
+    /**
+     * Resolve section-specific data.
+     */
+    protected function resolveSectionData(string $type, array $settings, array $pageData): mixed
+    {
+        switch ($type) {
+            case 'hero_slider':
+                return $pageData['sliders'];
+
+            case 'important_message':
+                return $pageData['important_messages'];
+
+            case 'announcement':
+                $limit = (int) ($settings['limit'] ?? 5);
+
+                return array_slice($pageData['announcements'], 0, $limit);
+
+            case 'events':
+                $limit = (int) ($settings['limit'] ?? 3);
+
+                return array_slice($pageData['events'], 0, $limit);
+
+            case 'gallery':
+                $limit = (int) ($settings['limit'] ?? 6);
+                $category = $settings['category'] ?? 'all';
+                $gallery = $pageData['gallery'];
+
+                if ($category !== 'all') {
+                    $gallery = array_values(array_filter($gallery, fn ($item) => strtolower($item['category']) === strtolower($category)));
+                }
+
+                return array_slice($gallery, 0, $limit);
+
+            case 'news':
+                $limit = (int) ($settings['limit'] ?? 3);
+
+                return array_slice($pageData['news'], 0, $limit);
+
+            case 'about':
+                return $pageData['about'];
+
+            case 'features':
+                return $pageData['features'];
+
+            case 'courses':
+                return $pageData['classes'];
+
+            case 'statistics':
+                return $pageData['statistics'];
+
+            case 'principal':
+                return $pageData['principal'];
+
+            case 'testimonials':
+                return $pageData['testimonials'];
+
+            case 'quick_links':
+                return $pageData['quick_links'];
+
+            case 'contact':
+                return $pageData['contact'];
+
+            case 'admission_enquiry':
+                return [];
+
+            case 'custom_content':
+                return [
+                    'content' => $settings['content'] ?? '',
+                    'image' => ! empty($settings['image']) ? asset('storage/'.$settings['image']) : null,
+                    'bg_image' => ! empty($settings['bg_image']) ? asset('storage/'.$settings['bg_image']) : null,
+                    'bg_color' => $settings['bg_color'] ?? '#ffffff',
+                    'text_color' => $settings['text_color'] ?? '#333333',
+                    'button_text' => $settings['button_text'] ?? null,
+                    'button_url' => $settings['button_url'] ?? null,
+                    'features' => $settings['features'] ?? [],
+                ];
+
+            default:
+                return [];
+        }
+    }
+
+    /**
+     * Fallback if no sections table configured yet.
+     */
+    protected function getDefaultSectionsFallback(array $pageData): array
+    {
+        $types = [
+            'hero_slider', 'important_message', 'announcement', 'quick_links',
+            'about', 'features', 'courses', 'statistics', 'news',
+            'events', 'principal', 'gallery', 'testimonials', 'contact', 'admission_enquiry',
+        ];
+
+        return array_map(fn ($t) => [
+            'id' => 0,
+            'key' => $t,
+            'type' => $t,
+            'title' => ucfirst(str_replace('_', ' ', $t)),
+            'subtitle' => null,
+            'layout' => $t.'_01',
+            'custom_class' => null,
+            'settings' => [],
+            'data' => $this->resolveSectionData($t, [], $pageData),
+        ], $types);
+    }
+
+    public function getImportantMessages(): array
+    {
+        $messages = ImportantMessage::active()->get();
+
+        return $messages->map(fn ($msg) => [
+            'id' => $msg->id,
+            'title' => $msg->title,
+            'message' => $msg->message,
+            'type' => $msg->type,
+            'action_text' => $msg->action_text,
+            'action_url' => $msg->action_url,
+        ])->toArray();
+    }
+
+    public function getAnnouncements(): array
+    {
+        $announcements = Announcement::active()->get();
+
+        return $announcements->map(fn ($item) => [
+            'id' => $item->id,
+            'title' => $item->title,
+            'content' => $item->content,
+            'badge' => $item->badge ?? 'Announcement',
+            'link_url' => $item->link_url,
+            'link_text' => $item->link_text ?? 'Read More',
+            'date' => $item->created_at ? $item->created_at->format('d M Y') : date('d M Y'),
+        ])->toArray();
     }
 
     private function getInstitute(): array
@@ -53,6 +228,7 @@ class HomePageService
 
         if ($dbSliders->isNotEmpty()) {
             return $dbSliders->map(fn ($slider) => [
+                'id' => $slider->id,
                 'title' => $slider->title,
                 'subtitle' => $slider->subtitle,
                 'image' => $slider->image_url,
@@ -63,13 +239,15 @@ class HomePageService
 
         return [
             [
+                'id' => 1,
                 'title' => 'Welcome To ABC Public School',
                 'subtitle' => 'Empowering Students Through Quality Education',
                 'image' => asset('assets/website/images/slider/slider-1.png'),
                 'button_text' => 'Admission Open',
-                'button_url' => '#admission-enquiry',
+                'button_url' => route('admission'),
             ],
             [
+                'id' => 2,
                 'title' => 'Online Examination System',
                 'subtitle' => 'Smart, Secure and Digital Examination Platform',
                 'image' => asset('assets/website/images/slider/slider-2.png'),
@@ -81,6 +259,19 @@ class HomePageService
 
     private function getQuickLinks(): array
     {
+        $dbLinks = QuickLink::active()->get();
+
+        if ($dbLinks->isNotEmpty()) {
+            return $dbLinks->map(fn ($item) => [
+                'id' => $item->id,
+                'title' => $item->title,
+                'description' => $item->description ?? '',
+                'icon' => $item->icon ?? 'bi bi-mortarboard-fill',
+                'url' => $item->url ?? '#',
+                'color' => $item->color ?? 'primary',
+            ])->toArray();
+        }
+
         return [
             [
                 'title' => 'Admission Open',
@@ -159,7 +350,7 @@ class HomePageService
 
     private function getClasses(): array
     {
-        $dbClasses = AcademicClass::where('status', true)->orderBy('sort_order', 'asc')->get();
+        $dbClasses = AcademicClass::where('status', true)->orderBy('sort_order', 'asc')->limit(8)->get();
 
         if ($dbClasses->isNotEmpty()) {
             return $dbClasses->map(fn ($c) => [
@@ -255,38 +446,54 @@ class HomePageService
 
         if ($dbEvents->isNotEmpty()) {
             return $dbEvents->map(fn ($ev) => [
+                'id' => $ev->id,
                 'date' => $ev->event_date ? $ev->event_date->format('d') : '01',
                 'month' => $ev->event_date ? strtoupper($ev->event_date->format('M')) : 'JAN',
+                'full_date' => $ev->event_date ? $ev->event_date->format('d M Y') : date('d M Y'),
                 'title' => $ev->title,
                 'time' => $ev->event_time ?? '09:00 AM',
                 'location' => $ev->location ?? 'School Campus',
+                'description' => $ev->description ?? '',
+                'image' => $ev->image_url,
                 'url' => $ev->url ?? route('events'),
             ])->toArray();
         }
 
         return [
             [
+                'id' => 1,
                 'date' => '05',
                 'month' => 'JUL',
+                'full_date' => '05 Jul 2026',
                 'title' => 'Science Exhibition',
                 'time' => '10:00 AM',
                 'location' => 'School Campus',
+                'description' => 'Annual science and robotics project exhibition for all grades.',
+                'image' => asset('assets/website/images/slider/slider-1.png'),
                 'url' => route('events'),
             ],
             [
+                'id' => 2,
                 'date' => '15',
                 'month' => 'JUL',
+                'full_date' => '15 Jul 2026',
                 'title' => 'Parents Teacher Meeting',
                 'time' => '09:30 AM',
                 'location' => 'Conference Hall',
+                'description' => 'Interactive session between faculty and parents discussing student progress.',
+                'image' => asset('assets/website/images/slider/slider-2.png'),
                 'url' => route('events'),
             ],
             [
+                'id' => 3,
                 'date' => '25',
                 'month' => 'JUL',
+                'full_date' => '25 Jul 2026',
                 'title' => 'Annual Sports Competition',
                 'time' => '08:00 AM',
                 'location' => 'Play Ground',
+                'description' => 'Inter-house athletic tournaments, football, and cricket matches.',
+                'image' => asset('assets/website/images/slider/slider-1.png'),
                 'url' => route('events'),
             ],
         ];
@@ -315,6 +522,7 @@ class HomePageService
 
         if ($dbGalleries->isNotEmpty()) {
             return $dbGalleries->map(fn ($g) => [
+                'id' => $g->id,
                 'title' => $g->title,
                 'category' => $g->category,
                 'image' => $g->image_url,
@@ -322,12 +530,12 @@ class HomePageService
         }
 
         return [
-            ['image' => asset('assets/website/images/slider/slider-1.png'), 'title' => 'Campus', 'category' => 'Campus'],
-            ['image' => asset('assets/website/images/slider/slider-2.png'), 'title' => 'Computer Lab', 'category' => 'Academics'],
-            ['image' => asset('assets/website/images/slider/slider-1.png'), 'title' => 'Annual Function', 'category' => 'Events'],
-            ['image' => asset('assets/website/images/slider/slider-2.png'), 'title' => 'Playground', 'category' => 'Sports'],
-            ['image' => asset('assets/website/images/slider/slider-1.png'), 'title' => 'Science Exhibition', 'category' => 'Events'],
-            ['image' => asset('assets/website/images/slider/slider-2.png'), 'title' => 'Library', 'category' => 'Academics'],
+            ['id' => 1, 'image' => asset('assets/website/images/slider/slider-1.png'), 'title' => 'Campus Infrastructure', 'category' => 'Campus'],
+            ['id' => 2, 'image' => asset('assets/website/images/slider/slider-2.png'), 'title' => 'Computer Lab', 'category' => 'Academics'],
+            ['id' => 3, 'image' => asset('assets/website/images/slider/slider-1.png'), 'title' => 'Annual Function', 'category' => 'Events'],
+            ['id' => 4, 'image' => asset('assets/website/images/slider/slider-2.png'), 'title' => 'Playground', 'category' => 'Sports'],
+            ['id' => 5, 'image' => asset('assets/website/images/slider/slider-1.png'), 'title' => 'Science Exhibition', 'category' => 'Events'],
+            ['id' => 6, 'image' => asset('assets/website/images/slider/slider-2.png'), 'title' => 'Digital Library', 'category' => 'Academics'],
         ];
     }
 

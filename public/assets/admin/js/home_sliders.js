@@ -162,9 +162,14 @@ const HomeSlider = {
         });
     },
 
+    formatUrl(template, id) {
+        if (!template) return '';
+        return template.replace(':id', id).replace('%3Aid', id).replace('__ID__', id);
+    },
+
     edit(id) {
         Ajax.request({
-            url: SLIDER_EDIT_URL.replace(':id', id),
+            url: this.formatUrl(SLIDER_EDIT_URL, id),
             method: 'GET',
             success: (response) => {
                 const slider = response.data;
@@ -199,7 +204,7 @@ const HomeSlider = {
 
         Ajax.request({
             form: '#sliderForm',
-            url: SLIDER_UPDATE_URL.replace(':id', id),
+            url: this.formatUrl(SLIDER_UPDATE_URL, id),
             method: 'POST',
             data: formData,
             processData: false,
@@ -227,7 +232,7 @@ const HomeSlider = {
             formData.append('_method', 'DELETE');
 
             Ajax.request({
-                url: SLIDER_DELETE_URL.replace(':id', id),
+                url: this.formatUrl(SLIDER_DELETE_URL, id),
                 method: 'POST',
                 data: formData,
                 success: () => {
@@ -243,7 +248,7 @@ const HomeSlider = {
         formData.append('_method', 'PATCH');
 
         Ajax.request({
-            url: SLIDER_STATUS_URL.replace(':id', id),
+            url: this.formatUrl(SLIDER_STATUS_URL, id),
             method: 'POST',
             data: formData,
             success: () => {

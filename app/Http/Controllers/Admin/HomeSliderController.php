@@ -56,40 +56,40 @@ class HomeSliderController extends BaseController
         return $this->success('Home slider created successfully.');
     }
 
-    public function edit(HomeSlider $slider)
+    public function edit(HomeSlider $home_slider)
     {
         return $this->success('Slider fetched successfully.', [
-            'id' => $slider->id,
-            'title' => $slider->title,
-            'subtitle' => $slider->subtitle,
-            'button_text' => $slider->button_text,
-            'button_url' => $slider->button_url,
-            'sort_order' => $slider->sort_order,
-            'status' => $slider->status,
-            'image_url' => $slider->image_url,
+            'id' => $home_slider->id,
+            'title' => $home_slider->title,
+            'subtitle' => $home_slider->subtitle,
+            'button_text' => $home_slider->button_text,
+            'button_url' => $home_slider->button_url,
+            'sort_order' => $home_slider->sort_order,
+            'status' => $home_slider->status,
+            'image_url' => $home_slider->image_url,
         ]);
     }
 
-    public function update(HomeSliderRequest $request, HomeSlider $slider)
+    public function update(HomeSliderRequest $request, HomeSlider $home_slider)
     {
         $this->sliderService->update(
-            $slider->id,
+            $home_slider->id,
             $request->validated()
         );
 
         return $this->success('Home slider updated successfully.');
     }
 
-    public function destroy(HomeSlider $slider)
+    public function destroy(HomeSlider $home_slider)
     {
-        $this->sliderService->delete($slider->id);
+        $this->sliderService->delete($home_slider->id);
 
         return $this->success('Home slider deleted successfully.');
     }
 
-    public function changeStatus(HomeSlider $slider)
+    public function changeStatus(HomeSlider $home_slider)
     {
-        $this->sliderService->changeStatus($slider->id);
+        $this->sliderService->changeStatus($home_slider->id);
 
         return $this->success('Slider status updated successfully.');
     }

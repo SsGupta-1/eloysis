@@ -9,10 +9,10 @@
         title="Exam Management"
         subtitle="Schedule and conduct examinations, manage student enrollments, timetable schedules, and marks entry">
         <x-slot:actions>
-            <a href="{{ route('admin.question-papers.index') }}" class="btn btn-outline-primary me-2">
+            <a href="{{ route('admin.question-papers.index') }}" class="btn btn-outline-primary">
                 <i class="bi bi-file-earmark-text me-1"></i> Question Papers
             </a>
-            <a href="{{ route('admin.results.index') }}" class="btn btn-outline-success me-2">
+            <a href="{{ route('admin.results.index') }}" class="btn btn-outline-success">
                 <i class="bi bi-award me-1"></i> Results & Broadsheet
             </a>
             <a href="{{ route('admin.exams.create') }}" class="btn btn-primary">

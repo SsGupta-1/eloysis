@@ -16,9 +16,11 @@
 
             {{-- Sidebar --}}
             @include('components.admin.sidebar')
+            <div class="sidebar-backdrop" id="sidebarBackdrop"></div>
 
             {{-- Main Content --}}
             <div class="main-wrapper">
+
 
                 <main class="content-wrapper">
 
