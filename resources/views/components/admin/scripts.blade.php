@@ -26,7 +26,7 @@
 
     const BASE_URL = document
         .querySelector('meta[name="base-url"]')
-        .getAttribute('content');
+        ?.getAttribute('content') || '';
 
-    console.log(BASE_URL);
+    console.log('BASE_URL:', BASE_URL);
 </script>
