@@ -49,7 +49,7 @@ if ($scrollable) {
             {{-- Header --}}
             <div class="modal-header">
 
-                <h5 class="modal-title">
+                <h5 class="modal-title" id="{{ $id }}Title">
 
                     {{ $title }}
 

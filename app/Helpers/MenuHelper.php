@@ -48,6 +48,10 @@ if (! function_exists('menu_active')) {
                 'admin.results.*',
             ],
 
+            'fees' => [
+                'admin.fees.*',
+            ],
+
             'users' => [
                 'admin.roles.*',
                 'admin.staffs.*',

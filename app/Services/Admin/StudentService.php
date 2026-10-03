@@ -147,6 +147,8 @@ class StudentService
 
                 'section_id' => $data['section_id'],
 
+                'fee_discount_id' => $data['fee_discount_id'] ?? null,
+
                 'roll_number' => $rollNumber,
 
                 'admission_date' => $data['admission_date'] ?? now(),
@@ -545,6 +547,8 @@ class StudentService
                         'class_id' => $data['class_id'],
 
                         'section_id' => $data['section_id'],
+
+                        'fee_discount_id' => $data['fee_discount_id'] ?? null,
 
                         'roll_number' => $data['roll_number'],
 

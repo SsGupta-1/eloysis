@@ -45,4 +45,20 @@ class StudentProfile extends Model
             'stu_profile_id'
         );
     }
+
+    public function feeAllocations()
+    {
+        return $this->hasMany(
+            StudentFeeAllocation::class,
+            'stu_profile_id'
+        );
+    }
+
+    public function feePayments()
+    {
+        return $this->hasMany(
+            FeePayment::class,
+            'stu_profile_id'
+        );
+    }
 }

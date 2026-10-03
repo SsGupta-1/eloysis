@@ -272,88 +272,70 @@
 </div>
 
 {{-- Approval Modal --}}
-<div class="modal fade" id="approvalModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content border-0 shadow">
-            <div class="modal-header bg-primary text-white">
-                <h5 class="modal-title"><i class="bi bi-shield-check me-2"></i> Approval Workflow</h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body">
-                <form id="approvalForm">
-                    <div class="mb-3">
-                        <label class="form-label fw-semibold">Action Status</label>
-                        <select name="status" id="approval_status_select" class="form-select" required>
-                            <option value="pending_approval" {{ $paper->approval_status === 'pending_approval' ? 'selected' : '' }}>Submit for Approval</option>
-                            <option value="approved" {{ $paper->approval_status === 'approved' ? 'selected' : '' }}>Approve Question Paper</option>
-                            <option value="rejected" {{ $paper->approval_status === 'rejected' ? 'selected' : '' }}>Reject with Remarks</option>
-                            <option value="draft" {{ $paper->approval_status === 'draft' ? 'selected' : '' }}>Revert to Draft</option>
-                        </select>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label fw-semibold">Remarks / Review Notes</label>
-                        <textarea name="remarks" id="approval_remarks" class="form-control" rows="3" placeholder="Enter review remarks..."></textarea>
-                    </div>
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                <button type="button" class="btn btn-primary" id="btnSubmitApproval" data-id="{{ $paper->id }}">
-                    Submit Decision
-                </button>
-            </div>
+<x-ui.modal id="approvalModal" title="Approval Workflow">
+    <form id="approvalForm">
+        <div class="mb-3">
+            <label class="form-label fw-semibold">Action Status</label>
+            <select name="status" id="approval_status_select" class="form-select" required>
+                <option value="pending_approval" {{ $paper->approval_status === 'pending_approval' ? 'selected' : '' }}>Submit for Approval</option>
+                <option value="approved" {{ $paper->approval_status === 'approved' ? 'selected' : '' }}>Approve Question Paper</option>
+                <option value="rejected" {{ $paper->approval_status === 'rejected' ? 'selected' : '' }}>Reject with Remarks</option>
+                <option value="draft" {{ $paper->approval_status === 'draft' ? 'selected' : '' }}>Revert to Draft</option>
+            </select>
         </div>
-    </div>
-</div>
+        <div class="mb-3">
+            <label class="form-label fw-semibold">Remarks / Review Notes</label>
+            <textarea name="remarks" id="approval_remarks" class="form-control" rows="3" placeholder="Enter review remarks..."></textarea>
+        </div>
+    </form>
+
+    <x-slot:footer>
+        <x-ui.button variant="secondary" data-bs-dismiss="modal">Cancel</x-ui.button>
+        <x-ui.button variant="primary" id="btnSubmitApproval" data-id="{{ $paper->id }}">
+            Submit Decision
+        </x-ui.button>
+    </x-slot:footer>
+</x-ui.modal>
 
 {{-- Generate Sets Modal --}}
-<div class="modal fade" id="generateSetsModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content border-0 shadow">
-            <div class="modal-header bg-success text-white">
-                <h5 class="modal-title"><i class="bi bi-shuffle me-2"></i> Generate Multi-Sets (A, B, C, D)</h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+<x-ui.modal id="generateSetsModal" title="Generate Multi-Sets (A, B, C, D)">
+    <p class="small text-muted mb-3">
+        Select which sets to generate and whether to shuffle question ordering to prevent copying.
+    </p>
+    <div class="mb-3">
+        <label class="form-label fw-semibold">Select Sets to Generate:</label>
+        <div class="d-flex gap-3">
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" name="set_names[]" value="A" id="setA" checked>
+                <label class="form-check-label fw-bold" for="setA">Set A</label>
             </div>
-            <div class="modal-body">
-                <p class="small text-muted mb-3">
-                    Select which sets to generate and whether to shuffle question ordering to prevent copying.
-                </p>
-                <div class="mb-3">
-                    <label class="form-label fw-semibold">Select Sets to Generate:</label>
-                    <div class="d-flex gap-3">
-                        <div class="form-check">
-                            <input class="form-check-input" type="checkbox" name="set_names[]" value="A" id="setA" checked>
-                            <label class="form-check-label fw-bold" for="setA">Set A</label>
-                        </div>
-                        <div class="form-check">
-                            <input class="form-check-input" type="checkbox" name="set_names[]" value="B" id="setB" checked>
-                            <label class="form-check-label fw-bold" for="setB">Set B</label>
-                        </div>
-                        <div class="form-check">
-                            <input class="form-check-input" type="checkbox" name="set_names[]" value="C" id="setC" checked>
-                            <label class="form-check-label fw-bold" for="setC">Set C</label>
-                        </div>
-                        <div class="form-check">
-                            <input class="form-check-input" type="checkbox" name="set_names[]" value="D" id="setD" checked>
-                            <label class="form-check-label fw-bold" for="setD">Set D</label>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="form-check form-switch mb-3">
-                    <input class="form-check-input" type="checkbox" id="modalShuffleQuestions" checked>
-                    <label class="form-check-label" for="modalShuffleQuestions">Randomize Question Sequence per Set</label>
-                </div>
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" name="set_names[]" value="B" id="setB" checked>
+                <label class="form-check-label fw-bold" for="setB">Set B</label>
             </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                <button type="button" class="btn btn-success" id="btnExecuteGenerateSets" data-id="{{ $paper->id }}">
-                    Generate Sets Now
-                </button>
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" name="set_names[]" value="C" id="setC" checked>
+                <label class="form-check-label fw-bold" for="setC">Set C</label>
+            </div>
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" name="set_names[]" value="D" id="setD" checked>
+                <label class="form-check-label fw-bold" for="setD">Set D</label>
             </div>
         </div>
     </div>
-</div>
+
+    <div class="form-check form-switch mb-3">
+        <input class="form-check-input" type="checkbox" id="modalShuffleQuestions" checked>
+        <label class="form-check-label" for="modalShuffleQuestions">Randomize Question Sequence per Set</label>
+    </div>
+
+    <x-slot:footer>
+        <x-ui.button variant="secondary" data-bs-dismiss="modal">Cancel</x-ui.button>
+        <x-ui.button variant="success" id="btnExecuteGenerateSets" data-id="{{ $paper->id }}">
+            Generate Sets Now
+        </x-ui.button>
+    </x-slot:footer>
+</x-ui.modal>
 @endsection
 
 @push('scripts')

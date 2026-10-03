@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\BaseController;
 use App\Http\Requests\Admin\StudentRequest;
+use App\Models\FeeDiscount;
 use App\Models\StudentEnrollment;
 use App\Models\StudentProfile;
 use App\Services\Admin\StudentService;
@@ -85,13 +86,15 @@ class StudentController extends BaseController
      */
     public function create()
     {
+        $feeDiscounts = FeeDiscount::where('is_active', true)->orderBy('name')->pluck('name', 'id')->toArray();
+
         return view(
             'admin.students.create',
             [
-                // 'academicSessions' => academic_session_options(1),
                 'academicSessions' => academic_session_options(),
                 'classes' => class_options(),
                 'sections' => section_options(),
+                'feeDiscounts' => $feeDiscounts,
             ]
         );
     }
@@ -252,17 +255,17 @@ class StudentController extends BaseController
     {
         $student->load([
             'student.user',
+            'feeDiscount',
         ]);
 
+        $feeDiscounts = FeeDiscount::where('is_active', true)->orderBy('name')->pluck('name', 'id')->toArray();
+
         return view('admin.students.edit', [
-
             'enrollment' => $student,
-
-            //    'academicSessions' => academic_session_options(1),
             'academicSessions' => academic_session_options(),
             'classes' => class_options(),
             'sections' => section_options(),
-
+            'feeDiscounts' => $feeDiscounts,
         ]);
     }
 

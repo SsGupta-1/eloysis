@@ -280,105 +280,89 @@
 
 {{-- Modals from create --}}
 {{-- Question Selector Modal --}}
-<div class="modal fade" id="questionSelectorModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered modal-xl">
-        <div class="modal-content border-0 shadow">
-            <div class="modal-header bg-primary text-white">
-                <h5 class="modal-title"><i class="bi bi-patch-question me-2"></i> Select Questions from Question Bank</h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body">
-                <div class="row g-2 mb-3">
-                    <div class="col-md-3">
-                        <select id="modal_filter_type" class="form-select form-select-sm">
-                            <option value="">All Question Types</option>
-                            <option value="mcq">Multiple Choice (MCQ)</option>
-                            <option value="true_false">True / False</option>
-                            <option value="fill_blanks">Fill in Blanks</option>
-                            <option value="short_answer">Short Answer</option>
-                            <option value="long_answer">Long Answer</option>
-                            <option value="descriptive">Descriptive</option>
-                        </select>
-                    </div>
-                    <div class="col-md-3">
-                        <select id="modal_filter_difficulty" class="form-select form-select-sm">
-                            <option value="">All Difficulties</option>
-                            <option value="easy">Easy</option>
-                            <option value="medium">Medium</option>
-                            <option value="hard">Hard</option>
-                        </select>
-                    </div>
-                    <div class="col-md-4">
-                        <input type="text" id="modal_filter_search" class="form-control form-control-sm" placeholder="Search question text or chapter...">
-                    </div>
-                    <div class="col-md-2">
-                        <button type="button" class="btn btn-sm btn-primary w-100" id="btnFilterModalQuestions">
-                            <i class="bi bi-search me-1"></i> Search
-                        </button>
-                    </div>
-                </div>
-
-                <div class="table-responsive" style="max-height: 400px; overflow-y: auto;">
-                    <table class="table table-hover align-middle mb-0" id="modalQuestionsTable">
-                        <thead class="table-light sticky-top">
-                            <tr>
-                                <th width="40"><input type="checkbox" id="selectAllModalQuestions" class="form-check-input"></th>
-                                <th>Question</th>
-                                <th>Type</th>
-                                <th>Difficulty</th>
-                                <th>Marks</th>
-                            </tr>
-                        </thead>
-                        <tbody id="modalQuestionsBody"></tbody>
-                    </table>
-                </div>
-            </div>
-            <div class="modal-footer d-flex justify-content-between">
-                <div><span class="fw-semibold text-primary" id="selectedCountText">0 questions selected</span></div>
-                <div>
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="button" class="btn btn-success" id="btnAddSelectedQuestionsToSection">
-                        <i class="bi bi-plus-lg me-1"></i> Add to Section
-                    </button>
-                </div>
-            </div>
+<x-ui.modal id="questionSelectorModal" title="Select Questions from Question Bank" size="xl">
+    <div class="row g-2 mb-3">
+        <div class="col-md-3">
+            <select id="modal_filter_type" class="form-select form-select-sm">
+                <option value="">All Question Types</option>
+                <option value="mcq">Multiple Choice (MCQ)</option>
+                <option value="true_false">True / False</option>
+                <option value="fill_blanks">Fill in Blanks</option>
+                <option value="short_answer">Short Answer</option>
+                <option value="long_answer">Long Answer</option>
+                <option value="descriptive">Descriptive</option>
+            </select>
+        </div>
+        <div class="col-md-3">
+            <select id="modal_filter_difficulty" class="form-select form-select-sm">
+                <option value="">All Difficulties</option>
+                <option value="easy">Easy</option>
+                <option value="medium">Medium</option>
+                <option value="hard">Hard</option>
+            </select>
+        </div>
+        <div class="col-md-4">
+            <input type="text" id="modal_filter_search" class="form-control form-control-sm" placeholder="Search question text or chapter...">
+        </div>
+        <div class="col-md-2">
+            <button type="button" class="btn btn-sm btn-primary w-100" id="btnFilterModalQuestions">
+                <i class="bi bi-search me-1"></i> Search
+            </button>
         </div>
     </div>
-</div>
+
+    <div class="table-responsive" style="max-height: 400px; overflow-y: auto;">
+        <table class="table table-hover align-middle mb-0" id="modalQuestionsTable">
+            <thead class="table-light sticky-top">
+                <tr>
+                    <th width="40"><input type="checkbox" id="selectAllModalQuestions" class="form-check-input"></th>
+                    <th>Question</th>
+                    <th>Type</th>
+                    <th>Difficulty</th>
+                    <th>Marks</th>
+                </tr>
+            </thead>
+            <tbody id="modalQuestionsBody"></tbody>
+        </table>
+    </div>
+
+    <x-slot:footer>
+        <div class="d-flex justify-content-between align-items-center w-100">
+            <div><span class="fw-semibold text-primary" id="selectedCountText">0 questions selected</span></div>
+            <div>
+                <x-ui.button variant="secondary" data-bs-dismiss="modal">Cancel</x-ui.button>
+                <x-ui.button variant="success" id="btnAddSelectedQuestionsToSection" icon="bi-plus-lg">
+                    Add to Section
+                </x-ui.button>
+            </div>
+        </div>
+    </x-slot:footer>
+</x-ui.modal>
 
 {{-- Auto-Generate Blueprint Modal --}}
-<div class="modal fade" id="autoBlueprintModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered modal-lg">
-        <div class="modal-content border-0 shadow">
-            <div class="modal-header bg-success text-white">
-                <h5 class="modal-title"><i class="bi bi-magic me-2"></i> Auto-Generate Blueprint from Question Bank</h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+<x-ui.modal id="autoBlueprintModal" title="Auto-Generate Blueprint from Question Bank" size="lg">
+    <div id="blueprintRowsContainer">
+        <div class="row g-2 mb-2 blueprint-row align-items-center">
+            <div class="col-md-3"><input type="text" class="form-control form-control-sm bp-name" value="Section A (MCQ)"></div>
+            <div class="col-md-3">
+                <select class="form-select form-select-sm bp-type">
+                    <option value="mcq">MCQ</option>
+                    <option value="short_answer">Short Answer</option>
+                </select>
             </div>
-            <div class="modal-body">
-                <div id="blueprintRowsContainer">
-                    <div class="row g-2 mb-2 blueprint-row align-items-center">
-                        <div class="col-md-3"><input type="text" class="form-control form-control-sm bp-name" value="Section A (MCQ)"></div>
-                        <div class="col-md-3">
-                            <select class="form-select form-select-sm bp-type">
-                                <option value="mcq">MCQ</option>
-                                <option value="short_answer">Short Answer</option>
-                            </select>
-                        </div>
-                        <div class="col-md-2"><input type="number" class="form-control form-control-sm bp-count" value="10" min="1"></div>
-                        <div class="col-md-2"><input type="number" class="form-control form-control-sm bp-marks" value="1" min="0.5" step="0.5"></div>
-                        <div class="col-md-2 text-center"><span class="badge bg-light text-dark border bp-total-badge">10 M</span></div>
-                    </div>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                <button type="button" class="btn btn-success px-4" id="btnExecuteAutoBlueprint">
-                    <i class="bi bi-lightning-charge me-1"></i> Regenerate Paper
-                </button>
-            </div>
+            <div class="col-md-2"><input type="number" class="form-control form-control-sm bp-count" value="10" min="1"></div>
+            <div class="col-md-2"><input type="number" class="form-control form-control-sm bp-marks" value="1" min="0.5" step="0.5"></div>
+            <div class="col-md-2 text-center"><span class="badge bg-light text-dark border bp-total-badge">10 M</span></div>
         </div>
     </div>
-</div>
+
+    <x-slot:footer>
+        <x-ui.button variant="secondary" data-bs-dismiss="modal">Cancel</x-ui.button>
+        <x-ui.button variant="success" id="btnExecuteAutoBlueprint" icon="bi-lightning-charge">
+            Regenerate Paper
+        </x-ui.button>
+    </x-slot:footer>
+</x-ui.modal>
 @endsection
 
 @push('scripts')

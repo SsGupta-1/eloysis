@@ -264,6 +264,58 @@
             </x-admin.menu-group>
 
 
+            {{-- Fee Management --}}
+            <x-admin.menu-group
+                id="feeMenu"
+                title="Fee Management"
+                icon="bi bi-cash-stack"
+                :active="menu_active('fees')">
+
+                <x-admin.menu-item
+                    route="admin.fees.payments.collect"
+                    active="admin.fees.payments.collect"
+                    icon="bi bi-wallet2"
+                    label="Collect Fees (POS)"
+                />
+
+                <x-admin.menu-item
+                    route="admin.fees.payments.index"
+                    active="admin.fees.payments.index"
+                    icon="bi bi-receipt"
+                    label="Fee Transactions"
+                />
+
+                <x-admin.menu-item
+                    route="admin.fees.allocations.index"
+                    active="admin.fees.allocations.*"
+                    icon="bi bi-person-check"
+                    label="Student Allocations"
+                />
+
+                <x-admin.menu-item
+                    route="admin.fees.structures.index"
+                    active="admin.fees.structures.*"
+                    icon="bi bi-calculator"
+                    label="Fee Structures"
+                />
+
+                <x-admin.menu-item
+                    route="admin.fees.heads.index"
+                    active="admin.fees.heads.*"
+                    icon="bi bi-tag"
+                    label="Fee Heads"
+                />
+
+                <x-admin.menu-item
+                    route="admin.fees.discounts.index"
+                    active="admin.fees.discounts.*"
+                    icon="bi bi-percent"
+                    label="Discounts & Rules"
+                />
+
+            </x-admin.menu-group>
+
+
             {{-- Website Management --}}
             <x-admin.menu-group
                 id="websiteMenu"

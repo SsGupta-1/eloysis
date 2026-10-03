@@ -26,6 +26,14 @@ class AcademicClass extends Model
     }
 
     /**
+     * One class has many student enrollments
+     */
+    public function enrollments(): HasMany
+    {
+        return $this->hasMany(StudentEnrollment::class, 'class_id');
+    }
+
+    /**
      * One class has many student profiles
      */
     public function studentProfiles(): HasMany

@@ -204,188 +204,112 @@
 {{-- Add / Edit Modal --}}
 {{-- ========================================================= --}}
 
-<div
-    class="modal fade"
-    id="classTimetableModal"
-    tabindex="-1"
-    aria-hidden="true">
+<x-ui.modal id="classTimetableModal" title="Add Timetable" size="lg">
 
-    <div class="modal-dialog modal-lg modal-dialog-centered">
+    <form id="classTimetableForm" method="POST">
+        @csrf
 
-        <div class="modal-content">
+        <input type="hidden" name="timetable_id" id="timetable_id">
 
-            <form
-                id="classTimetableForm"
-                method="POST">
+        <div class="row g-3">
 
-                @csrf
+            {{-- Teacher Subject Assignment --}}
+            <div class="col-md-12">
+                <x-ui.select
+                    name="teacher_subject_id"
+                    id="teacher_subject_id"
+                    :options="$teacherSubjects ?? []"
+                    placeholder="Select Teacher / Class / Subject">
+                </x-ui.select>
 
-                <input
-                    type="hidden"
-                    name="timetable_id"
-                    id="timetable_id">
-
-
-                <div class="modal-header">
-
-                    <h5
-                        class="modal-title"
-                        id="classTimetableModalTitle">
-
-                        Add Timetable
-
-                    </h5>
-
-                    <button
-                        type="button"
-                        class="btn-close"
-                        data-bs-dismiss="modal">
-                    </button>
-
-                </div>
-
-
-                <div class="modal-body">
-
-                    <div class="row g-3">
-
-
-                        {{-- Teacher Subject Assignment --}}
-                        <div class="col-md-12">
-
-                            <x-ui.select
-                                name="teacher_subject_id"
-                                id="teacher_subject_id"
-                                :options="$teacherSubjects ?? []"
-                                placeholder="Select Teacher / Class / Subject">
-
-                            </x-ui.select>
-
-                            <div
-                                id="teacherSubjectInfo"
-                                class="mt-2 d-none">
-
-                                <div class="alert alert-info mb-0">
-
-                                    <div class="row">
-
-                                        <div class="col-md-3">
-                                            <strong>Teacher:</strong>
-                                            <span id="infoTeacher">-</span>
-                                        </div>
-
-                                        <div class="col-md-3">
-                                            <strong>Class:</strong>
-                                            <span id="infoClass">-</span>
-                                        </div>
-
-                                        <div class="col-md-3">
-                                            <strong>Section:</strong>
-                                            <span id="infoSection">-</span>
-                                        </div>
-
-                                        <div class="col-md-3">
-                                            <strong>Subject:</strong>
-                                            <span id="infoSubject">-</span>
-                                        </div>
-
-                                    </div>
-
-                                </div>
-
+                <div id="teacherSubjectInfo" class="mt-2 d-none">
+                    <div class="alert alert-info mb-0">
+                        <div class="row">
+                            <div class="col-md-3">
+                                <strong>Teacher:</strong>
+                                <span id="infoTeacher">-</span>
                             </div>
-
+                            <div class="col-md-3">
+                                <strong>Class:</strong>
+                                <span id="infoClass">-</span>
+                            </div>
+                            <div class="col-md-3">
+                                <strong>Section:</strong>
+                                <span id="infoSection">-</span>
+                            </div>
+                            <div class="col-md-3">
+                                <strong>Subject:</strong>
+                                <span id="infoSubject">-</span>
+                            </div>
                         </div>
-
-
-                        {{-- Period --}}
-                        <div class="col-md-6">
-
-                            <x-ui.select
-                                name="period_id"
-                                id="period_id"
-                                :options="$periods ?? []"
-                                placeholder="Select Period">
-
-                            </x-ui.select>
-
-                        </div>
-
-
-                        {{-- Day --}}
-                        <div class="col-md-6">
-
-                            <x-ui.select
-                                name="day"
-                                id="modal_day"
-                                :options="[
-                                    'Monday' => 'Monday',
-                                    'Tuesday' => 'Tuesday',
-                                    'Wednesday' => 'Wednesday',
-                                    'Thursday' => 'Thursday',
-                                    'Friday' => 'Friday',
-                                    'Saturday' => 'Saturday',
-                                    'Sunday' => 'Sunday',
-                                ]"
-                                placeholder="Select Day">
-
-                            </x-ui.select>
-
-                        </div>
-
-
-                        {{-- Status --}}
-                        <div class="col-md-6">
-
-                            <x-ui.select
-                                name="status"
-                                id="modal_status"
-                                :options="[
-                                    '1' => 'Active',
-                                    '0' => 'Inactive',
-                                ]"
-                                value="1"
-                                placeholder="Select Status">
-
-                            </x-ui.select>
-
-                        </div>
-
                     </div>
-
                 </div>
+            </div>
 
+            {{-- Period --}}
+            <div class="col-md-6">
+                <x-ui.select
+                    name="period_id"
+                    id="period_id"
+                    :options="$periods ?? []"
+                    placeholder="Select Period">
+                </x-ui.select>
+            </div>
 
-                <div class="modal-footer">
+            {{-- Day --}}
+            <div class="col-md-6">
+                <x-ui.select
+                    name="day"
+                    id="modal_day"
+                    :options="[
+                        'Monday' => 'Monday',
+                        'Tuesday' => 'Tuesday',
+                        'Wednesday' => 'Wednesday',
+                        'Thursday' => 'Thursday',
+                        'Friday' => 'Friday',
+                        'Saturday' => 'Saturday',
+                        'Sunday' => 'Sunday',
+                    ]"
+                    placeholder="Select Day">
+                </x-ui.select>
+            </div>
 
-                    <x-ui.button
-                        variant="secondary"
-                        type="button"
-                        data-bs-dismiss="modal">
-
-                        Cancel
-
-                    </x-ui.button>
-
-
-                    <x-ui.button
-                        variant="primary"
-                        type="submit"
-                        id="btnSaveTimetable">
-
-                        Save Timetable
-
-                    </x-ui.button>
-
-                </div>
-
-            </form>
+            {{-- Status --}}
+            <div class="col-md-6">
+                <x-ui.select
+                    name="status"
+                    id="modal_status"
+                    :options="[
+                        '1' => 'Active',
+                        '0' => 'Inactive',
+                    ]"
+                    value="1"
+                    placeholder="Select Status">
+                </x-ui.select>
+            </div>
 
         </div>
 
-    </div>
+    </form>
 
-</div>
+    <x-slot:footer>
+        <x-ui.button
+            variant="secondary"
+            type="button"
+            data-bs-dismiss="modal">
+            Cancel
+        </x-ui.button>
+
+        <x-ui.button
+            variant="primary"
+            type="submit"
+            form="classTimetableForm"
+            id="btnSaveTimetable">
+            Save Timetable
+        </x-ui.button>
+    </x-slot:footer>
+
+</x-ui.modal>
 
 
 @endsection

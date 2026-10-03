@@ -13,8 +13,8 @@ class DashboardController extends Controller
 
     public function index()
     {
-        return view('admin.dashboard.index', [
-            'stats' => $this->dashboardService->stats(),
-        ]);
+        $data = $this->dashboardService->getDashboardData();
+
+        return view('admin.dashboard.index', $data);
     }
 }

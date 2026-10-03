@@ -14,6 +14,11 @@ use App\Http\Controllers\Admin\ContactMessageController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\EventController as AdminEventController;
 use App\Http\Controllers\Admin\ExamController;
+use App\Http\Controllers\Admin\FeeAllocationController;
+use App\Http\Controllers\Admin\FeeDiscountController;
+use App\Http\Controllers\Admin\FeeHeadController;
+use App\Http\Controllers\Admin\FeePaymentController;
+use App\Http\Controllers\Admin\FeeStructureController;
 use App\Http\Controllers\Admin\GalleryController;
 use App\Http\Controllers\Admin\HomePageBuilderController;
 use App\Http\Controllers\Admin\HomeSliderController;
@@ -332,5 +337,38 @@ Route::prefix('admin')->name('admin.')->middleware('activity.log')->group(functi
         Route::post('results/exam/{exam}/publish', [ResultController::class, 'publishToggle'])->name('results.publish');
         Route::get('results/exam/{exam}/tabulation-print', [ResultController::class, 'tabulationPrint'])->name('results.tabulation-print');
         Route::get('results/student/{student}', [ResultController::class, 'studentResults'])->name('results.student');
+
+        // **********************Fee Management Routes******************************* */
+        Route::prefix('fees')->name('fees.')->group(function () {
+            // Fee Heads
+            Route::get('heads/list', [FeeHeadController::class, 'list'])->name('heads.list');
+            Route::patch('heads/{fee_head}/status', [FeeHeadController::class, 'changeStatus'])->name('heads.status');
+            Route::resource('heads', FeeHeadController::class, ['parameters' => ['heads' => 'fee_head']]);
+
+            // Fee Discounts
+            Route::get('discounts/list', [FeeDiscountController::class, 'list'])->name('discounts.list');
+            Route::patch('discounts/{fee_discount}/status', [FeeDiscountController::class, 'changeStatus'])->name('discounts.status');
+            Route::resource('discounts', FeeDiscountController::class, ['parameters' => ['discounts' => 'fee_discount']]);
+
+            // Fee Structures
+            Route::get('structures/list', [FeeStructureController::class, 'list'])->name('structures.list');
+            Route::patch('structures/{fee_structure}/status', [FeeStructureController::class, 'changeStatus'])->name('structures.status');
+            Route::resource('structures', FeeStructureController::class, ['parameters' => ['structures' => 'fee_structure']]);
+
+            // Fee Allocations
+            Route::get('allocations/list', [FeeAllocationController::class, 'list'])->name('allocations.list');
+            Route::get('allocations/structures', [FeeAllocationController::class, 'getStructures'])->name('allocations.structures');
+            Route::get('allocations/search-students', [FeeAllocationController::class, 'searchStudents'])->name('allocations.search-students');
+            Route::post('allocations/bulk', [FeeAllocationController::class, 'bulk'])->name('allocations.bulk');
+            Route::resource('allocations', FeeAllocationController::class, ['parameters' => ['allocations' => 'fee_allocation']]);
+
+            // Fee Collection / Payments
+            Route::get('payments/list', [FeePaymentController::class, 'list'])->name('payments.list');
+            Route::get('payments/collect', [FeePaymentController::class, 'collect'])->name('payments.collect');
+            Route::get('payments/ledger', [FeePaymentController::class, 'studentLedger'])->name('payments.ledger');
+            Route::get('payments/{fee_payment}/print', [FeePaymentController::class, 'print'])->name('payments.print');
+            Route::post('payments/{fee_payment}/cancel', [FeePaymentController::class, 'cancel'])->name('payments.cancel');
+            Route::resource('payments', FeePaymentController::class, ['parameters' => ['payments' => 'fee_payment']]);
+        });
     });
 });

@@ -180,6 +180,16 @@ class StudentRequest extends BaseRequest
 
             ],
 
+            'fee_discount_id' => [
+
+                'nullable',
+
+                'integer',
+
+                'exists:fee_discounts,id',
+
+            ],
+
             'section_id' => [
 
                 'required',

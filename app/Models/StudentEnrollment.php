@@ -17,9 +17,15 @@ class StudentEnrollment extends Model
         'academic_session_id',
         'class_id',
         'section_id',
+        'fee_discount_id',
         'status',
         'promoted_by',
     ];
+
+    public function feeDiscount()
+    {
+        return $this->belongsTo(FeeDiscount::class, 'fee_discount_id');
+    }
 
     public function student()
     {
@@ -55,6 +61,22 @@ class StudentEnrollment extends Model
     {
         return $this->hasMany(
             StudentAttendance::class,
+            'student_enrollment_id'
+        );
+    }
+
+    public function feeAllocations(): HasMany
+    {
+        return $this->hasMany(
+            StudentFeeAllocation::class,
+            'student_enrollment_id'
+        );
+    }
+
+    public function feePayments(): HasMany
+    {
+        return $this->hasMany(
+            FeePayment::class,
             'student_enrollment_id'
         );
     }

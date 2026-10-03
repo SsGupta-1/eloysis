@@ -237,6 +237,19 @@
 
             </div>
 
+            {{-- Fee Discount / Concession Category --}}
+            <div class="col-md-4">
+
+                <x-ui.select
+                    label="Fee Concession Category"
+                    name="fee_discount_id"
+                    id="fee_discount_id"
+                    :value="$enrollment->fee_discount_id ?? old('fee_discount_id')"
+                    :options="['' => 'General (No Concession)'] + ($feeDiscounts ?? [])"
+                />
+
+            </div>
+
         </div>
 
     </div>

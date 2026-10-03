@@ -103,26 +103,17 @@
 </div>
 
 {{-- Question Preview Modal --}}
-<div class="modal fade" id="previewQuestionModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered modal-lg">
-        <div class="modal-content border-0 shadow">
-            <div class="modal-header bg-primary text-white">
-                <h5 class="modal-title">
-                    <i class="bi bi-eye me-2"></i> Question Details
-                </h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body" id="previewQuestionBody">
-                <div class="text-center py-4">
-                    <span class="spinner-border text-primary"></span>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-            </div>
+<x-ui.modal id="previewQuestionModal" title="Question Details" size="lg">
+    <div id="previewQuestionBody">
+        <div class="text-center py-4">
+            <span class="spinner-border text-primary"></span>
         </div>
     </div>
-</div>
+
+    <x-slot:footer>
+        <x-ui.button variant="secondary" data-bs-dismiss="modal">Close</x-ui.button>
+    </x-slot:footer>
+</x-ui.modal>
 @endsection
 
 @push('scripts')
