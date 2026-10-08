@@ -13,6 +13,7 @@
 
         <x-slot:actions>
 
+            @hasPermission('periods.create')
             <x-ui.button
                 icon="bi-plus-lg"
                 id="btnAddPeriod">
@@ -20,6 +21,7 @@
                 Add Period
 
             </x-ui.button>
+            @endhasPermission
 
         </x-slot:actions>
 

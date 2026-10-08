@@ -73,7 +73,7 @@ const Helper = {
 
     },
 
-    statusSwitch(id, status) {
+    statusSwitch(id, status, canEdit = true) {
 
         return `
             <div class="form-check form-switch">
@@ -82,6 +82,7 @@ const Helper = {
                     type="checkbox"
                     data-id="${id}"
                     ${status ? 'checked' : ''}
+                    ${canEdit ? '' : 'disabled title="No permission to change status"'}
                 >
             </div>
         `;

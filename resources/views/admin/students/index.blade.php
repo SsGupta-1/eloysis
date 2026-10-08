@@ -13,6 +13,7 @@
 
         <x-slot:actions>
 
+            @hasPermission('students.create')
             <x-ui.button
                 icon="bi-plus-lg"
                 id="btnAddStudent"
@@ -21,6 +22,7 @@
                 Add Student
 
             </x-ui.button>
+            @endhasPermission
 
         </x-slot:actions>
 

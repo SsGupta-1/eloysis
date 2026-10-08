@@ -13,6 +13,7 @@
 
         <x-slot:actions>
 
+            @hasPermission('class_sections.create')
             <x-ui.button
                 icon="bi-plus-lg"
                 id="btnAddSection">
@@ -20,6 +21,7 @@
                 Add Class Section
 
             </x-ui.button>
+            @endhasPermission
 
         </x-slot:actions>
 

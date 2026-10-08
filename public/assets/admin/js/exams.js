@@ -126,25 +126,44 @@ const ExamManager = {
                     searchable: false,
                     className: 'text-center',
                     render: function (data, type, row) {
+                        const canEdit = typeof window.can === 'function' ? window.can('exams.edit') : true;
+                        const canDelete = typeof window.can === 'function' ? window.can('exams.delete') : true;
+                        const canView = typeof window.can === 'function' ? window.can('exams.view') : true;
+
                         const showUrl = `${EXAM_BASE_URL}/${row.id}`;
                         const editUrl = `${EXAM_BASE_URL}/${row.id}/edit`;
                         const admitCardsUrl = `${EXAM_BASE_URL}/${row.id}/admit-cards`;
-                        return `
-                            <div class="btn-group btn-group-sm">
+
+                        let buttons = '';
+
+                        if (canView) {
+                            buttons += `
                                 <a href="${showUrl}" class="btn btn-outline-info" title="View Exam Hub">
                                     <i class="bi bi-eye"></i>
                                 </a>
                                 <a href="${admitCardsUrl}" class="btn btn-outline-secondary" target="_blank" title="Print Admit Cards">
                                     <i class="bi bi-printer"></i>
                                 </a>
+                            `;
+                        }
+
+                        if (canEdit) {
+                            buttons += `
                                 <a href="${editUrl}" class="btn btn-outline-primary" title="Edit Exam">
                                     <i class="bi bi-pencil"></i>
                                 </a>
+                            `;
+                        }
+
+                        if (canDelete) {
+                            buttons += `
                                 <button type="button" class="btn btn-outline-danger btn-delete-exam" data-id="${row.id}" title="Delete Exam">
                                     <i class="bi bi-trash"></i>
                                 </button>
-                            </div>
-                        `;
+                            `;
+                        }
+
+                        return buttons ? `<div class="btn-group btn-group-sm">${buttons}</div>` : '<span class="text-muted fs-7">-</span>';
                     }
                 }
             ]

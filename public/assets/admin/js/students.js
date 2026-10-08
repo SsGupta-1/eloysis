@@ -125,7 +125,8 @@ const Student = {
                     orderable: false,
                     searchable: false,
                     render: function (data, type, row) {
-                        return Helper.statusSwitch(row.id, row.student?.user?.status);
+                        const canEdit = typeof window.can === 'function' ? window.can('students.edit') : true;
+                        return Helper.statusSwitch(row.id, row.student?.user?.status, canEdit);
                     }
                 },
                 {
@@ -134,30 +135,50 @@ const Student = {
                     orderable: false,
                     searchable: false,
                     render: function (data, type, row) {
+                        const canEdit = typeof window.can === 'function' ? window.can('students.edit') : true;
+                        const canDelete = typeof window.can === 'function' ? window.can('students.delete') : true;
+                        const canView = typeof window.can === 'function' ? window.can('students.view') : true;
+
                         const viewUrl = STUDENT_SHOW_URL.replace(':id', row.id);
                         const editUrl = STUDENT_UPDATE_URL.replace(':id', row.id) + '/edit';
 
-                        return `
-                            <a
-                                href="${viewUrl}"
-                                class="btn btn-sm btn-view"
-                                title="View">
-                                <i class="bi bi-eye"></i>
-                            </a>
-                            <a
-                                href="${editUrl}"
-                                class="btn btn-sm btn-edit"
-                                title="Edit">
-                                <i class="bi bi-pencil"></i>
-                            </a>
-                            <button
-                                type="button"
-                                class="btn btn-sm btn-delete"
-                                data-id="${row.id}"
-                                title="Delete">
-                                <i class="bi bi-trash"></i>
-                            </button>
-                        `;
+                        let buttons = '';
+
+                        if (canView) {
+                            buttons += `
+                                <a
+                                    href="${viewUrl}"
+                                    class="btn btn-sm btn-view"
+                                    title="View">
+                                    <i class="bi bi-eye"></i>
+                                </a>
+                            `;
+                        }
+
+                        if (canEdit) {
+                            buttons += `
+                                <a
+                                    href="${editUrl}"
+                                    class="btn btn-sm btn-edit"
+                                    title="Edit">
+                                    <i class="bi bi-pencil"></i>
+                                </a>
+                            `;
+                        }
+
+                        if (canDelete) {
+                            buttons += `
+                                <button
+                                    type="button"
+                                    class="btn btn-sm btn-delete"
+                                    data-id="${row.id}"
+                                    title="Delete">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            `;
+                        }
+
+                        return buttons || '<span class="text-muted fs-7">-</span>';
                     }
                 }
             ]

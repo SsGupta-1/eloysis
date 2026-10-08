@@ -19,6 +19,7 @@
             </p>
         </div>
 
+        @hasPermission('class_timetables.create')
         <x-ui.button
             variant="primary"
             type="button"
@@ -28,6 +29,7 @@
             Add Timetable
 
         </x-ui.button>
+        @endhasPermission
 
     </div>
 

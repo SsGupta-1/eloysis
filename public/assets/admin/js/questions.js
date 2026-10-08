@@ -114,11 +114,8 @@ const QuestionManager = {
                     data: 'status',
                     name: 'status',
                     render: function (data, type, row) {
-                        return `
-                            <div class="form-check form-switch">
-                                <input class="form-check-input btn-status-question" type="checkbox" data-id="${row.id}" ${data ? 'checked' : ''}>
-                            </div>
-                        `;
+                        const canEdit = typeof window.can === 'function' ? window.can('questions.edit') : true;
+                        return Helper.statusSwitch(row.id, data, canEdit);
                     }
                 },
                 {
@@ -127,18 +124,38 @@ const QuestionManager = {
                     searchable: false,
                     className: 'text-center',
                     render: function (data, type, row) {
+                        const canEdit = typeof window.can === 'function' ? window.can('questions.edit') : true;
+                        const canDelete = typeof window.can === 'function' ? window.can('questions.delete') : true;
+                        const canView = typeof window.can === 'function' ? window.can('questions.view') : true;
                         const editUrl = QUESTION_UPDATE_URL.replace(':id', row.id) + '/edit';
-                        return `
-                            <button type="button" class="btn btn-sm btn-outline-info btn-preview-question me-1" data-id="${row.id}" title="Preview">
-                                <i class="bi bi-eye"></i>
-                            </button>
-                            <a href="${editUrl}" class="btn btn-sm btn-outline-primary me-1" title="Edit">
-                                <i class="bi bi-pencil"></i>
-                            </a>
-                            <button type="button" class="btn btn-sm btn-outline-danger btn-delete-question" data-id="${row.id}" title="Delete">
-                                <i class="bi bi-trash"></i>
-                            </button>
-                        `;
+
+                        let buttons = '';
+
+                        if (canView) {
+                            buttons += `
+                                <button type="button" class="btn btn-sm btn-outline-info btn-preview-question me-1" data-id="${row.id}" title="Preview">
+                                    <i class="bi bi-eye"></i>
+                                </button>
+                            `;
+                        }
+
+                        if (canEdit) {
+                            buttons += `
+                                <a href="${editUrl}" class="btn btn-sm btn-outline-primary me-1" title="Edit">
+                                    <i class="bi bi-pencil"></i>
+                                </a>
+                            `;
+                        }
+
+                        if (canDelete) {
+                            buttons += `
+                                <button type="button" class="btn btn-sm btn-outline-danger btn-delete-question" data-id="${row.id}" title="Delete">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            `;
+                        }
+
+                        return buttons || '<span class="text-muted fs-7">-</span>';
                     }
                 }
             ]

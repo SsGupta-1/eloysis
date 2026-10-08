@@ -178,9 +178,11 @@ const Classes = {
                         row
                     ) {
 
+                        const canEdit = typeof window.can === 'function' ? window.can('classes.edit') : true;
                         return Helper.statusSwitch(
                             row.id,
-                            row.status
+                            row.status,
+                            canEdit
                         );
 
                     }
@@ -208,25 +210,37 @@ const Classes = {
                         row
                     ) {
 
-                        return `
-                            <button
-                                type="button"
-                                class="btn btn-sm btn-edit"
-                                data-id="${row.id}">
+                        const canEdit = typeof window.can === 'function' ? window.can('classes.edit') : true;
+                        const canDelete = typeof window.can === 'function' ? window.can('classes.delete') : true;
 
-                                <i class="bi bi-pencil"></i>
+                        let buttons = '';
+                        if (canEdit) {
+                            buttons += `
+                                <button
+                                    type="button"
+                                    class="btn btn-sm btn-edit"
+                                    data-id="${row.id}">
 
-                            </button>
+                                    <i class="bi bi-pencil"></i>
 
-                            <button
-                                type="button"
-                                class="btn btn-sm btn-delete"
-                                data-id="${row.id}">
+                                </button>
+                            `;
+                        }
 
-                                <i class="bi bi-trash"></i>
+                        if (canDelete) {
+                            buttons += `
+                                <button
+                                    type="button"
+                                    class="btn btn-sm btn-delete"
+                                    data-id="${row.id}">
 
-                            </button>
-                        `;
+                                    <i class="bi bi-trash"></i>
+
+                                </button>
+                            `;
+                        }
+
+                        return buttons || '<span class="text-muted fs-7">-</span>';
 
                     }
                 }

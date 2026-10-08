@@ -151,16 +151,29 @@ const FeeAllocation = {
                     orderable: false,
                     searchable: false,
                     render: function (data, type, row) {
-                        const canDelete = parseFloat(row.paid_amount || 0) === 0;
-                        return `
-                            <button type="button" class="btn btn-sm btn-warning btn-edit-allocation" data-id="${row.id}" title="Edit">
-                                <i class="bi bi-pencil"></i>
-                            </button>
-                            ${canDelete ? `
-                            <button type="button" class="btn btn-sm btn-danger btn-delete-allocation" data-id="${row.id}" title="Delete">
-                                <i class="bi bi-trash"></i>
-                            </button>` : ''}
-                        `;
+                        const canEditPerm = typeof window.can === 'function' ? window.can('fees.allocations.edit') : true;
+                        const canDeletePerm = typeof window.can === 'function' ? window.can('fees.allocations.delete') : true;
+                        const canDelete = canDeletePerm && parseFloat(row.paid_amount || 0) === 0;
+
+                        let buttons = '';
+
+                        if (canEditPerm) {
+                            buttons += `
+                                <button type="button" class="btn btn-sm btn-warning btn-edit-allocation" data-id="${row.id}" title="Edit">
+                                    <i class="bi bi-pencil"></i>
+                                </button>
+                            `;
+                        }
+
+                        if (canDelete) {
+                            buttons += `
+                                <button type="button" class="btn btn-sm btn-danger btn-delete-allocation" data-id="${row.id}" title="Delete">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            `;
+                        }
+
+                        return buttons || '<span class="text-muted fs-7">-</span>';
                     }
                 }
             ]

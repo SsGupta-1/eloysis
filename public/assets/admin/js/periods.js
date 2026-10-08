@@ -204,9 +204,11 @@ const Periods = {
                         row
                     ) {
 
+                        const canEdit = typeof window.can === 'function' ? window.can('periods.edit') : true;
                         return Helper.statusSwitch(
                             row.id,
-                            row.status
+                            row.status,
+                            canEdit
                         );
 
                     }
@@ -234,25 +236,38 @@ const Periods = {
                         row
                     ) {
 
-                        return `
-                            <button
-                                type="button"
-                                class="btn btn-sm btn-edit"
-                                data-id="${row.id}">
+                        const canEdit = typeof window.can === 'function' ? window.can('periods.edit') : true;
+                        const canDelete = typeof window.can === 'function' ? window.can('periods.delete') : true;
 
-                                <i class="bi bi-pencil"></i>
+                        let buttons = '';
 
-                            </button>
+                        if (canEdit) {
+                            buttons += `
+                                <button
+                                    type="button"
+                                    class="btn btn-sm btn-edit"
+                                    data-id="${row.id}">
 
-                            <button
-                                type="button"
-                                class="btn btn-sm btn-delete"
-                                data-id="${row.id}">
+                                    <i class="bi bi-pencil"></i>
 
-                                <i class="bi bi-trash"></i>
+                                </button>
+                            `;
+                        }
 
-                            </button>
-                        `;
+                        if (canDelete) {
+                            buttons += `
+                                <button
+                                    type="button"
+                                    class="btn btn-sm btn-delete"
+                                    data-id="${row.id}">
+
+                                    <i class="bi bi-trash"></i>
+
+                                </button>
+                            `;
+                        }
+
+                        return buttons || '<span class="text-muted fs-7">-</span>';
 
                     }
                 }

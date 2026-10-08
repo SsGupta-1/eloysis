@@ -13,6 +13,7 @@
 
         <x-slot:actions>
 
+            @hasPermission('roles.create')
             <x-ui.button
                 icon="bi-plus-lg"
                 id="btnAddRole">
@@ -20,6 +21,7 @@
                 Add Role
 
             </x-ui.button>
+            @endhasPermission
 
         </x-slot:actions>
 

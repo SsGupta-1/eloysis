@@ -28,5 +28,28 @@
         .querySelector('meta[name="base-url"]')
         ?.getAttribute('content') || '';
 
-    console.log('BASE_URL:', BASE_URL);
+    @php
+        $authUser = auth('admin')->user() ?? auth('web')->user();
+        $authPermissions = $authUser ? $authUser->permissionSlugs() : [];
+        $isSuperAdminUser = $authUser ? ($authUser->isSuperAdmin() && ! $authUser->has_custom_permissions) : false;
+    @endphp
+
+    window.UserPermissions = @json($authPermissions);
+    window.isSuperAdmin = @json($isSuperAdminUser);
+
+    window.can = function(permission) {
+        if (window.isSuperAdmin) {
+            return true;
+        }
+        return Array.isArray(window.UserPermissions) && window.UserPermissions.includes(permission);
+    };
+
+    window.canAny = function(permissions) {
+        if (window.isSuperAdmin) {
+            return true;
+        }
+        const list = Array.isArray(permissions) ? permissions : (permissions || '').split('|').map(p => p.trim());
+        return list.some(p => Array.isArray(window.UserPermissions) && window.UserPermissions.includes(p));
+    };
+
 </script>

@@ -13,13 +13,15 @@
 
         <x-slot:actions>
 
+            @hasPermission('class_subjects.create')
             <x-ui.button
                 icon="bi-plus-lg"
                 id="btnAddClassSubject">
 
-                Add Class
+                Add Class Subject
 
             </x-ui.button>
+            @endhasPermission
 
         </x-slot:actions>
 

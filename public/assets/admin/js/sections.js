@@ -72,7 +72,8 @@ const Section = {
                     orderable: true,
                     searchable: false,
                     render: function (data, type, row) {
-                        return Helper.statusSwitch(row.id, row.status);
+                        const canEdit = typeof window.can === 'function' ? window.can('sections.edit') : true;
+                        return Helper.statusSwitch(row.id, row.status, canEdit);
                     }
                 },
                 {
@@ -81,20 +82,31 @@ const Section = {
                     orderable: false,
                     searchable: false,
                     render: function (data, type, row) {
-                        return `
-                            <button
-                                type="button"
-                                class="btn btn-sm btn-edit"
-                                data-id="${row.id}">
-                                <i class="bi bi-pencil"></i>
-                            </button>
-                            <button
-                                type="button"
-                                class="btn btn-sm btn-delete"
-                                data-id="${row.id}">
-                                <i class="bi bi-trash"></i>
-                            </button>
-                        `;
+                        const canEdit = typeof window.can === 'function' ? window.can('sections.edit') : true;
+                        const canDelete = typeof window.can === 'function' ? window.can('sections.delete') : true;
+
+                        let buttons = '';
+                        if (canEdit) {
+                            buttons += `
+                                <button
+                                    type="button"
+                                    class="btn btn-sm btn-edit"
+                                    data-id="${row.id}">
+                                    <i class="bi bi-pencil"></i>
+                                </button>
+                            `;
+                        }
+                        if (canDelete) {
+                            buttons += `
+                                <button
+                                    type="button"
+                                    class="btn btn-sm btn-delete"
+                                    data-id="${row.id}">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            `;
+                        }
+                        return buttons || '<span class="text-muted fs-7">-</span>';
                     }
                 }
             ]

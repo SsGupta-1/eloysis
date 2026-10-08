@@ -324,7 +324,8 @@ const ClassTimetables = {
 
                     render: function (data, type, row) {
 
-                        return Helper.statusSwitch(row.id, row.status);
+                        const canEdit = typeof window.can === 'function' ? window.can('class_timetables.edit') : true;
+                        return Helper.statusSwitch(row.id, row.status, canEdit);
 
                     }
 
@@ -348,27 +349,38 @@ const ClassTimetables = {
 
                     render: function (data, type, row) {
 
-                        return `
+                        const canEdit = typeof window.can === 'function' ? window.can('class_timetables.edit') : true;
+                        const canDelete = typeof window.can === 'function' ? window.can('class_timetables.delete') : true;
 
-                            <button
-                                type="button"
-                                class="btn btn-sm btn-edit"
-                                data-id="${row.id}">
+                        let buttons = '';
 
-                                <i class="bi bi-pencil"></i>
+                        if (canEdit) {
+                            buttons += `
+                                <button
+                                    type="button"
+                                    class="btn btn-sm btn-edit"
+                                    data-id="${row.id}">
 
-                            </button>
+                                    <i class="bi bi-pencil"></i>
 
-                            <button
-                                type="button"
-                                class="btn btn-sm btn-delete"
-                                data-id="${row.id}">
+                                </button>
+                            `;
+                        }
 
-                                <i class="bi bi-trash"></i>
+                        if (canDelete) {
+                            buttons += `
+                                <button
+                                    type="button"
+                                    class="btn btn-sm btn-delete"
+                                    data-id="${row.id}">
 
-                            </button>
+                                    <i class="bi bi-trash"></i>
 
-                        `;
+                                </button>
+                            `;
+                        }
+
+                        return buttons || '<span class="text-muted fs-7">-</span>';
 
                     }
 

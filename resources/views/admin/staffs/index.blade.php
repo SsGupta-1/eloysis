@@ -13,6 +13,7 @@
 
         <x-slot:actions>
 
+            @hasPermission('admins.create')
             <x-ui.button
                 icon="bi-plus-lg"
                 id="btnAddStaff">
@@ -20,6 +21,7 @@
                 Add Admin
 
             </x-ui.button>
+            @endhasPermission
 
         </x-slot:actions>
 

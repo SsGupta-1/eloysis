@@ -138,7 +138,8 @@ const Teacher = {
                     orderable: false,
                     searchable: false,
                     render: function (data, type, row) {
-                        return Helper.statusSwitch(row.id, row.user?.status);
+                        const canEdit = typeof window.can === 'function' ? window.can('teachers.edit') : true;
+                        return Helper.statusSwitch(row.id, row.user?.status, canEdit);
                     }
                 },
                 {
@@ -147,36 +148,61 @@ const Teacher = {
                     orderable: false,
                     searchable: false,
                     render: function (data, type, row) {
-                        return `
-                            <button
-                                type="button"
-                                class="btn btn-sm btn-outline-primary btn-permissions me-1"
-                                data-id="${row.id}"
-                                title="Custom Permissions">
-                                <i class="bi bi-person-lock"></i>
-                            </button>
-                            <button
-                                type="button"
-                                class="btn btn-sm btn-view"
-                                data-id="${row.id}"
-                                title="View Details">
-                                <i class="bi bi-eye"></i>
-                            </button>
-                            <button
-                                type="button"
-                                class="btn btn-sm btn-edit"
-                                data-id="${row.id}"
-                                title="Edit Teacher">
-                                <i class="bi bi-pencil"></i>
-                            </button>
-                            <button
-                                type="button"
-                                class="btn btn-sm btn-delete"
-                                data-id="${row.id}"
-                                title="Delete Teacher">
-                                <i class="bi bi-trash"></i>
-                            </button>
-                        `;
+                        const canEdit = typeof window.can === 'function' ? window.can('teachers.edit') : true;
+                        const canDelete = typeof window.can === 'function' ? window.can('teachers.delete') : true;
+                        const canView = typeof window.can === 'function' ? window.can('teachers.view') : true;
+
+                        let buttons = '';
+
+                        if (canEdit) {
+                            buttons += `
+                                <button
+                                    type="button"
+                                    class="btn btn-sm btn-outline-primary btn-permissions me-1"
+                                    data-id="${row.id}"
+                                    title="Custom Permissions">
+                                    <i class="bi bi-person-lock"></i>
+                                </button>
+                            `;
+                        }
+
+                        if (canView) {
+                            buttons += `
+                                <button
+                                    type="button"
+                                    class="btn btn-sm btn-view"
+                                    data-id="${row.id}"
+                                    title="View Details">
+                                    <i class="bi bi-eye"></i>
+                                </button>
+                            `;
+                        }
+
+                        if (canEdit) {
+                            buttons += `
+                                <button
+                                    type="button"
+                                    class="btn btn-sm btn-edit"
+                                    data-id="${row.id}"
+                                    title="Edit Teacher">
+                                    <i class="bi bi-pencil"></i>
+                                </button>
+                            `;
+                        }
+
+                        if (canDelete) {
+                            buttons += `
+                                <button
+                                    type="button"
+                                    class="btn btn-sm btn-delete"
+                                    data-id="${row.id}"
+                                    title="Delete Teacher">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            `;
+                        }
+
+                        return buttons || '<span class="text-muted fs-7">-</span>';
                     }
                 }
             ]

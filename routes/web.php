@@ -174,7 +174,7 @@ Route::prefix('admin')->name('admin.')->middleware('activity.log')->group(functi
         // ************Roles route*******************
         Route::prefix('roles')
             ->name('roles.')
-            ->middleware('permission:roles.view|roles.create|roles.edit|roles.delete')
+            ->middleware('permission:resource:roles')
             ->controller(RoleController::class)
             ->group(function () {
 
@@ -193,7 +193,7 @@ Route::prefix('admin')->name('admin.')->middleware('activity.log')->group(functi
         // ************Academic Session route*******************
         Route::prefix('academic')
             ->name('academic.')
-            ->middleware('permission:academic_sessions.view|academic_sessions.create|academic_sessions.edit|academic_sessions.delete')
+            ->middleware('permission:resource:academic_sessions')
             ->controller(AcademicSessionController::class)
             ->group(function () {
 
@@ -208,21 +208,21 @@ Route::prefix('admin')->name('admin.')->middleware('activity.log')->group(functi
             });
 
         // ************Academic Classes route*******************
-        Route::middleware('permission:classes.view|classes.create|classes.edit|classes.delete')->group(function () {
+        Route::middleware('permission:resource:classes')->group(function () {
             Route::get('classes/list', [AcademicClassController::class, 'list'])->name('classes.list');
             Route::patch('classes/{classes}/status', [AcademicClassController::class, 'changeStatus'])->name('classes.status');
             Route::resource('classes', AcademicClassController::class);
         });
 
         // ************Academic Classes Section route*******************
-        Route::middleware('permission:sections.view|sections.create|sections.edit|sections.delete')->group(function () {
+        Route::middleware('permission:resource:sections')->group(function () {
             Route::get('sections/list', [AcademicSectionController::class, 'list'])->name('sections.list');
             Route::patch('sections/{sections}/status', [AcademicSectionController::class, 'changeStatus'])->name('sections.status');
             Route::resource('sections', AcademicSectionController::class);
         });
 
         // ************Academic Student route*******************
-        Route::middleware('permission:students.view|students.create|students.edit|students.delete')->group(function () {
+        Route::middleware('permission:resource:students')->group(function () {
             Route::get('students/list', [StudentController::class, 'list'])->name('students.list');
             Route::get('students/suggested-roll-number', [StudentController::class, 'getSuggestedRollNumber'])->name('students.suggested-roll-number');
             Route::patch('students/{students}/status', [StudentController::class, 'changeStatus'])->name('students.status');
@@ -230,14 +230,14 @@ Route::prefix('admin')->name('admin.')->middleware('activity.log')->group(functi
         });
 
         // ************Academic Classes Subject route*******************
-        Route::middleware('permission:subjects.view|subjects.create|subjects.edit|subjects.delete')->group(function () {
+        Route::middleware('permission:resource:subjects')->group(function () {
             Route::get('subjects/list', [SubjectController::class, 'list'])->name('subjects.list');
             Route::patch('subjects/{subjects}/status', [SubjectController::class, 'changeStatus'])->name('subjects.status');
             Route::resource('subjects', SubjectController::class);
         });
 
         // ************Academic Teacher route*******************
-        Route::middleware('permission:teachers.view|teachers.create|teachers.edit|teachers.delete')->group(function () {
+        Route::middleware('permission:resource:teachers')->group(function () {
             Route::get('teachers/list', [TeacherController::class, 'list'])->name('teachers.list');
             Route::patch('teachers/{teachers}/status', [TeacherController::class, 'changeStatus'])->name('teachers.status');
             Route::get('teachers/{teacher}/permissions', [TeacherController::class, 'getPermissions'])->name('teachers.permissions');
@@ -246,7 +246,7 @@ Route::prefix('admin')->name('admin.')->middleware('activity.log')->group(functi
         });
 
         // ************Academic Staff / Admin Users route*******************
-        Route::middleware('permission:admins.view|admins.create|admins.edit|admins.delete')->group(function () {
+        Route::middleware('permission:resource:admins')->group(function () {
             Route::get('staffs/list', [StaffController::class, 'list'])->name('staffs.list');
             Route::patch('staffs/{staffs}/status', [StaffController::class, 'changeStatus'])->name('staffs.status');
             Route::get('staffs/{staff}/permissions', [StaffController::class, 'getPermissions'])->name('staffs.permissions');
@@ -255,21 +255,21 @@ Route::prefix('admin')->name('admin.')->middleware('activity.log')->group(functi
         });
 
         // ************Academic class subjects route*******************
-        Route::middleware('permission:class_subjects.view|class_subjects.create|class_subjects.delete')->group(function () {
+        Route::middleware('permission:resource:class_subjects')->group(function () {
             Route::get('clsubject/list', [ClassSubjectController::class, 'list'])->name('clsubject.list');
             Route::patch('clsubject/{clsubject}/status', [ClassSubjectController::class, 'changeStatus'])->name('clsubject.status');
             Route::resource('clsubject', ClassSubjectController::class);
         });
 
         // ************Academic teacher subjects route*******************
-        Route::middleware('permission:teacher_subjects.view|teacher_subjects.create|teacher_subjects.delete')->group(function () {
+        Route::middleware('permission:resource:teacher_subjects')->group(function () {
             Route::get('teacher-subject/list', [TeacherSubjectController::class, 'list'])->name('teacher-subject.list');
             Route::patch('teacher-subject/{teacher_subject}/status', [TeacherSubjectController::class, 'changeStatus'])->name('teacher-subject.status');
             Route::resource('teacher-subject', TeacherSubjectController::class);
         });
 
         // ************Academic Class Section route*******************
-        Route::middleware('permission:class_sections.view|class_sections.create|class_sections.delete')->group(function () {
+        Route::middleware('permission:resource:class_sections')->group(function () {
             Route::get('class-sections/list', [ClassSectionController::class, 'list'])->name('class-sections.list');
             Route::patch('class-sections/{classSection}/status', [ClassSectionController::class, 'changeStatus'])->name('class-sections.status');
             Route::resource('class-sections', ClassSectionController::class);
@@ -278,7 +278,7 @@ Route::prefix('admin')->name('admin.')->middleware('activity.log')->group(functi
         // *****************Student Promotions route****************************** */
         Route::prefix('student-promotions')
             ->name('student-promotions.')
-            ->middleware('permission:student_promotions.view|student_promotions.create')
+            ->middleware('permission:resource:student_promotions')
             ->controller(StudentPromotionController::class)
             ->group(function () {
 
@@ -291,7 +291,7 @@ Route::prefix('admin')->name('admin.')->middleware('activity.log')->group(functi
         // **********************Student Attendance******************************* */
         Route::prefix('attendance')
             ->name('attendance.')
-            ->middleware('permission:attendance.view|attendance.create')
+            ->middleware('permission:resource:attendance')
             ->controller(StudentAttendanceController::class)
             ->group(function () {
 
@@ -305,7 +305,7 @@ Route::prefix('admin')->name('admin.')->middleware('activity.log')->group(functi
         // **********************Teacher Attendance******************************* */
         Route::prefix('teacher-attendance')
             ->name('teacher_attendance.')
-            ->middleware('permission:teacher_attendance.view|teacher_attendance.create')
+            ->middleware('permission:resource:teacher_attendance')
             ->controller(TeacherAttendanceController::class)
             ->group(function () {
 
@@ -317,21 +317,21 @@ Route::prefix('admin')->name('admin.')->middleware('activity.log')->group(functi
             });
 
         // ************Academic Periods route*******************
-        Route::middleware('permission:periods.view|periods.create|periods.edit|periods.delete')->group(function () {
+        Route::middleware('permission:resource:periods')->group(function () {
             Route::get('periods/list', [PeriodsController::class, 'list'])->name('periods.list');
             Route::patch('periods/{periods}/status', [PeriodsController::class, 'changeStatus'])->name('periods.status');
             Route::resource('periods', PeriodsController::class);
         });
 
         // ************Class Timetable*******************
-        Route::middleware('permission:class_timetables.view|class_timetables.create|class_timetables.edit|class_timetables.delete')->group(function () {
+        Route::middleware('permission:resource:class_timetables')->group(function () {
             Route::get('class-timetables/list', [ClassTimetableController::class, 'list'])->name('class-timetables.list');
             Route::patch('class-timetables/{class_timetable}/status', [ClassTimetableController::class, 'changeStatus'])->name('class-timetables.status');
             Route::resource('class-timetables', ClassTimetableController::class);
         });
 
         // ***************************Admission Enquiry******************************* */
-        Route::middleware('permission:admission_enquiry.view|admission_enquiry.create|admission_enquiry.edit|admission_enquiry.delete')->group(function () {
+        Route::middleware('permission:resource:admission_enquiry')->group(function () {
             Route::get('admission-enquiry/list', [AdmissionEnquiryController::class, 'list'])->name('admission_enquiry.list');
             Route::patch('admission-enquiry/{admission_enquiry}/status', [AdmissionEnquiryController::class, 'changeStatus'])->name('admission_enquiry.status');
             Route::post('admission-enquiry/{admission_enquiry}/assign', [AdmissionEnquiryController::class, 'assignStaff'])->name('admission-enquiry.assign');
@@ -346,7 +346,7 @@ Route::prefix('admin')->name('admin.')->middleware('activity.log')->group(functi
         // **********************Log Management******************************* */
         Route::prefix('logs')
             ->name('logs.')
-            ->middleware('permission:logs.view|logs.download')
+            ->middleware('permission:resource:logs')
             ->controller(LogController::class)
             ->group(function () {
                 Route::get('/', 'index')->name('index');
@@ -368,14 +368,14 @@ Route::prefix('admin')->name('admin.')->middleware('activity.log')->group(functi
             });
 
         // **********************Examination & Question Paper Management******************************* */
-        Route::middleware('permission:questions.view|questions.create|questions.edit|questions.delete')->group(function () {
+        Route::middleware('permission:resource:questions')->group(function () {
             Route::get('questions/list', [QuestionController::class, 'list'])->name('questions.list');
             Route::get('questions/search-selection', [QuestionController::class, 'searchForSelection'])->name('questions.search-selection');
             Route::patch('questions/{question}/status', [QuestionController::class, 'changeStatus'])->name('questions.status');
             Route::resource('questions', QuestionController::class);
         });
 
-        Route::middleware('permission:question_papers.view|question_papers.create|question_papers.edit|question_papers.delete|question_papers.approve|question_papers.print')->group(function () {
+        Route::middleware('permission:resource:question_papers')->group(function () {
             Route::get('question-papers/list', [QuestionPaperController::class, 'list'])->name('question-papers.list');
             Route::post('question-papers/auto-blueprint', [QuestionPaperController::class, 'autoGenerateBlueprint'])->name('question-papers.auto-blueprint');
             Route::patch('question-papers/{question_paper}/lock', [QuestionPaperController::class, 'toggleLock'])->name('question-papers.lock');
@@ -385,7 +385,7 @@ Route::prefix('admin')->name('admin.')->middleware('activity.log')->group(functi
             Route::resource('question-papers', QuestionPaperController::class);
         });
 
-        Route::middleware('permission:exams.view|exams.create|exams.edit|exams.delete|exams.marks_entry')->group(function () {
+        Route::middleware('permission:resource:exams')->group(function () {
             Route::get('exams/list', [ExamController::class, 'list'])->name('exams.list');
             Route::patch('exams/{exam}/status', [ExamController::class, 'changeStatus'])->name('exams.status');
             Route::get('exams/{exam}/enrollments', [ExamController::class, 'enrollments'])->name('exams.enrollments');
@@ -408,28 +408,28 @@ Route::prefix('admin')->name('admin.')->middleware('activity.log')->group(functi
         // **********************Fee Management Routes******************************* */
         Route::prefix('fees')->name('fees.')->group(function () {
             // Fee Heads
-            Route::middleware('permission:fees.heads.view|fees.heads.create|fees.heads.edit|fees.heads.delete')->group(function () {
+            Route::middleware('permission:resource:fees.heads')->group(function () {
                 Route::get('heads/list', [FeeHeadController::class, 'list'])->name('heads.list');
                 Route::patch('heads/{fee_head}/status', [FeeHeadController::class, 'changeStatus'])->name('heads.status');
                 Route::resource('heads', FeeHeadController::class, ['parameters' => ['heads' => 'fee_head']]);
             });
 
             // Fee Discounts
-            Route::middleware('permission:fees.discounts.view|fees.discounts.create|fees.discounts.edit|fees.discounts.delete')->group(function () {
+            Route::middleware('permission:resource:fees.discounts')->group(function () {
                 Route::get('discounts/list', [FeeDiscountController::class, 'list'])->name('discounts.list');
                 Route::patch('discounts/{fee_discount}/status', [FeeDiscountController::class, 'changeStatus'])->name('discounts.status');
                 Route::resource('discounts', FeeDiscountController::class, ['parameters' => ['discounts' => 'fee_discount']]);
             });
 
             // Fee Structures
-            Route::middleware('permission:fees.structures.view|fees.structures.create|fees.structures.edit|fees.structures.delete')->group(function () {
+            Route::middleware('permission:resource:fees.structures')->group(function () {
                 Route::get('structures/list', [FeeStructureController::class, 'list'])->name('structures.list');
                 Route::patch('structures/{fee_structure}/status', [FeeStructureController::class, 'changeStatus'])->name('structures.status');
                 Route::resource('structures', FeeStructureController::class, ['parameters' => ['structures' => 'fee_structure']]);
             });
 
             // Fee Allocations
-            Route::middleware('permission:fees.allocations.view|fees.allocations.create|fees.allocations.delete')->group(function () {
+            Route::middleware('permission:resource:fees.allocations')->group(function () {
                 Route::get('allocations/list', [FeeAllocationController::class, 'list'])->name('allocations.list');
                 Route::get('allocations/structures', [FeeAllocationController::class, 'getStructures'])->name('allocations.structures');
                 Route::get('allocations/search-students', [FeeAllocationController::class, 'searchStudents'])->name('allocations.search-students');
