@@ -1,12 +1,17 @@
 const Role = {
 
     modal: null,
+    permissionModal: null,
     table: null,
 
     init() {
 
         this.modal = new bootstrap.Modal(
             document.getElementById('roleModal')
+        );
+
+        this.permissionModal = new bootstrap.Modal(
+            document.getElementById('rolePermissionModal')
         );
 
         this.initDataTable();
@@ -84,14 +89,23 @@ const Role = {
                         return `
                             <button
                                 type="button"
+                                class="btn btn-sm btn-outline-primary btn-permissions me-1"
+                                data-id="${row.id}"
+                                title="Manage Permissions">
+                                <i class="bi bi-shield-lock"></i>
+                            </button>
+                            <button
+                                type="button"
                                 class="btn btn-sm btn-edit"
-                                data-id="${row.id}">
+                                data-id="${row.id}"
+                                title="Edit Role">
                                 <i class="bi bi-pencil"></i>
                             </button>
                             <button
                                 type="button"
                                 class="btn btn-sm btn-delete"
-                                data-id="${row.id}">
+                                data-id="${row.id}"
+                                title="Delete Role">
                                 <i class="bi bi-trash"></i>
                             </button>
                         `;
@@ -150,6 +164,44 @@ const Role = {
             this.edit($(e.currentTarget).data('id'));
         });
 
+        // Permissions (Dynamic Button)
+        $(document).on('click', '.btn-permissions', (e) => {
+            this.openPermissions($(e.currentTarget).data('id'));
+        });
+
+        // Save Permissions Form
+        $('#rolePermissionForm').on('submit', (e) => {
+            e.preventDefault();
+            this.savePermissions();
+        });
+
+        // Global Select All switch
+        $('#roleSelectAllPerms').on('change', function () {
+            const isChecked = $(this).is(':checked');
+            $('.role-perm-checkbox').prop('checked', isChecked);
+            $('.module-select-all').prop('checked', isChecked);
+            Role.updateCounter();
+        });
+
+        // Module-level select all switch
+        $(document).on('change', '.module-select-all', function () {
+            const moduleName = $(this).data('module');
+            const isChecked = $(this).is(':checked');
+            $(`.role-perm-checkbox[data-module="${moduleName}"]`).prop('checked', isChecked);
+            Role.syncSelectAllStates();
+            Role.updateCounter();
+        });
+
+        // Individual checkbox change
+        $(document).on('change', '.role-perm-checkbox', function () {
+            const moduleName = $(this).data('module');
+            const totalInModule = $(`.role-perm-checkbox[data-module="${moduleName}"]`).length;
+            const checkedInModule = $(`.role-perm-checkbox[data-module="${moduleName}"]:checked`).length;
+            $(`.module-select-all[data-module="${moduleName}"]`).prop('checked', totalInModule === checkedInModule);
+            Role.syncSelectAllStates();
+            Role.updateCounter();
+        });
+
         // Delete 
         $(document).on('click', '.btn-delete', (e) => {
             this.destroy($(e.currentTarget).data('id'));
@@ -165,6 +217,159 @@ const Role = {
             this.table.ajax.reload();
         });
 
+    },
+
+    /*
+    |--------------------------------------------------------------------------
+    | Permissions
+    |--------------------------------------------------------------------------
+    */
+
+    openPermissions(roleId) {
+        $('#perm_role_id').val(roleId);
+        $('#rolePermissionLoading').removeClass('d-none');
+        $('#rolePermissionContainer').addClass('d-none').empty();
+        this.permissionModal.show();
+
+        const url = ROLE_PERMISSIONS_URL.replace(':id', roleId);
+
+        $.ajax({
+            url: url,
+            type: 'GET',
+            success: (response) => {
+                const data = response.data;
+                const role = data.role;
+                const assigned = data.assigned_permissions || [];
+                const grouped = data.grouped_permissions || {};
+
+                $('#rolePermissionModalTitle').text(`Manage Permissions - ${role.role_name}`);
+                Role.renderPermissionsMatrix(grouped, assigned);
+                $('#rolePermissionLoading').addClass('d-none');
+                $('#rolePermissionContainer').removeClass('d-none');
+                Role.syncSelectAllStates();
+                Role.updateCounter();
+            },
+            error: (xhr) => {
+                Toast.error(xhr.responseJSON?.message ?? 'Unable to fetch role permissions.');
+                this.permissionModal.hide();
+            }
+        });
+    },
+
+    renderPermissionsMatrix(groupedPermissions, assignedIds) {
+        let html = '<div class="row g-3">';
+
+        const moduleIcons = {
+            'dashboard': 'bi-speedometer2',
+            'admins': 'bi-person-gear',
+            'roles': 'bi-shield-lock',
+            'academic_sessions': 'bi-calendar3',
+            'classes': 'bi-building',
+            'sections': 'bi-diagram-3',
+            'class_sections': 'bi-diagram-2',
+            'subjects': 'bi-book',
+            'class_subjects': 'bi-journal-bookmark',
+            'teachers': 'bi-person-workspace',
+            'teacher_subjects': 'bi-person-video2',
+            'teacher_attendance': 'bi-calendar-check',
+            'periods': 'bi-clock-history',
+            'class_timetables': 'bi-calendar-week',
+            'students': 'bi-people',
+            'student_promotions': 'bi-mortarboard',
+            'attendance': 'bi-check2-circle',
+            'admission_enquiry': 'bi-person-lines-fill',
+            'questions': 'bi-patch-question',
+            'question_papers': 'bi-file-earmark-text',
+            'exams': 'bi-journal-text',
+            'results': 'bi-award',
+            'fees': 'bi-cash-stack',
+            'website': 'bi-globe',
+            'logs': 'bi-file-text'
+        };
+
+        for (const [moduleName, permissions] of Object.entries(groupedPermissions)) {
+            const formattedModuleName = Helper.capitalize(moduleName.replace(/_/g, ' '));
+            const icon = moduleIcons[moduleName] || 'bi-folder';
+            const totalInModule = permissions.length;
+            const checkedInModule = permissions.filter(p => assignedIds.includes(p.id)).length;
+            const isAllChecked = totalInModule > 0 && totalInModule === checkedInModule;
+
+            html += `
+                <div class="col-md-6 col-lg-4">
+                    <div class="card h-100 border shadow-none" style="background-color: var(--bs-body-bg);">
+                        <div class="card-header py-2 px-3 d-flex justify-content-between align-items-center bg-light-subtle border-bottom">
+                            <div class="d-flex align-items-center gap-2">
+                                <i class="bi ${icon} text-primary"></i>
+                                <span class="fw-bold fs-7 text-uppercase">${formattedModuleName}</span>
+                            </div>
+                            <div class="form-check form-switch m-0 ps-0">
+                                <input class="form-check-input module-select-all ms-0" 
+                                       type="checkbox" 
+                                       role="switch" 
+                                       data-module="${moduleName}"
+                                       ${isAllChecked ? 'checked' : ''}
+                                       title="Select all in ${formattedModuleName}">
+                            </div>
+                        </div>
+                        <div class="card-body p-3">
+                            <div class="d-flex flex-column gap-2">
+            `;
+
+            permissions.forEach(perm => {
+                const isChecked = assignedIds.includes(perm.id);
+                html += `
+                    <div class="form-check">
+                        <input class="form-check-input role-perm-checkbox" 
+                               type="checkbox" 
+                               name="permissions[]" 
+                               value="${perm.id}" 
+                               id="role_perm_${perm.id}"
+                               data-module="${moduleName}"
+                               ${isChecked ? 'checked' : ''}>
+                        <label class="form-check-label small cursor-pointer" for="role_perm_${perm.id}">
+                            ${perm.name}
+                        </label>
+                    </div>
+                `;
+            });
+
+            html += `
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        html += '</div>';
+        $('#rolePermissionContainer').html(html);
+    },
+
+    syncSelectAllStates() {
+        const totalPerms = $('.role-perm-checkbox').length;
+        const totalChecked = $('.role-perm-checkbox:checked').length;
+        $('#roleSelectAllPerms').prop('checked', totalPerms > 0 && totalPerms === totalChecked);
+    },
+
+    updateCounter() {
+        const totalPerms = $('.role-perm-checkbox').length;
+        const totalChecked = $('.role-perm-checkbox:checked').length;
+        $('#rolePermissionCounter').text(`${totalChecked} / ${totalPerms} Selected`);
+    },
+
+    savePermissions() {
+        const roleId = $('#perm_role_id').val();
+        const url = ROLE_PERMISSIONS_UPDATE_URL.replace(':id', roleId);
+
+        Ajax.request({
+            form: '#rolePermissionForm',
+            url: url,
+            method: 'POST',
+            success: (response) => {
+                Toast.success(response.message ?? 'Role permissions updated successfully.');
+                this.permissionModal.hide();
+            }
+        });
     },
 
     /*

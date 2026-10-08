@@ -3,7 +3,9 @@
 namespace App\Services\Admin;
 
 use App\Helpers\UploadHelper;
+use App\Models\Permission;
 use App\Models\Role;
+use App\Models\TeacherProfile;
 use App\Repositories\Admin\TeacherRepository;
 use App\Repositories\Admin\UserRepository;
 use Illuminate\Support\Facades\Auth;
@@ -231,5 +233,51 @@ class TeacherService
         return $this->userRepository->changeStatus(
             $teacher->user_id,
         );
+    }
+
+    /**
+     * Get teacher user permissions and role baseline
+     */
+    public function getPermissionsData(TeacherProfile $teacher): array
+    {
+        $user = $teacher->user;
+        $user->load(['role.permissions', 'permissions']);
+
+        $role = $user->role;
+        $rolePermissionIds = $role ? $role->permissions->pluck('id')->toArray() : [];
+        $directPermissionIds = $user->permissions->pluck('id')->toArray();
+
+        $permissions = Permission::active()
+            ->orderBy('module')
+            ->orderBy('name')
+            ->get()
+            ->groupBy('module');
+
+        return [
+            'profile' => $teacher,
+            'teacher' => $teacher,
+            'user' => $user,
+            'role' => $role,
+            'has_custom_permissions' => (bool) $user->has_custom_permissions,
+            'role_permission_ids' => $rolePermissionIds,
+            'direct_permission_ids' => $directPermissionIds,
+            'grouped_permissions' => $permissions,
+        ];
+    }
+
+    /**
+     * Update teacher user-level custom permissions
+     */
+    public function updatePermissions(TeacherProfile $teacher, bool $hasCustomPermissions, array $permissionIds): bool
+    {
+        $user = $teacher->user;
+
+        if ($hasCustomPermissions) {
+            $user->syncCustomPermissions($permissionIds);
+        } else {
+            $user->resetToRolePermissions();
+        }
+
+        return true;
     }
 }

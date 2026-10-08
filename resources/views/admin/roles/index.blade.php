@@ -110,6 +110,7 @@
 </div>
 
 @include('admin.roles.partials.modal')
+@include('admin.roles.partials.permission-modal')
 
 @endsection
 
@@ -123,6 +124,8 @@
     const ROLE_UPDATE_URL = "{{ route('admin.roles.update', ':id') }}";
     const ROLE_DELETE_URL = "{{ route('admin.roles.destroy', ':id') }}";
     const ROLE_STATUS_URL = "{{ route('admin.roles.status', ':id') }}";
+    const ROLE_PERMISSIONS_URL = "{{ route('admin.roles.permissions', ':id') }}";
+    const ROLE_PERMISSIONS_UPDATE_URL = "{{ route('admin.roles.permissions.update', ':id') }}";
 
     </script>
 

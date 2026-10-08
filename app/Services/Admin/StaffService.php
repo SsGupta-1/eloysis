@@ -3,6 +3,7 @@
 namespace App\Services\Admin;
 
 use App\Helpers\UploadHelper;
+use App\Models\Permission;
 use App\Models\Role;
 use App\Models\StaffProfile;
 use App\Repositories\Admin\StaffRepository;
@@ -342,5 +343,50 @@ class StaffService
 
         return true;
 
+    }
+
+    /**
+     * Get user permissions and role baseline
+     */
+    public function getPermissionsData(StaffProfile $staff): array
+    {
+        $user = $staff->user;
+        $user->load(['role.permissions', 'permissions']);
+
+        $role = $user->role;
+        $rolePermissionIds = $role ? $role->permissions->pluck('id')->toArray() : [];
+        $directPermissionIds = $user->permissions->pluck('id')->toArray();
+
+        $permissions = Permission::active()
+            ->orderBy('module')
+            ->orderBy('name')
+            ->get()
+            ->groupBy('module');
+
+        return [
+            'staff' => $staff,
+            'user' => $user,
+            'role' => $role,
+            'has_custom_permissions' => (bool) $user->has_custom_permissions,
+            'role_permission_ids' => $rolePermissionIds,
+            'direct_permission_ids' => $directPermissionIds,
+            'grouped_permissions' => $permissions,
+        ];
+    }
+
+    /**
+     * Update user-level custom permissions
+     */
+    public function updatePermissions(StaffProfile $staff, bool $hasCustomPermissions, array $permissionIds): bool
+    {
+        $user = $staff->user;
+
+        if ($hasCustomPermissions) {
+            $user->syncCustomPermissions($permissionIds);
+        } else {
+            $user->resetToRolePermissions();
+        }
+
+        return true;
     }
 }

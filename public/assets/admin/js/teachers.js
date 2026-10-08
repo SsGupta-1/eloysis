@@ -15,6 +15,17 @@ const Teacher = {
         );
 
         this.initDataTable();
+
+        if (typeof UserPermissionManager !== 'undefined') {
+            UserPermissionManager.init({
+                getUrl: TEACHER_PERMISSIONS_URL,
+                updateUrl: TEACHER_PERMISSIONS_UPDATE_URL,
+                table: this.table,
+                defaultAvatar: typeof DEFAULT_AVATAR !== 'undefined' ? DEFAULT_AVATAR : '',
+                titlePrefix: 'Teacher'
+            });
+        }
+
         this.bindEvents();
 
     },
@@ -69,6 +80,9 @@ const Teacher = {
                     render: function (data, type, row) {
                         const user = row.user || {};
                         const profileImage = user.profile_image_url ?? DEFAULT_AVATAR;
+                        const customBadge = user.has_custom_permissions
+                            ? '<span class="badge bg-warning-subtle text-warning border border-warning-subtle ms-1" style="font-size:10px;">Custom</span>'
+                            : '';
 
                         return `
                             <div class="d-flex align-items-center">
@@ -79,8 +93,9 @@ const Teacher = {
                                     class="rounded-circle me-2"
                                     style="object-fit: cover;">
                                 <div>
-                                    <div class="fw-semibold">
+                                    <div class="fw-semibold d-flex align-items-center">
                                         ${user.name ?? '-'}
+                                        ${customBadge}
                                     </div>
                                 </div>
                             </div>
@@ -135,20 +150,30 @@ const Teacher = {
                         return `
                             <button
                                 type="button"
+                                class="btn btn-sm btn-outline-primary btn-permissions me-1"
+                                data-id="${row.id}"
+                                title="Custom Permissions">
+                                <i class="bi bi-person-lock"></i>
+                            </button>
+                            <button
+                                type="button"
                                 class="btn btn-sm btn-view"
-                                data-id="${row.id}">
+                                data-id="${row.id}"
+                                title="View Details">
                                 <i class="bi bi-eye"></i>
                             </button>
                             <button
                                 type="button"
                                 class="btn btn-sm btn-edit"
-                                data-id="${row.id}">
+                                data-id="${row.id}"
+                                title="Edit Teacher">
                                 <i class="bi bi-pencil"></i>
                             </button>
                             <button
                                 type="button"
                                 class="btn btn-sm btn-delete"
-                                data-id="${row.id}">
+                                data-id="${row.id}"
+                                title="Delete Teacher">
                                 <i class="bi bi-trash"></i>
                             </button>
                         `;
@@ -199,6 +224,14 @@ const Teacher = {
         // View Teacher
         $(document).on('click', '.btn-view', (e) => {
             this.view($(e.currentTarget).data('id'));
+        });
+
+        // Custom Permissions Modal
+        $(document).on('click', '.btn-permissions', (e) => {
+            const id = $(e.currentTarget).data('id');
+            if (typeof UserPermissionManager !== 'undefined') {
+                UserPermissionManager.open(id);
+            }
         });
 
         // Change status

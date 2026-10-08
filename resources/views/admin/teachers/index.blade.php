@@ -137,10 +137,9 @@
 
 @include('admin.teachers.partials.modal')
 @include('admin.teachers.partials.view-modal')
-
+@include('admin.common.user-permission-modal')
 
 @endsection
-
 
 @push('scripts')
 
@@ -163,17 +162,24 @@
 
         const TEACHER_SHOW_URL =
             "{{ route('admin.teachers.show', ':id') }}";
+
         const TEACHER_DELETE_URL =
             "{{ route('admin.teachers.destroy', ':id') }}";
 
         const TEACHER_STATUS_URL =
             "{{ route('admin.teachers.status', ':id') }}";
 
-         const DEFAULT_AVATAR ="{{ asset('assets/uploads/profile/default-avatar.jpg') }}";
+        const TEACHER_PERMISSIONS_URL =
+            "{{ route('admin.teachers.permissions', ':id') }}";
+
+        const TEACHER_PERMISSIONS_UPDATE_URL =
+            "{{ route('admin.teachers.permissions.update', ':id') }}";
+
+        const DEFAULT_AVATAR ="{{ asset('assets/uploads/profile/default-avatar.jpg') }}";
 
     </script>
 
-
+    <script src="{{ asset('assets/admin/js/user-permissions.js') }}"></script>
     <script src="{{ asset('assets/admin/js/teachers.js') }}"></script>
 
 @endpush

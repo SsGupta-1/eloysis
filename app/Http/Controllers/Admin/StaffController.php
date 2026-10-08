@@ -139,4 +139,39 @@ class StaffController extends BaseController
             'Staff status updated successfully.'
         );
     }
+
+    /**
+     * Get Staff / User Permissions
+     */
+    public function getPermissions(StaffProfile $staff)
+    {
+        $data = $this->staffService->getPermissionsData($staff);
+
+        return $this->success(
+            'User permissions fetched successfully.',
+            $data
+        );
+    }
+
+    /**
+     * Update Staff / User Permissions
+     */
+    public function updatePermissions(Request $request, StaffProfile $staff)
+    {
+        $request->validate([
+            'has_custom_permissions' => 'required|boolean',
+            'permissions' => 'nullable|array',
+            'permissions.*' => 'exists:permissions,id',
+        ]);
+
+        $this->staffService->updatePermissions(
+            $staff,
+            $request->boolean('has_custom_permissions'),
+            $request->input('permissions', [])
+        );
+
+        return $this->success(
+            'User permissions updated successfully.'
+        );
+    }
 }

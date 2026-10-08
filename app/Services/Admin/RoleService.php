@@ -2,6 +2,7 @@
 
 namespace App\Services\Admin;
 
+use App\Models\Permission;
 use App\Repositories\Admin\RoleRepository;
 use Exception;
 use Illuminate\Support\Facades\DB;
@@ -108,5 +109,47 @@ class RoleService
     public function changeStatus(int $id)
     {
         return $this->roleRepository->changeStatus($id);
+    }
+
+    /**
+     * Get all permissions and role assigned permissions
+     */
+    public function getPermissionsData(int $id): array
+    {
+        $role = $this->roleRepository->findOrFail($id);
+        $role->load('permissions');
+
+        $permissions = Permission::active()
+            ->orderBy('module')
+            ->orderBy('name')
+            ->get()
+            ->groupBy('module');
+
+        return [
+            'role' => $role,
+            'assigned_permissions' => $role->permissions->pluck('id')->toArray(),
+            'grouped_permissions' => $permissions,
+        ];
+    }
+
+    /**
+     * Update permissions for a role
+     */
+    public function updatePermissions(int $id, array $permissionIds): bool
+    {
+        DB::beginTransaction();
+
+        try {
+            $role = $this->roleRepository->findOrFail($id);
+            $role->permissions()->sync($permissionIds);
+
+            DB::commit();
+
+            return true;
+        } catch (Exception $e) {
+            DB::rollBack();
+
+            throw $e;
+        }
     }
 }

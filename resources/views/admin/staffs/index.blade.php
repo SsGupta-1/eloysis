@@ -135,11 +135,10 @@
 
 
 @include('admin.staffs.partials.modal')
-
 @include('admin.staffs.partials.view-modal')
+@include('admin.common.user-permission-modal')
 
 @endsection
-
 
 @push('scripts')
 
@@ -163,9 +162,16 @@
     const STAFF_STATUS_URL =
         "{{ route('admin.staffs.status', ':id') }}";
 
+    const STAFF_PERMISSIONS_URL =
+        "{{ route('admin.staffs.permissions', ':id') }}";
+
+    const STAFF_PERMISSIONS_UPDATE_URL =
+        "{{ route('admin.staffs.permissions.update', ':id') }}";
+    const DEFAULT_AVATAR = "{{ asset('assets/images/default-avatar.png') }}";
+
 </script>
 
-
+<script src="{{ asset('assets/admin/js/user-permissions.js') }}"></script>
 <script src="{{ asset('assets/admin/js/staffs.js') }}"></script>
 
 @endpush

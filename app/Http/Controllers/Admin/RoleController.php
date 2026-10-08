@@ -127,4 +127,37 @@ class RoleController extends BaseController
             'Role status updated successfully.'
         );
     }
+
+    /**
+     * Get Role Permissions
+     */
+    public function getPermissions(Role $role)
+    {
+        $data = $this->roleService->getPermissionsData($role->id);
+
+        return $this->success(
+            'Permissions fetched successfully.',
+            $data
+        );
+    }
+
+    /**
+     * Update Role Permissions
+     */
+    public function updatePermissions(Request $request, Role $role)
+    {
+        $request->validate([
+            'permissions' => 'nullable|array',
+            'permissions.*' => 'exists:permissions,id',
+        ]);
+
+        $this->roleService->updatePermissions(
+            $role->id,
+            $request->input('permissions', [])
+        );
+
+        return $this->success(
+            'Role permissions updated successfully.'
+        );
+    }
 }

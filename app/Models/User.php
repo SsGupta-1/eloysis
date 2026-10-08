@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -35,6 +36,7 @@ class User extends Authenticatable
             'mobile_verified_at' => 'datetime',
             'password' => 'hashed',
             'status' => 'boolean',
+            'has_custom_permissions' => 'boolean',
             'last_login_at' => 'datetime',
         ];
     }
@@ -48,6 +50,7 @@ class User extends Authenticatable
         'password',
         'profile_image',
         'status',
+        'has_custom_permissions',
         'last_login_at',
         'created_by',
         'updated_by',
@@ -150,6 +153,15 @@ class User extends Authenticatable
     }
 
     /**
+     * Direct user permissions
+     */
+    public function permissions(): BelongsToMany
+    {
+        return $this->belongsToMany(Permission::class, 'user_permissions')
+            ->withTimestamps();
+    }
+
+    /**
      * Check if user is super admin
      */
     public function isSuperAdmin(): bool
@@ -174,20 +186,31 @@ class User extends Authenticatable
     }
 
     /**
-     * Check if user has a permission
+     * Check if user has a permission (Role-based with User-level customization support)
      */
     public function hasPermission(string $permissionSlug): bool
     {
-        // super admin gets all permissions
+        // Inactive accounts have no access
+        if ((int) $this->status !== 1) {
+            return false;
+        }
+
+        // If user has custom permissions enabled, check direct permissions (user-level override)
+        if ($this->has_custom_permissions) {
+            $this->loadMissing('permissions');
+
+            return $this->permissions
+                ->where('status', 1)
+                ->contains('slug', $permissionSlug);
+        }
+
+        // Super Admin role without custom restrictions bypasses all checks
         if ($this->isSuperAdmin()) {
             return true;
         }
 
-        if (! $this->relationLoaded('role')) {
-            $this->loadMissing('role.permissions');
-        } else {
-            $this->loadMissing('role.permissions');
-        }
+        // Otherwise fallback to Role permissions
+        $this->loadMissing('role.permissions');
 
         if (! $this->role || ! $this->role->status) {
             return false;
@@ -207,17 +230,26 @@ class User extends Authenticatable
     }
 
     /**
-     * Get all permission slugs of current user role
+     * Get all effective permission slugs for the user
      */
     public function permissionSlugs(): array
     {
+        if ($this->has_custom_permissions) {
+            $this->loadMissing('permissions');
+
+            return $this->permissions
+                ->where('status', 1)
+                ->pluck('slug')
+                ->toArray();
+        }
+
         if ($this->isSuperAdmin()) {
             return Permission::active()->pluck('slug')->toArray();
         }
 
         $this->loadMissing('role.permissions');
 
-        if (! $this->role) {
+        if (! $this->role || ! $this->role->status) {
             return [];
         }
 
@@ -225,6 +257,34 @@ class User extends Authenticatable
             ->where('status', 1)
             ->pluck('slug')
             ->toArray();
+    }
+
+    /**
+     * Get direct permission IDs assigned to this user
+     */
+    public function directPermissionIds(): array
+    {
+        $this->loadMissing('permissions');
+
+        return $this->permissions->pluck('id')->toArray();
+    }
+
+    /**
+     * Sync custom permissions for this user
+     */
+    public function syncCustomPermissions(array $permissionIds): void
+    {
+        $this->permissions()->sync($permissionIds);
+        $this->update(['has_custom_permissions' => true]);
+    }
+
+    /**
+     * Reset user permissions to inherit from their role
+     */
+    public function resetToRolePermissions(): void
+    {
+        $this->permissions()->detach();
+        $this->update(['has_custom_permissions' => false]);
     }
 
     public function teacherSubjects()

@@ -28,7 +28,6 @@ if (! function_exists('menu_active')) {
                 'admin.class-sections.*',
                 'admin.subjects.*',
                 'admin.clsubject.*',
-                'admin.teachers.*',
                 'admin.teacher-subject.*',
                 'admin.periods.*',
                 'admin.class-timetables.*',
@@ -55,6 +54,7 @@ if (! function_exists('menu_active')) {
             'users' => [
                 'admin.roles.*',
                 'admin.staffs.*',
+                'admin.teachers.*',
             ],
 
             'settings' => [

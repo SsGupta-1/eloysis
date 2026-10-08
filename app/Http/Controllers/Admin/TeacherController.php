@@ -149,4 +149,39 @@ class TeacherController extends BaseController
             'Academic Teacher status updated successfully.'
         );
     }
+
+    /**
+     * Get Teacher / User Permissions
+     */
+    public function getPermissions(TeacherProfile $teacher)
+    {
+        $data = $this->teacherService->getPermissionsData($teacher);
+
+        return $this->success(
+            'Teacher permissions fetched successfully.',
+            $data
+        );
+    }
+
+    /**
+     * Update Teacher / User Permissions
+     */
+    public function updatePermissions(Request $request, TeacherProfile $teacher)
+    {
+        $request->validate([
+            'has_custom_permissions' => 'required|boolean',
+            'permissions' => 'nullable|array',
+            'permissions.*' => 'exists:permissions,id',
+        ]);
+
+        $this->teacherService->updatePermissions(
+            $teacher,
+            $request->boolean('has_custom_permissions'),
+            $request->input('permissions', [])
+        );
+
+        return $this->success(
+            'Teacher permissions updated successfully.'
+        );
+    }
 }

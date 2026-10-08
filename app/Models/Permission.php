@@ -29,6 +29,15 @@ class Permission extends Model
     }
 
     /**
+     * Users having this permission directly
+     */
+    public function users(): BelongsToMany
+    {
+        return $this->belongsToMany(User::class, 'user_permissions')
+            ->withTimestamps();
+    }
+
+    /**
      * Active permissions scope
      */
     public function scopeActive($query)
