@@ -45,6 +45,7 @@ use App\Http\Controllers\Admin\WebsiteSettingController;
 use Illuminate\Support\Facades\Route;
 
 require __DIR__.'/website.php';
+require __DIR__.'/student.php';
 // require __DIR__ . '/admin.php';
 
 // Route::get('/', function () {

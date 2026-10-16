@@ -100,6 +100,22 @@ class User extends Authenticatable
         return $this->hasOne(StudentProfile::class);
     }
 
+    /**
+     * Student enrollments
+     */
+    public function enrollments(): HasMany
+    {
+        return $this->hasMany(StudentEnrollment::class, 'user_id');
+    }
+
+    /**
+     * Current/latest student enrollment
+     */
+    public function currentEnrollment(): HasOne
+    {
+        return $this->hasOne(StudentEnrollment::class, 'user_id')->latestOfMany();
+    }
+
     public function teacherProfile()
     {
         return $this->hasOne(

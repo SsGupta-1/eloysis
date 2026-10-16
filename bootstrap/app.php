@@ -4,6 +4,8 @@ use App\Http\Middleware\ActivityLoggerMiddleware;
 use App\Http\Middleware\AdminMiddleware;
 use App\Http\Middleware\GuestAdminMiddleware;
 use App\Http\Middleware\PermissionMiddleware;
+use App\Http\Middleware\StudentAuthMiddleware;
+use App\Http\Middleware\StudentGuestMiddleware;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -22,6 +24,8 @@ return Application::configure(basePath: dirname(__DIR__))
             'permission' => PermissionMiddleware::class,
             'admin.guest' => GuestAdminMiddleware::class,
             'activity.log' => ActivityLoggerMiddleware::class,
+            'student.auth' => StudentAuthMiddleware::class,
+            'student.guest' => StudentGuestMiddleware::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

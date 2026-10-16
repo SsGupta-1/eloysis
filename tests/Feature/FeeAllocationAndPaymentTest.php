@@ -81,14 +81,14 @@ test('student fee allocation and payment cashier workflow', function () {
     // 3. Setup Fee Heads & Structures
     $tuitionHead = FeeHead::create([
         'name' => 'Tuition Fee '.uniqid(),
-        'code' => 'TUI_'.rand(100, 999),
+        'code' => 'TUI_'.uniqid(),
         'description' => 'Tuition',
         'is_active' => true,
     ]);
 
     $examHead = FeeHead::create([
         'name' => 'Exam Fee '.uniqid(),
-        'code' => 'EXM_'.rand(100, 999),
+        'code' => 'EXM_'.uniqid(),
         'description' => 'Exam Fee',
         'is_active' => true,
     ]);

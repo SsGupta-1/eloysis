@@ -80,7 +80,7 @@ test('complete end-to-end workflow for questions, question papers, exams, and re
 
         $stProfile = StudentProfile::create([
             'user_id' => $stUser->id,
-            'admission_no' => 'ADM-2026-'.rand(1000, 9999),
+            'admission_no' => 'ADM-2026-'.uniqid(),
             'father_name' => 'Guardian '.chr(64 + $i),
         ]);
 
