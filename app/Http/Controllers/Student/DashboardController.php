@@ -104,19 +104,14 @@ class DashboardController extends Controller
                 ->take(4)
                 ->get();
 
-            // 3. Attendance Summary
-            $attendances = StudentAttendance::where('student_enrollment_id', $enrollment->id)->get();
-            $totalDays = $attendances->count();
-            $presentDays = $attendances->where('status', 'present')->count();
-            $absentDays = $attendances->where('status', 'absent')->count();
-            $leaveDays = $attendances->whereIn('status', ['leave', 'half_day', 'holiday'])->count();
-
+            // 3. Current Month Attendance Summary
+            $monthlyAttendance = \App\Services\Student\StudentAttendanceHelper::buildMonthlyAttendance($enrollment->id);
             $attendanceStats = [
-                'total' => $totalDays,
-                'present' => $presentDays,
-                'absent' => $absentDays,
-                'leave' => $leaveDays,
-                'percentage' => $totalDays > 0 ? round(($presentDays / $totalDays) * 100, 1) : 0,
+                'total' => $monthlyAttendance['monthly_stats']['total_working_days'],
+                'present' => $monthlyAttendance['monthly_stats']['present_days'],
+                'absent' => $monthlyAttendance['monthly_stats']['absent_days'],
+                'leave' => $monthlyAttendance['monthly_stats']['leave_days'],
+                'percentage' => $monthlyAttendance['monthly_stats']['percentage'],
             ];
 
             $recentAttendance = StudentAttendance::where('student_enrollment_id', $enrollment->id)
@@ -252,44 +247,41 @@ class DashboardController extends Controller
     {
         [$user, $profile, $enrollment] = $this->getStudentData();
 
-        $month = $request->input('month', now()->month);
-        $year = $request->input('year', now()->year);
+        $month = (int) $request->input('month', now()->month);
+        $year = (int) $request->input('year', now()->year);
 
-        $attendanceLogs = collect();
-        $stats = [
-            'total' => 0,
-            'present' => 0,
-            'absent' => 0,
-            'leave' => 0,
-            'percentage' => 0,
+        $attendanceData = [
+            'monthly_stats' => [
+                'total_calendar_days' => 0,
+                'total_working_days' => 0,
+                'present_days' => 0,
+                'absent_days' => 0,
+                'leave_days' => 0,
+                'sunday_days' => 0,
+                'holiday_days' => 0,
+                'percentage' => 0,
+                'is_low_attendance' => false,
+            ],
+            'overall_stats' => [
+                'total_recorded' => 0,
+                'present' => 0,
+                'absent' => 0,
+                'percentage' => 0,
+            ],
+            'calendar' => [],
+            'first_day_of_week' => 0,
         ];
 
         if ($enrollment) {
-            $query = StudentAttendance::where('student_enrollment_id', $enrollment->id);
-
-            if ($month && $year) {
-                $query->whereMonth('attendance_date', $month)->whereYear('attendance_date', $year);
-            }
-
-            $attendanceLogs = $query->orderBy('attendance_date', 'desc')->get();
-
-            // Overall stats
-            $allAttendances = StudentAttendance::where('student_enrollment_id', $enrollment->id)->get();
-            $total = $allAttendances->count();
-            $present = $allAttendances->where('status', 'present')->count();
-            $absent = $allAttendances->where('status', 'absent')->count();
-            $leave = $allAttendances->whereIn('status', ['leave', 'half_day', 'holiday'])->count();
-
-            $stats = [
-                'total' => $total,
-                'present' => $present,
-                'absent' => $absent,
-                'leave' => $leave,
-                'percentage' => $total > 0 ? round(($present / $total) * 100, 1) : 0,
-            ];
+            $attendanceData = \App\Services\Student\StudentAttendanceHelper::buildMonthlyAttendance($enrollment->id, $month, $year);
         }
 
-        return view('student.attendance', compact('user', 'profile', 'enrollment', 'attendanceLogs', 'stats', 'month', 'year'));
+        $stats = $attendanceData['monthly_stats'];
+        $overallStats = $attendanceData['overall_stats'];
+        $calendar = $attendanceData['calendar'];
+        $firstDayOfWeek = $attendanceData['first_day_of_week'];
+
+        return view('student.attendance', compact('user', 'profile', 'enrollment', 'stats', 'overallStats', 'calendar', 'firstDayOfWeek', 'month', 'year'));
     }
 
     /**
